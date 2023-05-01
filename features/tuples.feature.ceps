@@ -1,0 +1,30 @@
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+val a = "";
+val b = a;
+
+Scenario{
+     title{label __chapter__1_scenario_1 title = "A tuple with w=1.0 is a point";};
+     Given{
+         let a = as_nodeset(tuple{4.3; -4.2; 3.1; 1.0;});
+     };
+     b = rt_obj(a.tuple);
+     Then{b.x == 4.3;};
+     And{b.y == -4.2;};
+     And{b.z ==  3.1;};
+     And{b.w == 1.0;};
+     And{rt_obj_type_as_str(b) != "point";};
+     And{rt_obj_type_as_str(b) != "vector";};
+};
+
+for(e : root.Scenario){
+    e.title.content();
+    if(e.Then.size()){
+        val r = force_int(e.Then.content()) == 1; 
+        if (!r) {label AssertionFailed title = "" type="error";e.Then.content();}
+        for(ee : e.And){
+            val r = force_int(ee.content()) == 1; 
+            if (!r) {label AssertionFailed title = "" type="error";ee;}
+        }
+    }
+}
