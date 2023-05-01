@@ -18,10 +18,17 @@ Scenario{
 };
 
 for(e : root.Scenario){
+<<<<<<< HEAD
     e.title.content();
     if(e.Then.size()){
         val r = force_int(e.Then.content()) == 1; 
         if (!r) {label AssertionFailed title = "" type="error";e.Then.content();}
+=======
+    e.title;
+    if(e.Then.size()){
+        val r = force_int(e.Then.content()) == 1; 
+        if (!r) {label AssertionFailed title = "" type="error";e;}
+>>>>>>> f5990cae42d17e6e67b7b1281db5ab1e1510e1e0
         for(ee : e.And){
             val r = force_int(ee.content()) == 1; 
             if (!r) {label AssertionFailed title = "" type="error";ee;}
