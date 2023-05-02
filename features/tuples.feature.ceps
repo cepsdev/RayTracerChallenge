@@ -104,6 +104,40 @@ Scenario{
      Then{ symbolic_equality(rt_op(negate{a;}).tuple,result.tuple).diff.equal.content();};
 };
 
+Scenario{
+     title{label __chapter__1_scenario_10 title = "Multiplying a tuple by a scalar";};
+     Given{
+         let a = rt_obj(tuple{1.0; -2.0; 3.0; -4.0;});
+     };
+     val result = rt_obj( tuple{x{3.5;};y{-7.0;};z{10.5;};w{-14.0;};}  );
+     Then{ symbolic_equality(rt_op(multiply{3.5;a;}).tuple,result.tuple).diff.equal.content();};
+};
+Scenario{
+     title{label __chapter__1_scenario_11 title = "Multiplying a tuple by a fraction";};
+     Given{
+         let a = rt_obj(tuple{1.0; -2.0; 3.0; -4.0;});
+     };
+     val result = rt_obj( tuple{x{0.5;};y{-1.0;};z{1.5;};w{-2.0;};}  );
+     Then{ symbolic_equality(rt_op(multiply{0.5;a;}).tuple,result.tuple).diff.equal.content();};
+};
+Scenario{
+     title{label __chapter__1_scenario_12 title = "Dividing a tuple by scalar";};
+     Given{
+         let a = rt_obj(tuple{1.0; -2.0; 3.0; -4.0;});
+     };
+     val result = rt_obj( tuple{x{0.5;};y{-1.0;};z{1.5;};w{-2.0;};}  );
+     Then{ symbolic_equality(rt_op(divide{a;2.0;}).tuple,result.tuple).diff.equal.content();};
+};
+
+Scenario{
+     title{label __chapter__1_scenario_13 title = "Computing the magnitude of vector(1,0,0)";};
+     Given{
+         let v = rt_obj(vector{1.0; 0.0; 0.0;});
+     };
+     Then{ rt_op(magnitude{v;}) == 1.0;};
+};
+
+
 summary{
 for(e : root.Scenario){
     scenario{

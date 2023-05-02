@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <future>
 #include <netinet/sctp.h> 
+#include <cmath>
 
 #include "ceps_ast.hh"
 #include "core/include/state_machine_simulation_core.hpp"
@@ -46,7 +47,7 @@ namespace rt{
         return {scalar*get<0>(t), scalar*get<1>(t),scalar*get<2>(t),scalar*get<3>(t)  };}
     inline tuple_t operator - (tuple_t l, tuple_t r) { 
         return {get<0>(l)+ -1.0*get<0>(r),get<1>(l)+-1.0*get<1>(r),get<2>(l)+-1.0*get<2>(r),get<3>(l)+-1.0*get<3>(r)  };}
-
+    inline precision_t norm_2(tuple_t t){return std::sqrt(get<0>(t)*get<0>(t) + get<1>(t)*get<1>(t)+get<2>(t)*get<2>(t)+get<3>(t)*get<3>(t)); }
     tuple_t  mk_tuple(ceps::ast::Struct);
     ceps::ast::node_struct_t mk_tuple(tuple_t);  
 }
@@ -158,6 +159,30 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
         if (children(ceps_struct).size() > 0){
             auto l = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[0]));
             auto result = -1.0 * l;
+            return rt::mk_tuple(result);
+        }
+    }else if (name(ceps_struct) == "magnitude"){
+        if (children(ceps_struct).size() > 0){
+            auto l = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[0]));
+            auto result = rt::norm_2(l);
+            return mk_double_node(result,all_zero_unit());
+        }
+    } else  if (name(ceps_struct) == "multiply"){
+        if (children(ceps_struct).size() > 1 
+            && is<Ast_node_kind::float_literal>(children(ceps_struct)[0]) 
+            && is<Ast_node_kind::structdef>(children(ceps_struct)[1])){
+            auto l = value(as_double_ref(children(ceps_struct)[0]));
+            auto r = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[1]));
+            auto result = l * r;
+            return rt::mk_tuple(result);
+        }
+    } else  if (name(ceps_struct) == "divide"){
+        if (children(ceps_struct).size() > 1 
+            && is<Ast_node_kind::float_literal>(children(ceps_struct)[1]) 
+            && is<Ast_node_kind::structdef>(children(ceps_struct)[0])){
+            auto l = value(as_double_ref(children(ceps_struct)[1]));
+            auto r = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[0]));
+            auto result = 1/l * r;
             return rt::mk_tuple(result);
         }
     }
