@@ -9,22 +9,34 @@ Scenario{
          let a = as_nodeset(tuple{4.3; -4.2; 3.1; 1.0;});
      };
      let b = rt_obj(a.tuple);
-     Then{b.content().x.content() == 4.3;};
-     And{b.content().y.content() == -4.2;};
-     And{b.content().z.content() ==  3.1;};
-     And{b.content().w.content() == 1.0;};
+     Then{b.tuple.x.content() == 4.3;};
+     And{b.tuple.y.content() == -4.2;};
+     And{b.tuple.z.content() ==  3.1;};
+     And{b.tuple.w.content() == 1.0;};
      And{rt_obj_type_as_str(b) != "point";};
      And{rt_obj_type_as_str(b) != "vector";};
 };
 
+summary{
 for(e : root.Scenario){
+    scenario{
     e.title.content();
+    val pass = 1;
     if(e.Then.size()){
         val r = force_int(e.Then.content()) == 1; 
-        if (!r) {label AssertionFailed title = "" type="error";e.Then.content();}
+        if (!r) {let pass=0;}
         for(ee : e.And){
             val r = force_int(ee.content()) == 1; 
-            if (!r) {label AssertionFailed title = "" type="error";ee;}
+            if (!r) {let pass=0;}
         }
     }
+    verdict{
+    if(pass){
+        label Passed title = "" type="check";
+    } else {
+         label Failed title = "" type="error";
+    }
+    };
+    };
 }
+};
