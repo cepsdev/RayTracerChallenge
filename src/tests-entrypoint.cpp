@@ -154,6 +154,12 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             auto result = l - r;
             return rt::mk_tuple(result);
         }
+    } else if (name(ceps_struct) == "negate" || name(ceps_struct) == "neg"){
+        if (children(ceps_struct).size() > 0){
+            auto l = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[0]));
+            auto result = -1.0 * l;
+            return rt::mk_tuple(result);
+        }
     }
 
     auto result = mk_struct("error");

@@ -2,6 +2,7 @@ kind DocgenStringPrintNoEscape;
 DocgenStringPrintNoEscape docinfo_se;
 val a = "";
 val b = a;
+val v = b;
 
 Scenario{
      title{label __chapter__1_scenario_1 title = "A tuple with w=1.0 is a point";};
@@ -73,15 +74,34 @@ Scenario{
      Then{ symbolic_equality(rt_op(minus{a;b;}).tuple,c.tuple).diff.equal.content();};
 };
 
-
 Scenario{
-     title{label __chapter__1_scenario_6 title = "Subtracting a vector from a point";};
+     title{label __chapter__1_scenario_7 title = "Subtracting two vectors";};
      Given{
-         let a = as_nodeset(point{3.0; 2.0; 1.0;});
+         let a = as_nodeset(vector{3.0; 2.0; 1.0;});
      };
      let b = as_nodeset(vector{5.0; 6.0; 7.0;});
-     val c = rt_obj( point{x{-2.0;};y{-4.0;};z{-6.0;};}  );
+     val c = rt_obj( vector{x{-2.0;};y{-4.0;};z{-6.0;};}  );
      Then{ symbolic_equality(rt_op(minus{a;b;}).tuple,c.tuple).diff.equal.content();};
+};
+
+Scenario{
+     title{label __chapter__1_scenario_8 title = "Subtracting a vector from the zero vector";};
+     val zero = ""; 
+     Given{
+         let zero = as_nodeset(vector{0.0; 0.0; 0.0;});
+     };
+     let v = as_nodeset(vector{1.0; -2.0; 3.0;});
+     val result = rt_obj( vector{x{-1.0;};y{2.0;};z{-3.0;};}  );
+     Then{ symbolic_equality(rt_op(minus{zero;v;}).tuple,result.tuple).diff.equal.content();};
+};
+
+Scenario{
+     title{label __chapter__1_scenario_9 title = "Negating a tuple";};
+     Given{
+         let a = as_nodeset(tuple{1.0; -2.0; 3.0; -4.0;});
+     };
+     val result = rt_obj( tuple{x{-1.0;};y{2.0;};z{-3.0;};w{4.0;};}  );
+     Then{ symbolic_equality(rt_op(negate{a;}).tuple,result.tuple).diff.equal.content();};
 };
 
 summary{
