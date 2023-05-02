@@ -42,6 +42,10 @@ namespace rt{
     };
 
     inline tuple_t operator + (tuple_t l, tuple_t r) { return {get<0>(l)+get<0>(r),get<1>(l)+get<1>(r),get<2>(l)+get<2>(r),get<3>(l)+get<3>(r)  };}
+    inline tuple_t operator * (precision_t scalar, tuple_t t) { 
+        return {scalar*get<0>(t), scalar*get<1>(t),scalar*get<2>(t),scalar*get<3>(t)  };}
+    inline tuple_t operator - (tuple_t l, tuple_t r) { 
+        return {get<0>(l)+ -1.0*get<0>(r),get<1>(l)+-1.0*get<1>(r),get<2>(l)+-1.0*get<2>(r),get<3>(l)+-1.0*get<3>(r)  };}
 
     tuple_t  mk_tuple(ceps::ast::Struct);
     ceps::ast::node_struct_t mk_tuple(tuple_t);  
@@ -143,7 +147,15 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             auto result = l + r;
             return rt::mk_tuple(result);
         }
+    } else if (name(ceps_struct) == "minus"){
+        if (children(ceps_struct).size() > 1){
+            auto l = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[0]));
+            auto r = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[1]));
+            auto result = l - r;
+            return rt::mk_tuple(result);
+        }
     }
+
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));
     return result;

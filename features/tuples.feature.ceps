@@ -63,6 +63,27 @@ Scenario{
      Then{ symbolic_equality(rt_op(plus{a;b;}).tuple,c).diff.equal.content();};
 };
 
+Scenario{
+     title{label __chapter__1_scenario_6 title = "Subtracting two points";};
+     Given{
+         let a = as_nodeset(point{3.0; 2.0; 1.0;});
+     };
+     let b = as_nodeset(point{5.0; 6.0; 7.0;});
+     val c = rt_obj( vector{x{-2.0;};y{-4.0;};z{-6.0;};}  );
+     Then{ symbolic_equality(rt_op(minus{a;b;}).tuple,c.tuple).diff.equal.content();};
+};
+
+
+Scenario{
+     title{label __chapter__1_scenario_6 title = "Subtracting a vector from a point";};
+     Given{
+         let a = as_nodeset(point{3.0; 2.0; 1.0;});
+     };
+     let b = as_nodeset(vector{5.0; 6.0; 7.0;});
+     val c = rt_obj( point{x{-2.0;};y{-4.0;};z{-6.0;};}  );
+     Then{ symbolic_equality(rt_op(minus{a;b;}).tuple,c.tuple).diff.equal.content();};
+};
+
 summary{
 for(e : root.Scenario){
     scenario{
