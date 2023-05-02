@@ -13,8 +13,22 @@ Scenario{
      And{b.tuple.y.content() == -4.2;};
      And{b.tuple.z.content() ==  3.1;};
      And{b.tuple.w.content() == 1.0;};
-     And{rt_obj_type_as_str(b) != "point";};
+     And{rt_obj_type_as_str(b) == "point";};
      And{rt_obj_type_as_str(b) != "vector";};
+};
+
+Scenario{
+     title{label __chapter__1_scenario_2 title = "A tuple with w=0 is a vector";};
+     Given{
+         let a = as_nodeset(tuple{4.3; -4.2; 3.1; 0.0;});
+     };
+     let b = rt_obj(a.tuple);
+     Then{b.tuple.x.content() == 4.3;};
+     And{b.tuple.y.content() == -4.2;};
+     And{b.tuple.z.content() ==  3.1;};
+     And{b.tuple.w.content() == 0.0;};
+     And{rt_obj_type_as_str(b) != "point";};
+     And{rt_obj_type_as_str(b) == "vector";};
 };
 
 summary{

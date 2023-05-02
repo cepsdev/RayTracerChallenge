@@ -45,13 +45,27 @@ namespace rt{
 
 rt::tuple_t rt::mk_tuple(ceps::ast::Struct s){
     auto& v{children(s)}; using namespace ceps::ast;
-    rt::tuple_t tuple{ 
-        v.size() > 0 && is<Ast_node_kind::float_literal>(v[0]) ? value(as_double_ref(v[0])) :rt::tuple_t::val_t{},
-        v.size() > 0 && is<Ast_node_kind::float_literal>(v[1]) ? value(as_double_ref(v[1])) :rt::tuple_t::val_t{},
-        v.size() > 0 && is<Ast_node_kind::float_literal>(v[2]) ? value(as_double_ref(v[2])) :rt::tuple_t::val_t{},
-        v.size() > 0 && is<Ast_node_kind::float_literal>(v[3]) ? value(as_double_ref(v[3])) :rt::tuple_t::val_t{}
-    };
-    return tuple; 
+
+    rt::tuple_t::val_t t[] = { rt::tuple_t::val_t{},rt::tuple_t::val_t{},rt::tuple_t::val_t{},rt::tuple_t::val_t{} };
+    for(auto iter = v.begin(); iter != v.end(); ++iter)
+     if (is<Ast_node_kind::float_literal>(*iter)){
+        t[iter - v.begin()] = value(as_double_ref(*iter));
+     } else if (is<Ast_node_kind::structdef>(*iter)){
+        auto& sub = *as_struct_ptr(*iter);
+        auto& nm = name(sub);
+        auto& ch = children(sub);
+        if (ch.size() == 0) continue;
+        if (is<Ast_node_kind::float_literal>(ch[0])){
+            if (nm == "x") t[0] = value(as_double_ref(ch[0]));
+            else if (nm == "y") t[1] = value(as_double_ref(ch[0]));
+            else if (nm == "z") t[2] = value(as_double_ref(ch[0]));
+            else if (nm == "w") t[3] = value(as_double_ref(ch[0]));
+        }
+     }
+      
+//v.size() > 0 && is<Ast_node_kind::float_literal>(v[3]) ? value(as_double_ref(v[3])) :rt::tuple_t::val_t{}
+
+    return rt::tuple_t{t[0],t[1],t[2],t[3]};
 }
 
 ceps::ast::node_struct_t rt::mk_tuple(rt::tuple_t tuple){
@@ -99,6 +113,11 @@ ceps::ast::node_t cepsplugin::obj_type_as_str(ceps::ast::node_callparameters_t p
     auto data = get_first_child(params);    
     if (!is<Ast_node_kind::structdef>(data)) return nullptr;
     auto& ceps_struct = *as_struct_ptr(data);
+    if (name(ceps_struct) == "tuple"){
+        auto t {rt::mk_tuple(ceps_struct)};
+        if (get<3>(t) == 0.0) return mk_string("vector"); 
+        if (get<3>(t) == 1.0) return mk_string("point"); 
+    }
     return mk_string(name(ceps_struct));
 }
 
