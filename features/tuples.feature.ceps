@@ -31,6 +31,28 @@ Scenario{
      And{rt_obj_type_as_str(b) == "vector";};
 };
 
+Scenario{
+     title{label __chapter__1_scenario_3 title = "point() creates a tuple with w=1";};
+     Given{
+         let a = as_nodeset(point{4.0; -4.0; 3.0;});
+     };
+     let b = rt_obj(a.point);
+     val c = {tuple{x{4.0;};y{-4.0;};z{3.0;};w{1.0;};};};
+     
+     Then{symbolic_equality(c,b.tuple).diff.equal.content();};
+};
+
+Scenario{
+     title{label __chapter__1_scenario_4 title = "vector() creates a tuple with w=0";};
+     Given{
+         let a = as_nodeset(vector{4.0; -4.0; 3.0;});
+     };
+     let b = rt_obj(a.vector);
+     val c = {tuple{x{4.0;};y{-4.0;};z{3.0;};w{0.0;};};};
+     
+     Then{symbolic_equality(c,b.tuple).diff.equal.content();};
+};
+
 summary{
 for(e : root.Scenario){
     scenario{

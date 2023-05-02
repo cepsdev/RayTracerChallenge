@@ -101,6 +101,17 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t
         auto tuple{rt::mk_tuple(ceps_struct)};
         return rt::mk_tuple(tuple);
     }
+    if (name(ceps_struct) == "point"){
+        auto tuple{rt::mk_tuple(ceps_struct)};
+        get<3>(tuple) = 1.0;
+        return rt::mk_tuple(tuple);
+    }
+    if (name(ceps_struct) == "vector"){
+        auto tuple{rt::mk_tuple(ceps_struct)};
+        get<3>(tuple) = 0.0;
+        return rt::mk_tuple(tuple);
+    }
+
     auto result = mk_struct("result");
     children(*result).push_back(mk_int_node(42));
     return result;
