@@ -53,6 +53,16 @@ Scenario{
      Then{symbolic_equality(c,b.tuple).diff.equal.content();};
 };
 
+Scenario{
+     title{label __chapter__1_scenario_5 title = "Adding two tuples";};
+     Given{
+         let a = as_nodeset(tuple{3.0; -2.0; 5.0;1.0;});
+     };
+     let b = as_nodeset(tuple{-2.0; 3.0; 1.0;0.0;});
+     val c = {tuple{x{1.0;};y{1.0;};z{6.0;};w{1.0;};};};
+     Then{ symbolic_equality(rt_op(plus{a;b;}).tuple,c).diff.equal.content();};
+};
+
 summary{
 for(e : root.Scenario){
     scenario{
