@@ -64,6 +64,11 @@ namespace rt{
     inline precision_t dot(tuple_t l, tuple_t r){
         return get<0>(l)*get<0>(r) + get<1>(l)*get<1>(r)+get<2>(l)*get<2>(r)+get<3>(l)*get<3>(r);
     }
+    inline tuple_t cross (tuple_t v1, tuple_t v2) { 
+        return { get<1>(v1)*get<2>(v2) - get<1>(v2) * get<2>(v1) , 
+                 get<2>(v1)*get<0>(v2) - get<2>(v2)*get<0>(v1),
+                 get<0>(v1)*get<1>(v2) - get<0>(v2)*get<1>(v1), 0.0 };}
+
     tuple_t  mk_tuple(ceps::ast::Struct);
     ceps::ast::node_struct_t mk_tuple(tuple_t);  
 }
@@ -210,7 +215,7 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             auto n2 = rt::norm_2(r);
             return rt::mk_tuple(1/n2 * r);
         }
-    }else  if (name(ceps_struct) == "approx_equal"){
+    } else  if (name(ceps_struct) == "approx_equal"){
         if (children(ceps_struct).size() > 1 
             && is<Ast_node_kind::structdef>(children(ceps_struct)[0])
             && is<Ast_node_kind::structdef>(children(ceps_struct)[1])){
@@ -227,15 +232,21 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             auto n2 = std::abs(l - r);
             return mk_int_node(1 ? rt::small(n2): 0);
         } 
-    }else if (name(ceps_struct) == "dot"){
+    } else if (name(ceps_struct) == "dot"){
         if (children(ceps_struct).size() > 1){
             auto l = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[0]));
             auto r = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[1]));
             auto result = rt::dot(l,r);
             return mk_double_node(result,all_zero_unit());
         }
+    } else if (name(ceps_struct) == "cross"){
+        if (children(ceps_struct).size() > 1){
+            auto l = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[0]));
+            auto r = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[1]));
+            auto result = rt::cross(l,r);
+            return rt::mk_tuple(result);
+        }
     }
-    
 
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));

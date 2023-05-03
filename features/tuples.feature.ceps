@@ -3,6 +3,8 @@ DocgenStringPrintNoEscape docinfo_se;
 val a = "";
 val b = a;
 val v = b;
+val v1 = b;
+val v2 = b;
 
 Scenario{
      title{label __chapter__1_scenario_1 title = "A tuple with w=1.0 is a point";};
@@ -236,6 +238,22 @@ Info{
             z{ v1.z * v2.z; };
         };
     };
+};
+
+Scenario{
+     title{label __chapter__1_scenario_20 title = "The cross product of two vectors";};
+     Given{
+         let v1 = rt_obj(vector{1.0; 2.0; 3.0;});
+     };
+     And{
+        let v2 = rt_obj(vector{2.0; 3.0; 4.0;}); 1;
+     };
+     val result1 = rt_obj(vector{-1.0;2.0;-1.0;});
+     val result2 = rt_obj(vector{1.0;-2.0;1.0;});
+     Then{ symbolic_equality(rt_op(cross{v1;v2;}).tuple,result1.tuple).diff.equal.content();};
+     And{ symbolic_equality(rt_op(cross{v2;v1;}).tuple,result2.tuple).diff.equal.content();};
+
+     ">>>>>";rt_op(cross{v1;v2;});
 };
 
 summary{
