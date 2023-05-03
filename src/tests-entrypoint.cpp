@@ -78,6 +78,7 @@ namespace rt{
 
     inline tuple_t operator * (precision_t scalar, tuple_t const & t) { 
         return {scalar*get<0>(t), scalar*get<1>(t),scalar*get<2>(t),scalar*get<3>(t)  };}
+    
     inline tuple_t operator - (tuple_t const & l, tuple_t const & r) { 
         return {get<0>(l)+ -1.0*get<0>(r),get<1>(l)+-1.0*get<1>(r),get<2>(l)+-1.0*get<2>(r),get<3>(l)+-1.0*get<3>(r)  };}
     inline precision_t norm_2(tuple_t t){
@@ -268,10 +269,6 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             return rt::mk_tuple(result);
         }
     }
-
-    rt::vector_t v1; rt::point_t p1;
-    auto re = p1 + v1;
-
 
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));
