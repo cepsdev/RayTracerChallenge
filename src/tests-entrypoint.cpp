@@ -51,13 +51,34 @@ namespace rt{
         tuple_t() = default;
         tuple_t(precision_t a,precision_t b,precision_t c,precision_t d):tuple_base_t{a,b,c,d}{}
     };
+    struct vector_t;struct point_t;
+    
+    struct point_t: private tuple_t{
+        point_t() = default;
+        point_t(precision_t a,precision_t b,precision_t c):tuple_t{a,b,c,1.0}{}
+        friend point_t operator + (point_t , vector_t );
+    };
+
+    struct vector_t: private tuple_t{
+        vector_t() = default;
+        vector_t(precision_t a,precision_t b,precision_t c):tuple_t{a,b,c,0.0}{}
+        friend point_t operator + (point_t , vector_t );
+        friend vector_t operator + (vector_t , vector_t);
+    };
 
     inline tuple_t operator + (tuple_t l, tuple_t r) { 
         return {get<0>(l)+get<0>(r),get<1>(l)+get<1>(r),get<2>(l)+get<2>(r),get<3>(l)+get<3>(r)  };
     }
-    inline tuple_t operator * (precision_t scalar, tuple_t t) { 
+    inline point_t operator + (point_t l, vector_t r) { 
+        return {get<0>(l)+get<0>(r),get<1>(l)+get<1>(r),get<2>(l)+get<2>(r)  };
+    }
+    inline vector_t operator + (vector_t l, vector_t r) { 
+        return {get<0>(l)+get<0>(r),get<1>(l)+get<1>(r),get<2>(l)+get<2>(r)  };
+    }
+
+    inline tuple_t operator * (precision_t scalar, tuple_t const & t) { 
         return {scalar*get<0>(t), scalar*get<1>(t),scalar*get<2>(t),scalar*get<3>(t)  };}
-    inline tuple_t operator - (tuple_t l, tuple_t r) { 
+    inline tuple_t operator - (tuple_t const & l, tuple_t const & r) { 
         return {get<0>(l)+ -1.0*get<0>(r),get<1>(l)+-1.0*get<1>(r),get<2>(l)+-1.0*get<2>(r),get<3>(l)+-1.0*get<3>(r)  };}
     inline precision_t norm_2(tuple_t t){
         return std::sqrt(get<0>(t)*get<0>(t) + get<1>(t)*get<1>(t)+get<2>(t)*get<2>(t)+get<3>(t)*get<3>(t)); }
@@ -247,6 +268,10 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             return rt::mk_tuple(result);
         }
     }
+
+    rt::vector_t v1; rt::point_t p1;
+    auto re = p1 + v1;
+
 
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));
