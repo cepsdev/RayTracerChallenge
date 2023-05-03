@@ -137,6 +137,42 @@ Scenario{
      Then{ rt_op(magnitude{v;}) == 1.0;};
 };
 
+Scenario{
+     title{label __chapter__1_scenario_14 title = "Computing the magnitude of vector(0,1,0)";};
+     Given{
+         let v = rt_obj(vector{0.0; 1.0; 0.0;});
+     };
+     Then{ rt_op(magnitude{v;}) == 1.0;};
+};
+
+Scenario{
+     title{label __chapter__1_scenario_15 title = "Computing the magnitude of vector(0,0,1)";};
+     Given{
+         let v = rt_obj(vector{0.0; 0.0; 1.0;});
+     };
+     Then{ rt_op(magnitude{v;}) == 1.0;};
+};
+
+Scenario{
+     title{label __chapter__1_scenario_15 title = "Computing the magnitude of vector(1,2,3)";};
+     Given{
+         let v = rt_obj(vector{1.0; 2.0; 3.0;});
+     };
+     Then{ rt_op(magnitude{v;}) == sqrt(14.0);};
+};
+
+Scenario{
+     title{label __chapter__1_scenario_15 title = "Computing the magnitude of vector(-1,-2,-3)";};
+     Given{
+         let v = rt_obj(vector{-1.0; -2.0; -3.0;});
+     };
+     Then{ rt_op(magnitude{v;}) == sqrt(14.0);};
+};
+
+Info{
+    label __chapter__1_magnitude title="";
+    magnitude(w) = sqrt(w_x*w_x + w_y*w_y + w_z*w_z);
+};
 
 summary{
 for(e : root.Scenario){
@@ -161,3 +197,4 @@ for(e : root.Scenario){
     };
 }
 };
+
