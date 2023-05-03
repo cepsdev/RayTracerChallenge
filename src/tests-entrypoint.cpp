@@ -33,8 +33,18 @@ namespace cepsplugin{
 
 #include <tuple>
 
+
+//RT lives here
+template<typename T> struct smallness;
+template<> struct smallness<double> { static constexpr double value = 0.0000001;};
+
+
 namespace rt{
     using precision_t = double;
+    bool small(precision_t v) {
+        return std::abs(v) < smallness<precision_t>::value;
+    }
+    
     using tuple_base_t = std::tuple<precision_t,precision_t,precision_t,precision_t>;
     struct tuple_t: public tuple_base_t{
         using val_t = precision_t;
@@ -42,15 +52,23 @@ namespace rt{
         tuple_t(precision_t a,precision_t b,precision_t c,precision_t d):tuple_base_t{a,b,c,d}{}
     };
 
-    inline tuple_t operator + (tuple_t l, tuple_t r) { return {get<0>(l)+get<0>(r),get<1>(l)+get<1>(r),get<2>(l)+get<2>(r),get<3>(l)+get<3>(r)  };}
+    inline tuple_t operator + (tuple_t l, tuple_t r) { 
+        return {get<0>(l)+get<0>(r),get<1>(l)+get<1>(r),get<2>(l)+get<2>(r),get<3>(l)+get<3>(r)  };
+    }
     inline tuple_t operator * (precision_t scalar, tuple_t t) { 
         return {scalar*get<0>(t), scalar*get<1>(t),scalar*get<2>(t),scalar*get<3>(t)  };}
     inline tuple_t operator - (tuple_t l, tuple_t r) { 
         return {get<0>(l)+ -1.0*get<0>(r),get<1>(l)+-1.0*get<1>(r),get<2>(l)+-1.0*get<2>(r),get<3>(l)+-1.0*get<3>(r)  };}
-    inline precision_t norm_2(tuple_t t){return std::sqrt(get<0>(t)*get<0>(t) + get<1>(t)*get<1>(t)+get<2>(t)*get<2>(t)+get<3>(t)*get<3>(t)); }
+    inline precision_t norm_2(tuple_t t){
+        return std::sqrt(get<0>(t)*get<0>(t) + get<1>(t)*get<1>(t)+get<2>(t)*get<2>(t)+get<3>(t)*get<3>(t)); }
+    inline precision_t dot(tuple_t l, tuple_t r){
+        return get<0>(l)*get<0>(r) + get<1>(l)*get<1>(r)+get<2>(l)*get<2>(r)+get<3>(l)*get<3>(r);
+    }
     tuple_t  mk_tuple(ceps::ast::Struct);
     ceps::ast::node_struct_t mk_tuple(tuple_t);  
 }
+
+//Test Interface lives here
 
 rt::tuple_t rt::mk_tuple(ceps::ast::Struct s){
     auto& v{children(s)}; using namespace ceps::ast;
@@ -185,7 +203,39 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             auto result = 1/l * r;
             return rt::mk_tuple(result);
         }
+    }else  if (name(ceps_struct) == "normalize"){
+        if (children(ceps_struct).size() > 0 
+            && is<Ast_node_kind::structdef>(children(ceps_struct)[0])){
+            auto r = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[0]));
+            auto n2 = rt::norm_2(r);
+            return rt::mk_tuple(1/n2 * r);
+        }
+    }else  if (name(ceps_struct) == "approx_equal"){
+        if (children(ceps_struct).size() > 1 
+            && is<Ast_node_kind::structdef>(children(ceps_struct)[0])
+            && is<Ast_node_kind::structdef>(children(ceps_struct)[1])){
+            auto l = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[0]));
+            auto r = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[0]));
+
+            auto n2 = rt::norm_2(l - r);
+            return mk_int_node(1 ? rt::small(n2): 0);
+        } else if (children(ceps_struct).size() > 1 
+            && is<Ast_node_kind::float_literal>(children(ceps_struct)[0])
+            && is<Ast_node_kind::float_literal>(children(ceps_struct)[1])){
+            auto l = value(as_double_ref(children(ceps_struct)[0]));
+            auto r = value(as_double_ref(children(ceps_struct)[0]));
+            auto n2 = std::abs(l - r);
+            return mk_int_node(1 ? rt::small(n2): 0);
+        } 
+    }else if (name(ceps_struct) == "dot"){
+        if (children(ceps_struct).size() > 1){
+            auto l = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[0]));
+            auto r = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[1]));
+            auto result = rt::dot(l,r);
+            return mk_double_node(result,all_zero_unit());
+        }
     }
+    
 
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));
