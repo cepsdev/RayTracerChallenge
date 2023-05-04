@@ -1,0 +1,13 @@
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+val a = "";
+val b = a;
+val v = b;
+val v1 = b;
+val v2 = b;
+val c = 0;
+val c1 = 0;
+val c2 = 0;
+
+val skip_summary = 0;
+val summary_only_failures = 1;

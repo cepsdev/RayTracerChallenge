@@ -1,10 +1,4 @@
-kind DocgenStringPrintNoEscape;
-DocgenStringPrintNoEscape docinfo_se;
-val a = "";
-val b = a;
-val v = b;
-val v1 = b;
-val v2 = b;
+
 
 Scenario{
      title{label __chapter__1_scenario_1 title = "A tuple with w=1.0 is a point";};
@@ -254,10 +248,6 @@ Scenario{
      And{ symbolic_equality(rt_op(cross{v2;v1;}).tuple,result2.tuple).diff.equal.content();};
 };
 
-val c = 0;
-val c1 = 0;
-val c2 = 0;
-
 Scenario{
      title{label __chapter__2_scenario_1 title = "Colors are (red, green, blue) tuples";};
      Given{
@@ -331,51 +321,5 @@ Scenario{
      };
   };
 
-val skip_summary = 0;
-val summary_only_failures = 1;
-
-if(! skip_summary){
-    if (summary_only_failures){
-        for(e : root.Scenario){
-            val passes = 1;
-            if(e.Then.size()){
-                val r = force_int(e.Then.content()) == 1; 
-                if (!r) {let passes=0;}
-                for(ee : e.And){
-                    val r = force_int(ee.content()) == 1; 
-                    if (!r) {let passes=0;}
-                 }
-            }
-            if (!passes){
-
-                scenario{
-                    e.title.content();
-                    verdict{label Failed title = "" type="error";};
-                };
-            }
-        }
-    } else {
-summary{
-for(e : root.Scenario){
-    scenario{
-    e.title.content();
-    val pass = 1;
-    if(e.Then.size()){
-        val r = force_int(e.Then.content()) == 1; 
-        if (!r) {let pass=0;}
-        for(ee : e.And){
-            val r = force_int(ee.content()) == 1; 
-            if (!r) {let pass=0;}
-        }
-    }
-    verdict{
-    if(pass){
-        label Passed title = "" type="check";
-    } else {
-         label Failed title = "" type="error";
-    }
-    };
-    };
-}
-};}
-};
+let skip_summary = 0;
+let summary_only_failures = 0;

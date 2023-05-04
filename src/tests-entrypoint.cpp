@@ -18,6 +18,7 @@
 #include <future>
 #include <netinet/sctp.h> 
 #include <cmath>
+#include <vector>
 
 #include "ceps_ast.hh"
 #include "core/include/state_machine_simulation_core.hpp"
@@ -134,6 +135,27 @@ namespace rt{
 
     color_t mk_color(ceps::ast::Struct);
     ceps::ast::node_struct_t mk_color(color_t);
+
+    class canvas_t{
+        std::vector<color_t> data;
+        public:
+        canvas_t() = default;
+        canvas_t(unsigned short width, unsigned short height):width{width}, height{height}{
+            data.resize(width * height);
+        }
+        using iterator = std::vector<color_t>::iterator;
+        using const_iterator = std::vector<color_t>::const_iterator;
+        
+        const_iterator begin() const {return data.begin();}
+        const_iterator end() const {return data.end();}
+        iterator begin() {return data.begin();}
+        iterator end() {return data.end();}
+        unsigned short width{};
+        unsigned short height{};        
+    };
+
+    canvas_t mk_canvas(ceps::ast::Struct);
+    ceps::ast::node_struct_t mk_canvas(canvas_t);
   
 }
 
@@ -215,6 +237,44 @@ ceps::ast::node_struct_t rt::mk_color(rt::color_t color){
     return result;
 }  
 
+rt::canvas_t rt::mk_canvas(ceps::ast::Struct s){
+    using namespace ceps::ast;
+    auto& v{children(s)};
+    unsigned short dim[] = { 0,0};
+    for(auto iter = v.begin(); iter != v.end(); ++iter)
+     if (is<Ast_node_kind::int_literal>(*iter)){
+        dim[iter - v.begin()] = static_cast<unsigned short>(value(as_int_ref(*iter)));
+     } else if (is<Ast_node_kind::structdef>(*iter)){
+        auto& sub = *as_struct_ptr(*iter);
+        auto& nm = name(sub);
+        auto& ch = children(sub);
+        if (ch.size() == 0) continue;
+        if (is<Ast_node_kind::int_literal>(ch[0])){
+            if (nm == "w" || nm == "width") dim[0] = static_cast<unsigned short>(value(as_int_ref(ch[0])));
+            else if (nm == "h" || nm == "height") dim[1] = static_cast<unsigned short>(value(as_int_ref(ch[0])));
+        }
+     }
+    return {dim[0],dim[1]};
+}
+
+ceps::ast::node_struct_t rt::mk_canvas(rt::canvas_t canvas){
+    using namespace ceps::ast;using namespace ceps::interpreter;
+    auto result = mk_struct("canvas");
+    auto w = mk_struct("width");auto h = mk_struct("height");
+    children(*result).push_back(w);
+    children(*result).push_back(h);
+    children(*w).push_back(mk_int_node(canvas.width));
+    children(*h).push_back(mk_int_node(canvas.height));
+
+    auto d = mk_struct("data");
+    children(*result).push_back(d);
+    for(auto c : canvas){
+        children(*d).push_back(mk_color(c));
+    }
+    return result;
+}
+
+
 rt::tuple_t tuple_from_ceps(ceps::ast::Struct& ceps_struct){
     if (name(ceps_struct) == "tuple"){
         return rt::mk_tuple(ceps_struct);
@@ -250,6 +310,8 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t
         return rt::mk_tuple(tuple_from_ceps(ceps_struct));
     } else if (name(ceps_struct) == "color"){
         return rt::mk_color(rt::mk_color(ceps_struct));
+    } else if (name(ceps_struct) == "canvas"){
+        return rt::mk_canvas(rt::mk_canvas(ceps_struct));
     }
 
     auto result = mk_struct("error");

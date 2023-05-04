@@ -1,0 +1,45 @@
+if(! skip_summary){
+    if (summary_only_failures){
+        for(e : root.Scenario){
+            val passes = 1;
+            if(e.Then.size()){
+                val r = force_int(e.Then.content()) == 1; 
+                if (!r) {let passes=0;}
+                for(ee : e.And){
+                    val r = force_int(ee.content()) == 1; 
+                    if (!r) {let passes=0;}
+                 }
+            }
+            if (!passes){
+
+                scenario{
+                    e.title.content();
+                    verdict{label Failed title = "" type="error";};
+                };
+            }
+        }
+    } else {
+summary{
+for(e : root.Scenario){
+    scenario{
+    e.title.content();
+    val pass = 1;
+    if(e.Then.size()){
+        val r = force_int(e.Then.content()) == 1; 
+        if (!r) {let pass=0;}
+        for(ee : e.And){
+            val r = force_int(ee.content()) == 1; 
+            if (!r) {let pass=0;}
+        }
+    }
+    verdict{
+    if(pass){
+        label Passed title = "" type="check";
+    } else {
+         label Failed title = "" type="error";
+    }
+    };
+    };
+}
+};}
+};
