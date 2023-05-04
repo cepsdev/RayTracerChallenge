@@ -116,7 +116,22 @@ namespace rt{
     inline color_t clamp(color_t c){
         return { clamp(c.r()), clamp(c.g()), clamp(c.b()) };
     }
+
+    inline color_t operator + (color_t l, color_t r) { 
+        return {l.r()+r.r(),l.g()+r.g(),l.b()+r.b() };
+    }
+
+    inline color_t operator - (color_t l, color_t r) { 
+        return {l.r()-r.r(),l.g()-r.g(),l.b()-r.b() };
+    }
     
+    inline color_t operator * (color_t l, color_t r) { 
+        return {l.r()*r.r(),l.g()*r.g(),l.b()*r.b() };
+    }
+    inline color_t operator * (color_prec_t scalar, color_t l) { 
+        return {scalar*l.r(),scalar*l.g(),scalar*l.b() };
+    }
+
     color_t mk_color(ceps::ast::Struct);
     ceps::ast::node_struct_t mk_color(color_t);
   
@@ -252,17 +267,36 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
     auto& ceps_struct = *as_struct_ptr(data);
     if (name(ceps_struct) == "plus"){
         if (children(ceps_struct).size() > 1){
-            auto l = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[0]));
-            auto r = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[1]));
-            auto result = l + r;
-            return rt::mk_tuple(result);
+            if (
+                (name(*as_struct_ptr(children(ceps_struct)[0])) ==  "color") && 
+                (name(*as_struct_ptr(children(ceps_struct)[1])) == "color") ){
+                auto l = rt::mk_color(*as_struct_ptr(children(ceps_struct)[0]));
+                auto r = rt::mk_color(*as_struct_ptr(children(ceps_struct)[1]));
+                auto result = l + r;
+                return rt::mk_color(result);
+            } else{
+                auto l = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[0]));
+                auto r = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[1]));
+                auto result = l + r;
+                return rt::mk_tuple(result);
+            }
         }
     } else if (name(ceps_struct) == "minus"){
         if (children(ceps_struct).size() > 1){
+            if (
+                (name(*as_struct_ptr(children(ceps_struct)[0])) ==  "color") && 
+                (name(*as_struct_ptr(children(ceps_struct)[1])) == "color") ){
+                auto l = rt::mk_color(*as_struct_ptr(children(ceps_struct)[0]));
+                auto r = rt::mk_color(*as_struct_ptr(children(ceps_struct)[1]));
+                auto result = l - r;
+                return rt::mk_color(result);
+            } else{
+
             auto l = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[0]));
             auto r = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[1]));
             auto result = l - r;
             return rt::mk_tuple(result);
+            }
         }
     } else if (name(ceps_struct) == "negate" || name(ceps_struct) == "neg"){
         if (children(ceps_struct).size() > 0){
@@ -278,6 +312,24 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
         }
     } else  if (name(ceps_struct) == "multiply"){
         if (children(ceps_struct).size() > 1 
+            && is<Ast_node_kind::float_literal>(children(ceps_struct)[0]) 
+            && is<Ast_node_kind::structdef>(children(ceps_struct)[1])
+            && name(*as_struct_ptr(children(ceps_struct)[1]))=="color" ){
+            auto l = value(as_double_ref(children(ceps_struct)[0]));
+            auto r = rt::mk_color(*as_struct_ptr(children(ceps_struct)[1]));
+            auto result = l * r;
+            return rt::mk_color(result);
+        } else if (children(ceps_struct).size() > 1 
+            && is<Ast_node_kind::float_literal>(children(ceps_struct)[0]) 
+            && is<Ast_node_kind::float_literal>(children(ceps_struct)[1])
+            && name(*as_struct_ptr(children(ceps_struct)[0]))=="color"
+            && name(*as_struct_ptr(children(ceps_struct)[1]))=="color" 
+            ){
+            auto l = rt::mk_color(*as_struct_ptr(children(ceps_struct)[0]));
+            auto r = rt::mk_color(*as_struct_ptr(children(ceps_struct)[1]));
+            auto result = l * r;
+            return rt::mk_color(result);
+        } else if (children(ceps_struct).size() > 1 
             && is<Ast_node_kind::float_literal>(children(ceps_struct)[0]) 
             && is<Ast_node_kind::structdef>(children(ceps_struct)[1])){
             auto l = value(as_double_ref(children(ceps_struct)[0]));

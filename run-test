@@ -3,5 +3,5 @@
 
 LD_LIBRARY_PATH=$(pwd)/bin:$LD_LIBRARY_PATH ceps \
  $1 \
- --pluginlibrt.so --pe --format ansi						
+ --pluginlibrt.so --pe 	--format ansi					
 					
