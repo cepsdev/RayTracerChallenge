@@ -41,6 +41,8 @@ template<> struct smallness<double> { static constexpr double value = 0.0000001;
 
 namespace rt{
     using precision_t = double;
+    using color_prec_t = double;
+
     bool small(precision_t v) {
         return std::abs(v) < smallness<precision_t>::value;
     }
@@ -92,7 +94,32 @@ namespace rt{
                  get<0>(v1)*get<1>(v2) - get<0>(v2)*get<1>(v1), 0.0 };}
 
     tuple_t  mk_tuple(ceps::ast::Struct);
-    ceps::ast::node_struct_t mk_tuple(tuple_t);  
+    ceps::ast::node_struct_t mk_tuple(tuple_t);
+
+    inline color_prec_t clamp(color_prec_t v){
+        return v > 1.0 ? 1.0 : (v < 0.0 ? 0.0 : v); 
+    }
+
+    struct color_t: private std::tuple<color_prec_t,color_prec_t,color_prec_t>{
+        color_t() = default;
+        color_t(color_prec_t r,color_prec_t g,color_prec_t b):tuple{r,g,b}{}
+        color_prec_t r() const { return std::get<0>(*this);}
+        color_prec_t g() const { return std::get<1>(*this);}
+        color_prec_t b() const { return std::get<2>(*this);}
+
+        friend color_t operator + (color_t , color_t );
+        friend color_t operator - (color_t , color_t);
+        friend color_t operator * (color_prec_t , color_t );
+        friend color_t operator * (color_t , color_t);
+        friend color_t clamp(color_t);
+    };
+    inline color_t clamp(color_t c){
+        return { clamp(c.r()), clamp(c.g()), clamp(c.b()) };
+    }
+    
+    color_t mk_color(ceps::ast::Struct);
+    ceps::ast::node_struct_t mk_color(color_t);
+  
 }
 
 //Test Interface lives here
@@ -138,6 +165,41 @@ ceps::ast::node_struct_t rt::mk_tuple(rt::tuple_t tuple){
     return result;
 }  
 
+rt::color_t rt::mk_color(ceps::ast::Struct s){
+    using namespace ceps::ast;
+    auto& v{children(s)};
+    color_prec_t t[] = { color_prec_t{},color_prec_t{},color_prec_t{}};
+    for(auto iter = v.begin(); iter != v.end(); ++iter)
+     if (is<Ast_node_kind::float_literal>(*iter)){
+        t[iter - v.begin()] = value(as_double_ref(*iter));
+     } else if (is<Ast_node_kind::structdef>(*iter)){
+        auto& sub = *as_struct_ptr(*iter);
+        auto& nm = name(sub);
+        auto& ch = children(sub);
+        if (ch.size() == 0) continue;
+        if (is<Ast_node_kind::float_literal>(ch[0])){
+            if (nm == "r" || nm == "red") t[0] = value(as_double_ref(ch[0]));
+            else if (nm == "g" || nm == "green") t[1] = value(as_double_ref(ch[0]));
+            else if (nm == "b" || nm == "blue") t[2] = value(as_double_ref(ch[0]));
+        }
+     }
+    color_t r {t[0],t[1],t[2]};
+    return r;
+}
+ceps::ast::node_struct_t rt::mk_color(rt::color_t color){
+    using namespace ceps::ast;using namespace ceps::interpreter;
+    auto result = mk_struct("color");
+    auto r = mk_struct("red");auto g = mk_struct("green");auto b = mk_struct("blue");
+    children(*result).push_back(r);
+    children(*result).push_back(g);
+    children(*result).push_back(b);
+    
+    children(*r).push_back(mk_double_node(color.r(),all_zero_unit()));
+    children(*g).push_back(mk_double_node(color.g(),all_zero_unit()));
+    children(*b).push_back(mk_double_node(color.b(),all_zero_unit()));
+    return result;
+}  
+
 rt::tuple_t tuple_from_ceps(ceps::ast::Struct& ceps_struct){
     if (name(ceps_struct) == "tuple"){
         return rt::mk_tuple(ceps_struct);
@@ -171,6 +233,8 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t
 
     if (name(ceps_struct) == "tuple" || name(ceps_struct) == "point" || name(ceps_struct) == "vector"){
         return rt::mk_tuple(tuple_from_ceps(ceps_struct));
+    } else if (name(ceps_struct) == "color"){
+        return rt::mk_color(rt::mk_color(ceps_struct));
     }
 
     auto result = mk_struct("error");
@@ -268,7 +332,7 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             auto result = rt::cross(l,r);
             return rt::mk_tuple(result);
         }
-    }
+    } 
 
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));
@@ -287,7 +351,7 @@ ceps::ast::node_t cepsplugin::obj_type_as_str(ceps::ast::node_callparameters_t p
         auto t {rt::mk_tuple(ceps_struct)};
         if (get<3>(t) == 0.0) return mk_string("vector"); 
         if (get<3>(t) == 1.0) return mk_string("point"); 
-    }
+    } 
     return mk_string(name(ceps_struct));
 }
 
