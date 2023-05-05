@@ -151,12 +151,17 @@ namespace rt{
         iterator begin() {return data.begin();}
         iterator end() {return data.end();}
         unsigned short width{};
-        unsigned short height{};        
+        unsigned short height{};
+        void write_pixel(unsigned short x, unsigned short y, color_t color){
+            data[y*width+x] = color;
+        }
+        void write_pixel( unsigned int pos, color_t color){
+            data[pos] = color;
+        }
+        color_t pixel_at(short x, short y) const {return data[y*width+x];}
     };
-
     canvas_t mk_canvas(ceps::ast::Struct);
     ceps::ast::node_struct_t mk_canvas(canvas_t);
-  
 }
 
 //Test Interface lives here
@@ -239,11 +244,15 @@ ceps::ast::node_struct_t rt::mk_color(rt::color_t color){
 
 rt::canvas_t rt::mk_canvas(ceps::ast::Struct s){
     using namespace ceps::ast;
+    using namespace std;
     auto& v{children(s)};
     unsigned short dim[] = { 0,0};
+    node_struct_t data{};
     for(auto iter = v.begin(); iter != v.end(); ++iter)
      if (is<Ast_node_kind::int_literal>(*iter)){
         dim[iter - v.begin()] = static_cast<unsigned short>(value(as_int_ref(*iter)));
+     } else if (is<Ast_node_kind::structdef>(*iter) && name(*as_struct_ptr(*iter)) == "data" ){
+        data = as_struct_ptr(*iter);
      } else if (is<Ast_node_kind::structdef>(*iter)){
         auto& sub = *as_struct_ptr(*iter);
         auto& nm = name(sub);
@@ -254,7 +263,16 @@ rt::canvas_t rt::mk_canvas(ceps::ast::Struct s){
             else if (nm == "h" || nm == "height") dim[1] = static_cast<unsigned short>(value(as_int_ref(ch[0])));
         }
      }
-    return {dim[0],dim[1]};
+    canvas_t canvas{dim[0],dim[1]};
+    if(data) {
+        auto& v{children(data)};
+        for (auto iter = v.begin(); iter != v.end(); ++iter){
+            if (!is<Ast_node_kind::structdef>(*iter)) continue;
+            auto col = mk_color(*as_struct_ptr(*iter));
+            canvas.write_pixel(iter - v.begin(), mk_color(*as_struct_ptr(*iter)) );
+        }
+    }
+    return canvas;
 }
 
 ceps::ast::node_struct_t rt::mk_canvas(rt::canvas_t canvas){
@@ -446,7 +464,37 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             auto result = rt::cross(l,r);
             return rt::mk_tuple(result);
         }
-    } 
+    } else if (name(ceps_struct) == "write_pixel") {
+        if (children(ceps_struct).size() > 3){
+            if (
+                is<Ast_node_kind::structdef>(children(ceps_struct)[0]) &&
+                is<Ast_node_kind::structdef>(children(ceps_struct)[3]) &&
+                (name(*as_struct_ptr(children(ceps_struct)[0])) ==  "canvas") &&
+                is<Ast_node_kind::int_literal>(children(ceps_struct)[1]) &&
+                is<Ast_node_kind::int_literal>(children(ceps_struct)[2]) &&
+                (name(*as_struct_ptr(children(ceps_struct)[3])) == "color") ){
+                auto col = rt::mk_color(*as_struct_ptr(children(ceps_struct)[3]));
+                short x = value(as_int_ref(children(ceps_struct)[1]));
+                short y = value(as_int_ref(children(ceps_struct)[2]));
+                auto canvas = rt::mk_canvas(*as_struct_ptr(children(ceps_struct)[0]));                
+                canvas.write_pixel(x,y,col);
+                return rt::mk_canvas(canvas);
+            }
+        }
+    } else if (name(ceps_struct) == "pixel_at") {
+        if (children(ceps_struct).size() > 2){
+            if (
+                is<Ast_node_kind::structdef>(children(ceps_struct)[0]) &&
+                (name(*as_struct_ptr(children(ceps_struct)[0])) ==  "canvas") &&
+                is<Ast_node_kind::int_literal>(children(ceps_struct)[1]) &&
+                is<Ast_node_kind::int_literal>(children(ceps_struct)[2])  ){
+                short x = value(as_int_ref(children(ceps_struct)[1]));
+                short y = value(as_int_ref(children(ceps_struct)[2]));
+                auto canvas = rt::mk_canvas(*as_struct_ptr(children(ceps_struct)[0]));                
+                return rt::mk_color(canvas.pixel_at(x,y));
+            }
+        }
+    }
 
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));

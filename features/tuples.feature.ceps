@@ -251,11 +251,11 @@ Scenario{
 Scenario{
      title{label __chapter__2_scenario_1 title = "Colors are (red, green, blue) tuples";};
      Given{
-         let c = rt_obj(color{-0.5; 0.4; 1.7;});
+         let col = rt_obj(color{-0.5; 0.4; 1.7;});
      };
-     Then{ c.color.red.content() == -0.5; };
-     And{ c.color.green.content() == 0.4;};
-     And{ c.color.blue.content() == 1.7;};
+     Then{ col.color.red.content() == -0.5; };
+     And{ col.color.green.content() == 0.4;};
+     And{ col.color.blue.content() == 1.7;};
 };
 
 Scenario{

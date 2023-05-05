@@ -1,0 +1,52 @@
+
+
+
+Scenario{
+     title{label __chapter__2_scenario_6 title = "Creating a canvas";};
+     Given{
+         let c = rt_obj(canvas{10; 20;});
+     };
+     Then{
+        if(c.canvas.size()){
+            c.canvas.width.content() == 10;
+        } else 0;
+     };
+     And{
+        c.canvas.height.content() == 20;
+     };
+     And{
+        val every_pixel_is_black = 1;
+        for(coll : c.canvas.data.color){
+            if(coll.red.content() != 0.0){ let every_pixel_is_black = 0;}
+            if(coll.green.content() != 0.0){ let every_pixel_is_black = 0;}
+            if(coll.blue.content() != 0.0){ let every_pixel_is_black = 0;}
+        }
+        every_pixel_is_black;
+     };
+};
+
+Scenario{
+     title{label __chapter__2_scenario_6 title = "Creating a canvas";};
+     Given{
+         let c = rt_obj(canvas{3; 4;});
+     };
+     And{
+        let red_color = rt_obj(color{1.0;0.0;0.0;});1;
+     };
+     When{
+        let canvas = rt_op(write_pixel{c;2;3;red_color;});
+     };
+     Then{
+        let col = rt_op(pixel_at{canvas;2;3;});
+        col.color.red.content() == red_color.color.red.content() &&
+        col.color.green.content() == red_color.color.green.content() &&
+        col.color.blue.content() == red_color.color.blue.content()        ;
+        
+     };
+};
+
+
+
+let skip_summary = 0;
+let summary_only_failures = 0;
+

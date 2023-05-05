@@ -8,6 +8,8 @@ val v2 = b;
 val c = 0;
 val c1 = 0;
 val c2 = 0;
-
+val red_color = 0;
+val col = 0;
+val canvas = 0;
 val skip_summary = 0;
 val summary_only_failures = 1;
