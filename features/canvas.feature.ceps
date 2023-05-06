@@ -52,10 +52,10 @@ Scenario{
      };
      When{
         let ppm = rt_op(canvas_to_ppm{c;});
-        ppm;
      };
-     Then{
-         lines_of(ppm,3) == "P3\n5 3\n255\n";        
+     Then
+     {
+         first_lines_of_string(ppm,3,"\n") == "P3\n5 3\n255\n";
      };
 };
 
