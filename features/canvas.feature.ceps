@@ -45,6 +45,18 @@ Scenario{
      };
 };
 
+Scenario{
+     title{label __chapter__2_scenario_7 title = "Constructing the PPM header";};
+     Given{
+         let c = rt_obj(canvas{5; 3;});
+     };
+     When{
+        let ppm = rt_op(canvas_to_ppm{c;});
+     };
+     Then{
+         lines_of(ppm,3) == "P3\n5 3\n255\n";        
+     };
+};
 
 
 let skip_summary = 0;

@@ -162,6 +162,41 @@ namespace rt{
     };
     canvas_t mk_canvas(ceps::ast::Struct);
     ceps::ast::node_struct_t mk_canvas(canvas_t);
+
+    struct ppm{
+        canvas_t canvas;
+        static int constexpr clamp_high_default = 255;
+        static int constexpr max_line = 70;
+
+        int clamp_high{clamp_high_default};
+        ppm() = default;
+        ppm(canvas_t canvas, int clamp_high = clamp_high_default) : canvas{canvas}{
+            for(auto& c: canvas) c = clamp(c);
+        }
+        friend std::ostream& operator << (std::ostream& out, ppm const &);
+    };
+
+    std::ostream& operator << (std::ostream& out, ppm const & p){
+        out << "P3\n";
+        out << p.canvas.width << ' ';
+        out << p.canvas.height << '\n';
+        out << p.clamp_high << '\n';
+        std::stringstream s;
+        s << p.clamp_high << " " << p.clamp_high << " " << p.clamp_high;
+        auto chars_per_pixel = s.str().length();
+        int pixels_per_line = std::min(static_cast<int>(p.canvas.width), static_cast<int>(ppm::max_line /chars_per_pixel));
+        int current_line_pixels_written = 0;
+        for (auto c : p.canvas){
+            if (current_line_pixels_written == pixels_per_line) {out << '\n';current_line_pixels_written = 0;}
+            else out << ' ';
+            out << c.r() * p.clamp_high << ' ' <<
+            c.g() * p.clamp_high << ' ' <<
+            c.b() * p.clamp_high;
+            ++current_line_pixels_written;
+        }
+        if (current_line_pixels_written == pixels_per_line) out << '\n';
+        return out;
+    }
 }
 
 //Test Interface lives here
