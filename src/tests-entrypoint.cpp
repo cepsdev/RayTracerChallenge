@@ -171,7 +171,7 @@ namespace rt{
         int clamp_high{clamp_high_default};
         ppm() = default;
         ppm(canvas_t canvas, int clamp_high = clamp_high_default) : canvas{canvas}{
-            for(auto& c: canvas) c = clamp(c);
+            for(auto& c: this->canvas) c = clamp(c);
         }
         friend std::ostream& operator << (std::ostream& out, ppm const &);
     };
@@ -188,10 +188,10 @@ namespace rt{
         int current_line_pixels_written = 0;
         for (auto c : p.canvas){
             if (current_line_pixels_written == pixels_per_line) {out << '\n';current_line_pixels_written = 0;}
-            else out << ' ';
-            out << c.r() * p.clamp_high << ' ' <<
-            c.g() * p.clamp_high << ' ' <<
-            c.b() * p.clamp_high;
+            else if (current_line_pixels_written != 0) out << ' ';
+            out << (int)std::round(c.r() * p.clamp_high) << ' ' <<
+            (int)std::round(c.g() * p.clamp_high) << ' ' <<
+            (int)std::round(c.b() * p.clamp_high);
             ++current_line_pixels_written;
         }
         if (current_line_pixels_written == pixels_per_line) out << '\n';

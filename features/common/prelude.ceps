@@ -8,6 +8,7 @@ val v2 = b;
 val c = 0;
 val c1 = 0;
 val c2 = 0;
+val c3 = 0;
 val red_color = 0;
 val col = 0;
 val canvas = 0;

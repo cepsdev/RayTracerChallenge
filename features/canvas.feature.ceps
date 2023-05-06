@@ -59,6 +59,42 @@ Scenario{
      };
 };
 
+Scenario{
+     title{label __chapter__2_scenario_8 title = "Constructing the PPM pixel data";};
+     Given{
+         let c = rt_obj(canvas{5; 3;});
+     };
+     And{
+      let c1 = rt_obj(color{1.5;0.0;0.0;});1;
+     };
+     And{
+      let c2 = rt_obj(color{0.0;0.5;0.0;});1;
+     };
+     And{
+      let c3 = rt_obj(color{-0.5;0.0;1.0;});1;
+     };
+     When
+     {
+        let c = rt_op(write_pixel{c; 0;0;c1;});
+     };
+     And {
+        let c = rt_op(write_pixel{c; 2;1;c2;});1;
+     };
+     And {
+        let c = rt_op(write_pixel{c; 4;2;c3;});1;
+     };
+     And{
+         let ppm = rt_op(canvas_to_ppm{c;});1;
+     };
+     ppm;
+     Then
+     {
+         lines_of_string(ppm,3,3,"\n") == 
+         "255 0 0 0 0 0 0 0 0 0 0 0 0 0 0\n0 0 0 0 0 0 0 128 0 0 0 0 0 0 0\n0 0 0 0 0 0 0 0 0 0 0 0 0 0 255\n";
+     };
+};
+
+
 
 let skip_summary = 0;
 let summary_only_failures = 0;
