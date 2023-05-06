@@ -529,8 +529,19 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
                 return rt::mk_color(canvas.pixel_at(x,y));
             }
         }
+    } else if (name(ceps_struct) == "canvas_to_ppm") {
+        if (children(ceps_struct).size() > 0){
+            if (
+                is<Ast_node_kind::structdef>(children(ceps_struct)[0]) &&
+                (name(*as_struct_ptr(children(ceps_struct)[0])) ==  "canvas")){
+                auto canvas = rt::mk_canvas(*as_struct_ptr(children(ceps_struct)[0]));
+                rt::ppm p{canvas};
+                std::stringstream s;
+                s << p;                
+                return mk_string(s.str());
+            }
+        }
     }
-
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));
     return result;
