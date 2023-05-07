@@ -134,6 +134,21 @@ Scenario{
 };
 
 
+Scenario{
+     title{label __chapter__2_scenario_ex_1 title = "Wrtite PPM file to file system.";};
+     Given{
+         let canvas_rows = 30;
+         let canvas_cols = 40;
+         let c = rt_obj(canvas{canvas_cols; canvas_rows;});
+     };
+     When{
+      let ppm = rt_op(canvas_to_ppm{c;});;
+     };
+     Then{
+      rt_op(write_file{ppm;"test_data/test.ppm";});
+     };
+};
+
 let skip_summary = 0;
 let summary_only_failures = 0;
 

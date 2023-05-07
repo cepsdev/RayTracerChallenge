@@ -556,6 +556,17 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
                 return mk_string(s.str());
             }
         }
+    } else if (name(ceps_struct) == "write_file") {
+        if (children(ceps_struct).size() > 0){
+            if (is<Ast_node_kind::string_literal>(children(ceps_struct)[0]) &&
+                is<Ast_node_kind::string_literal>(children(ceps_struct)[1])){
+                auto ppm = value(as_string_ref(children(ceps_struct)[0]));
+                auto ppm_file = value(as_string_ref(children(ceps_struct)[1]));
+                std::ofstream f{ppm_file};
+                f << ppm;                
+                return mk_int_node((bool)f);
+            }
+        }
     }
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));
