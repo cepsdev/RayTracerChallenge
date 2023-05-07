@@ -181,20 +181,35 @@ namespace rt{
         out << p.canvas.width << ' ';
         out << p.canvas.height << '\n';
         out << p.clamp_high << '\n';
-        std::stringstream s;
-        s << p.clamp_high << " " << p.clamp_high << " " << p.clamp_high;
-        auto chars_per_pixel = s.str().length();
-        int pixels_per_line = std::min(static_cast<int>(p.canvas.width), static_cast<int>(ppm::max_line /chars_per_pixel));
-        int current_line_pixels_written = 0;
+        int current_line_chars_written = 0;
+        int pixels_written = 0;
+
+        auto write_color_tuple = [&](int v){
+            std::stringstream s;
+            s << v;
+            auto num_of_chars_to_write = s.str().length();
+            int blanks_before =  current_line_chars_written == 0 ? 0 : 1;
+            if (num_of_chars_to_write + blanks_before + current_line_chars_written > ppm::max_line) {
+                out << '\n'; current_line_chars_written = 0;blanks_before = 0;
+            }
+            out << (blanks_before == 0 ? "" : " ") << s.str();
+            current_line_chars_written += blanks_before + num_of_chars_to_write;
+        };
+
         for (auto c : p.canvas){
-            if (current_line_pixels_written == pixels_per_line) {out << '\n';current_line_pixels_written = 0;}
-            else if (current_line_pixels_written != 0) out << ' ';
-            out << (int)std::round(c.r() * p.clamp_high) << ' ' <<
-            (int)std::round(c.g() * p.clamp_high) << ' ' <<
-            (int)std::round(c.b() * p.clamp_high);
-            ++current_line_pixels_written;
+            write_color_tuple(std::round(c.r() * p.clamp_high));
+            write_color_tuple(std::round(c.g() * p.clamp_high));
+            write_color_tuple(std::round(c.b() * p.clamp_high));
+
+            ++pixels_written;
+            if (pixels_written == p.canvas.width){
+                if (current_line_chars_written) out << "\n";
+                pixels_written = 0;current_line_chars_written = 0;
+            } else if (current_line_chars_written >= ppm::max_line){
+                out << "\n";current_line_chars_written = 0;
+            }
         }
-        if (current_line_pixels_written == pixels_per_line) out << '\n';
+        if (current_line_chars_written) out << '\n';
         return out;
     }
 }

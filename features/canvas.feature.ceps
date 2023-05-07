@@ -86,7 +86,6 @@ Scenario{
      And{
          let ppm = rt_op(canvas_to_ppm{c;});1;
      };
-     ppm;
      Then
      {
          lines_of_string(ppm,3,3,"\n") == 
@@ -94,6 +93,45 @@ Scenario{
      };
 };
 
+Scenario{
+     title{label __chapter__2_scenario_9 title = "Splitting long lines in PPM files";};
+     Given{
+         let canvas_rows = 2;
+         let canvas_cols = 10;
+
+         let c = rt_obj(canvas{canvas_cols; canvas_rows;});
+     };
+     When{
+        for(canvas_row : 0 .. canvas_rows - 1){
+         for(canvas_col : 0 .. canvas_cols - 1){
+            let c = rt_op(write_pixel{c;canvas_col;canvas_row;color{1.0;0.8;0.6;};});
+         }
+        }
+     };
+     And{
+         let ppm = rt_op(canvas_to_ppm{c;});1;
+     };
+     Then
+     {
+         lines_of_string(ppm,3,4,"\n") == 
+         "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204\n153 255 204 153 255 204 153 255 204 153 255 204 153\n255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204\n153 255 204 153 255 204 153 255 204 153 255 204 153\n";
+     };
+};
+
+Scenario{
+     title{label __chapter__2_scenario_10 title = "PPM files are terminated by a newline character";};
+     Given{
+         let canvas_rows = 3;
+         let canvas_cols = 5;
+         let c = rt_obj(canvas{canvas_cols; canvas_rows;});
+     };
+     When{
+      let ppm = rt_op(canvas_to_ppm{c;});;
+     };
+     Then{
+      string_ends_with(ppm,"\n");
+     };
+};
 
 
 let skip_summary = 0;
