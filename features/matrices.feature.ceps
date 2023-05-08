@@ -92,6 +92,39 @@ Scenario{
      Then{!rt_op(approx_equal{mat1;mat2;});};
 };
 
+Scenario{
+     title{label __chapter__3_scenario_5 title = "Multiplying two matrices";};
+     Given{
+         let mat1 = rt_obj(matrix{
+         dim{4;4;};
+         data{
+            1.0; 2.0; 3.0; 4.0; 
+            5.0; 6.0;7.0;8.0;
+            9.0;8.0;7.0;6.0;
+            5.0;4.0;3.0;2.0;
+         };});
+     };
+     And{
+         let mat2 = rt_obj(matrix{
+         dim{4;4;};
+         data{
+            -2.0; 1.0; 2.0; 3.0; 
+            3.0; 2.0; 1.0; -1.0;
+            4.0; 3.0; 6.0; 5.0;
+            1.0; 2.0; 7.0; 8.0;
+         }
+         ;});1;
+     };
+     Then{
+        let mat = rt_obj(matrix{dim{4;4;};data{
+            20.0;22.0;50.0;48.0;
+            44.0;54.0;114.0;108.0;
+            40.0;58.0;110.0;102.0;
+            16.0;26.0;46.0;42.0;
+        };});
+        rt_op(approx_equal{ rt_op(multiply{mat1;mat2;}) ;mat;});};
+};
+
 let skip_summary = 0;
 let summary_only_failures = 0;
 
