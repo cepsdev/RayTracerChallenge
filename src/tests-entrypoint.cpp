@@ -34,8 +34,10 @@ namespace cepsplugin{
 
 #include <tuple>
 
+//////////////////////////////////
+///////////////////RT lives here//
+//////////////////////////////////
 
-//RT lives here
 template<typename T> struct smallness;
 template<> struct smallness<double> { static constexpr double value = 0.0000001;};
 
@@ -212,9 +214,92 @@ namespace rt{
         if (current_line_chars_written) out << '\n';
         return out;
     }
+
+    struct matrix_t{
+            using prec_t = precision_t;
+            using dim_t = unsigned int;
+
+            dim_t dim_y{};
+            dim_t dim_x{};
+            std::vector<prec_t> data;
+            matrix_t() = default;
+            matrix_t(unsigned int dim_y, unsigned int dim_x):
+            dim_y{dim_y}, dim_x{dim_x} {data.resize(dim_y*dim_x);};
+            using iterator = std::vector<prec_t>::iterator;
+            using const_iterator = std::vector<prec_t>::const_iterator;
+            iterator begin(){return data.begin();}
+            iterator end(){return data.end();}
+            const_iterator begin() const {return data.begin();}
+            const_iterator end() const {return data.end();}
+    };
+    matrix_t mk_matrix(ceps::ast::Struct);
+    ceps::ast::node_struct_t mk_matrix(matrix_t);
 }
 
-//Test Interface lives here
+//////////////////////////////////////////////
+///////////////////Test Interface lives here//
+//////////////////////////////////////////////
+
+
+rt::matrix_t rt::mk_matrix(ceps::ast::Struct s) {
+    auto& v{children(s)}; 
+    using namespace ceps::ast;
+    rt::matrix_t::dim_t dim[] = { {},{} };
+    size_t dim_pos{};
+    for(auto iter = v.begin(); iter != v.end() && dim_pos < sizeof(dim)/sizeof(rt::matrix_t::dim_t); ++iter)
+    {
+     if (is<Ast_node_kind::int_literal>(*iter)) 
+      dim[dim_pos++] = value(as_int_ref(*iter));
+     else if (is<Ast_node_kind::structdef>(*iter)){
+        auto& sub = *as_struct_ptr(*iter);
+        auto& nm = name(sub);
+        auto& ch = children(sub);
+        if (nm == "dim"){
+            if (ch.size() && is<Ast_node_kind::int_literal>(ch[0]))
+              dim[0] = value(as_int_ref(ch[0]));
+            if (ch.size() > 1 && is<Ast_node_kind::int_literal>(ch[1]))
+              dim[1] = value(as_int_ref(ch[1]));
+        }
+     }    
+    }
+    matrix_t m{dim[0],dim[1]};
+    for(auto iter = v.begin(); iter != v.end() ; ++iter)
+    {
+     if (is<Ast_node_kind::structdef>(*iter)){
+        auto& sub = *as_struct_ptr(*iter);
+        auto& nm = name(sub);
+        auto& ch = children(sub);
+        if (nm == "data"){
+            auto it = m.begin();
+            for( auto e : ch){
+                if(it == m.end()) break;
+                if (!is<Ast_node_kind::float_literal>(e)) continue;
+                *it = value(as_double_ref(e));
+                ++it;
+            }
+            break;
+        }
+     }
+    }
+    return m;   
+}
+
+ceps::ast::node_struct_t rt::mk_matrix(rt::matrix_t matrix){
+    using namespace ceps::ast;
+    using namespace ceps::interpreter;
+    auto result = mk_struct("matrix");
+    auto dim = mk_struct("dim");
+    auto data = mk_struct("data");
+    children(*result).push_back(dim);
+    children(*result).push_back(data);
+    for(auto v : matrix){
+     children(*data).push_back(mk_double_node(v,all_zero_unit()));
+    }
+    children(*dim).push_back(mk_int_node(matrix.dim_y));
+    children(*dim).push_back(mk_int_node(matrix.dim_x));
+    return result;
+}  
+
 
 rt::tuple_t rt::mk_tuple(ceps::ast::Struct s){
     auto& v{children(s)}; using namespace ceps::ast;
@@ -380,6 +465,8 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t
         return rt::mk_color(rt::mk_color(ceps_struct));
     } else if (name(ceps_struct) == "canvas"){
         return rt::mk_canvas(rt::mk_canvas(ceps_struct));
+    } else if (name(ceps_struct) == "matrix"){
+        return rt::mk_matrix(rt::mk_matrix(ceps_struct));
     }
 
     auto result = mk_struct("error");
