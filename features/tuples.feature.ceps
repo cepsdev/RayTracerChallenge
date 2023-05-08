@@ -182,9 +182,11 @@ Scenario{
 Scenario{
      title{label __chapter__1_scenario_17 title = "Normalizing vector(1,2,3)";};
      Given{
-         let v = rt_obj(vector{1.0; 2.0; 3.0;});
+         let v = rt_op(normalize{rt_obj(vector{1.0; 2.0; 3.0;});});
      };
+     "!!!!!!!!!!!";v;
      val result = rt_obj( vector{0.26726;0.53452;0.80178;}  );
+     rt_op(approx_equal{v;result;});
      Then{ rt_op(approx_equal{v;result;});};
 };
 

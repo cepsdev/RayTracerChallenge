@@ -14,7 +14,6 @@ Scenario{
          }
          ;});
      };
-     mat;
      Then{mat.matrix.data.content().at(0) == 1.0;};
      And{mat.matrix.data.content().at(3) == 4.0;};
      And{mat.matrix.data.content().at(4) == 5.5;};
@@ -24,6 +23,74 @@ Scenario{
      And{mat.matrix.data.content().at(14) == 15.5;};
 };
 
+Scenario{
+     title{label __chapter__3_scenario_2 title = "A 2x2 matrix ought to be represenable";};
+     Given{
+         let mat = rt_obj(matrix{
+         dim{2;2;};
+         data{
+            -3.0; 5.0; 
+            1.0; -2.0;
+         }
+         ;});
+     };
+     Then{mat.matrix.data.content().at(0) == -3.0;};
+     And{mat.matrix.data.content().at(1) == 5.0;};
+     And{mat.matrix.data.content().at(2) == 1.0;};
+     And{mat.matrix.data.content().at(3) == -2.0;};
+};
+
+Scenario{
+     title{label __chapter__3_scenario_3 title = "Matrix equality with identical matrices";};
+     Given{
+         let mat1 = rt_obj(matrix{
+         dim{4;4;};
+         data{
+            1.0; 2.0; 3.0; 4.0; 
+            5.0; 6.0;7.0;8.0;
+            9.0;8.0;7.0;6.0;
+            5.0;4.0;3.0;2.0;
+         };});
+     };
+     And{
+         let mat2 = rt_obj(matrix{
+         dim{4;4;};
+         data{
+            1.0; 2.0; 3.0; 4.0; 
+            5.0; 6.0;7.0;8.0;
+            9.0;8.0;7.0;6.0;
+            5.0;4.0;3.0;2.0;
+         }
+         ;});1;
+     };
+     Then{rt_op(approx_equal{mat1;mat2;});};
+};
+
+Scenario{
+     title{label __chapter__3_scenario_4 title = "Matrix equality with different matrices";};
+     Given{
+         let mat1 = rt_obj(matrix{
+         dim{4;4;};
+         data{
+            1.0; 2.0; 3.0; 4.0; 
+            5.0; 6.0;7.0;8.0;
+            9.0;8.0;7.0;6.0;
+            5.0;4.0;3.0;2.0;
+         };});
+     };
+     And{
+         let mat2 = rt_obj(matrix{
+         dim{4;4;};
+         data{
+            2.0; 3.0; 4.0; 5.0; 
+            6.0; 7.0; 8.0; 9.0;
+            8.0; 7.0; 6.0; 5.0;
+            4.0; 3.0; 2.0; 1.0;
+         }
+         ;});1;
+     };
+     Then{!rt_op(approx_equal{mat1;mat2;});};
+};
 
 let skip_summary = 0;
 let summary_only_failures = 0;
