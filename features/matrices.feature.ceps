@@ -126,7 +126,7 @@ Scenario{
 };
 
 Scenario{
-    title{label __chapter__3_scenario_6 title = "A matrix multipled by a tuple";};
+    title{label __chapter__3_scenario_6 title = "A matrix multiplied by a tuple";};
     Given{
          let mat = rt_obj(matrix{
          dim{4;4;};
@@ -192,6 +192,50 @@ Scenario{
     };
     Then{
         rt_op(approx_equal{mat1;;rt_op(multiply{mat2;mat1;}); } );
+    };
+};
+
+Scenario{
+    title{label __chapter__3_scenario_8 title = "Transposing a matrix";};
+    Given{
+         let mat = rt_obj(matrix{
+         dim{4;4;};
+         data{
+            0.0; 9.0; 3.0; 0.0; 
+            9.0; 8.0;0.0;8.0;
+            1.0;8.0;5.0;3.0;
+            0.0;0.0;5.0;8.0;
+         };});
+     };
+    Then{
+        let mat1 = rt_op(transpose{mat;});
+        let mat2 = rt_obj(matrix{
+         dim{4;4;};
+         data{
+            0.0; 9.0; 1.0; 0.0; 
+            9.0; 8.0;8.0;0.0;
+            3.0;0.0;5.0;5.0;
+            0.0;8.0;3.0;8.0;
+         };});
+        rt_op(approx_equal{mat1;mat2;} );
+    };
+};
+
+Scenario{
+    title{label __chapter__3_scenario_9 title = "Transposing the identity matrix";};
+    Given{
+         let mat = rt_obj(matrix{
+         dim{4;4;};
+         data{
+            1.0; 0.0; 0.0; 0.0; 
+            0.0; 1.0;0.0;0.0;
+            0.0;0.0;1.0;0.0;
+            0.0;0.0;0.0;1.0;
+         };});
+     };
+    Then{
+        let mat1 = rt_op(transpose{mat;});
+        rt_op(approx_equal{mat1;mat;} );
     };
 };
 

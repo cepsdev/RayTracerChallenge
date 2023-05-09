@@ -44,7 +44,7 @@ rt::matrix_t rt::mk_matrix(ceps::ast::Struct s) {
     using namespace ceps::ast;
     rt::matrix_t::dim_t dim[] = { {},{} };
     size_t dim_pos{};
-    if (v.size() == 1 && is<Ast_node_kind::identifier>(v[0]) && name(as_id_ref(v[0])) == "id" ) return rt::id_4_4;
+    if (v.size() == 1 && is<Ast_node_kind::identifier>(v[0]) && ( name(as_id_ref(v[0])) == "id" || name(as_id_ref(v[0])) == "identity_matrix") ) return rt::id_4_4;
     for(auto iter = v.begin(); iter != v.end() && dim_pos < sizeof(dim)/sizeof(rt::matrix_t::dim_t); ++iter)
     {
      if (is<Ast_node_kind::int_literal>(*iter)) 
@@ -500,9 +500,16 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
                 auto ppm_file = value(as_string_ref(children(ceps_struct)[1]));
                 std::ofstream f{ppm_file};
                 f << ppm;                
-                return mk_int_node((bool)f);
+                return mk_int_node((bool)f); 
             }
         }
+    } else  if (name(ceps_struct) == "transpose"){
+        if (children(ceps_struct).size() > 0 
+            && is<Ast_node_kind::structdef>(children(ceps_struct)[0]) 
+            && name(*as_struct_ptr(children(ceps_struct)[0]))=="matrix"){
+            auto m = rt::mk_matrix(*as_struct_ptr(children(ceps_struct)[0]));
+            return rt::mk_matrix(rt::transpose(m));
+        } 
     }
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));

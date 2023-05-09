@@ -147,6 +147,7 @@ namespace rt{
             dim_y{dim_y}, dim_x{dim_x} {data.resize(dim_y*dim_x);};
             matrix_t(unsigned int dim_y, unsigned int dim_x, std::vector<prec_t> const & data):
             dim_y{dim_y}, dim_x{dim_x}, data{data} {};
+            matrix_t(matrix_t const & rhs): dim_y{rhs.dim_y}, dim_x{rhs.dim_x}, data{rhs.data} {}
 
             using iterator = std::vector<prec_t>::iterator;
             using const_iterator = std::vector<prec_t>::const_iterator;
@@ -174,4 +175,10 @@ namespace rt{
         return std::sqrt(acc); 
     }
     tuple_t operator * (matrix_t const & m, tuple_t t);
+
+    matrix_t transpose(matrix_t const &);
+
+
+
+
 }

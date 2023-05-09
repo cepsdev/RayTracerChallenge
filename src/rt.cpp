@@ -113,5 +113,14 @@ namespace rt{
         return r;
     }
 
+    matrix_t transpose(matrix_t const & m){
+        auto r{m};
+        for (unsigned int row = 0; row < m.dim_y;++row)
+         for (unsigned int col = row + 1; col < m.dim_x;++col)
+          std::swap(r.at(row,col),r.at(col,row));
+
+        return r;
+    }
+
 }
 
