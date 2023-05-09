@@ -127,7 +127,7 @@ Scenario{
 
 Scenario{
     title{label __chapter__3_scenario_6 title = "A matrix multipled by a tuple";};
-     Given{
+    Given{
          let mat = rt_obj(matrix{
          dim{4;4;};
          data{
@@ -141,11 +141,57 @@ Scenario{
         let tup = rt_obj(tuple{1.0;2.0;3.0;1.0;});
         1;
     };
-    ">>>>>>>>>>>>>";
-    ">>>>>>>>>>>>>";
-    rt_op(multiply{mat;tup;});
     Then{
         rt_op(approx_equal{tuple{18.0;24.0;33.0;1.0;};rt_op(multiply{mat;tup;}); } );
+    };
+};
+
+Scenario{
+    title{label __chapter__3_scenario_7 title = "Multiplying a matrix by the identity matrix (1)";};
+    Given{
+         let mat1 = rt_obj(matrix{
+         dim{4;4;};
+         data{
+            0.0; 1.0; 2.0; 4.0; 
+            1.0; 2.0;4.0;8.0;
+            2.0;4.0;8.0;16.0;
+            4.0;8.0;16.0;32.0;
+         };});
+     };
+     And{
+        let mat2 = rt_obj(matrix{
+         dim{4;4;};
+         data{
+            1.0; 0.0; 0.0;0.0; 
+            0.0; 1.0;0.0;0.0;
+            0.0;0.0;1.0;0.0;
+            0.0;0.0;0.0;1.0;
+         };});
+        1;
+    };
+    Then{
+        rt_op(approx_equal{mat1;;rt_op(multiply{mat2;mat1;}); } );
+    };
+};
+
+Scenario{
+    title{label __chapter__3_scenario_7_ex title = "Multiplying a matrix by the identity matrix (2)";};
+    Given{
+         let mat1 = rt_obj(matrix{
+         dim{4;4;};
+         data{
+            0.0; 1.0; 2.0; 4.0; 
+            1.0; 2.0;4.0;8.0;
+            2.0;4.0;8.0;16.0;
+            4.0;8.0;16.0;32.0;
+         };});
+     };
+     And{
+        let mat2 = rt_obj(matrix{id;});
+        1;
+    };
+    Then{
+        rt_op(approx_equal{mat1;;rt_op(multiply{mat2;mat1;}); } );
     };
 };
 

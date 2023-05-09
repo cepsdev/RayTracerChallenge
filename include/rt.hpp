@@ -145,6 +145,9 @@ namespace rt{
             matrix_t() = default;
             matrix_t(unsigned int dim_y, unsigned int dim_x):
             dim_y{dim_y}, dim_x{dim_x} {data.resize(dim_y*dim_x);};
+            matrix_t(unsigned int dim_y, unsigned int dim_x, std::vector<prec_t> const & data):
+            dim_y{dim_y}, dim_x{dim_x}, data{data} {};
+
             using iterator = std::vector<prec_t>::iterator;
             using const_iterator = std::vector<prec_t>::const_iterator;
             iterator begin(){return data.begin();}
@@ -154,6 +157,12 @@ namespace rt{
             prec_t& at(dim_t y, dim_t x) {return data[x + y*dim_x];}
             prec_t  at(dim_t y, dim_t x) const {return data[x + y*dim_x];}
     };
+
+    static matrix_t id_4_4{4,4,{1.0,0.0,0.0,0.0,
+                                0.0,1.0,0.0,0.0,
+                                0.0,0.0,1.0,0.0,
+                                0.0,0.0,0.0,1.0 }};
+
     matrix_t mk_matrix(ceps::ast::Struct);
     ceps::ast::node_struct_t mk_matrix(matrix_t);
     matrix_t operator - (matrix_t const & m1, matrix_t const & m2);

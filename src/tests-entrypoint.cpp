@@ -44,6 +44,7 @@ rt::matrix_t rt::mk_matrix(ceps::ast::Struct s) {
     using namespace ceps::ast;
     rt::matrix_t::dim_t dim[] = { {},{} };
     size_t dim_pos{};
+    if (v.size() == 1 && is<Ast_node_kind::identifier>(v[0]) && name(as_id_ref(v[0])) == "id" ) return rt::id_4_4;
     for(auto iter = v.begin(); iter != v.end() && dim_pos < sizeof(dim)/sizeof(rt::matrix_t::dim_t); ++iter)
     {
      if (is<Ast_node_kind::int_literal>(*iter)) 
