@@ -254,6 +254,73 @@ Scenario{
     };
 };
 
+Scenario{
+    title{label __chapter__3_scenario_11 title = "A submatrix of a 3x3 matrix is a 2x2 matrix";};
+    Given{
+         let mat = rt_obj(matrix{
+         dim{3;3;};
+         data{
+            1.0; 5.0;0.0; 
+            -3.0; 2.0;7.0;
+            0.0; 6.0; -3.0;
+         };});
+     };
+    Then{
+        let mat1 = rt_obj(matrix{
+         dim{3;3;};
+         data{
+            -3.0; 2.0;
+            0.0; 6.0;
+         };});
+        rt_op(approx_equal{mat1;rt_op(sub_matrix{mat;0;2;});});
+    };
+};
+
+Scenario{
+    title{label __chapter__3_scenario_12 title = "A submatrix of a 4x4 matrix is a 3x3 matrix";};
+    Given{
+         let mat = rt_obj(matrix{
+         dim{4;4;};
+         data{
+            -6.0; 1.0;1.0; 6.0;
+            -8.0; 5.0; 8.0;6.0;
+            -1.0;0.0;8.0;2.0;
+            -7.0;1.0;-1.0;1.0;
+         };});
+     };
+    Then{
+        let mat1 = rt_obj(matrix{
+         dim{3;3;};
+         data{
+            -6.0; 1.0;6.0;
+            -8.0; 8.0;6.0;
+            -7.0;-1.0;1.0;
+         };});
+        rt_op(approx_equal{mat1;rt_op(sub_matrix{mat;2;1;});});
+    };
+};
+
+Scenario{
+    title{label __chapter__3_scenario_13 title = "Calculating a minor of a 3x3 matrix";};
+    Given{
+         let mat = rt_obj(matrix{
+         dim{3;3;};
+         data{
+            3.0;5.0;0.0;
+            2.0;-1.0;-7.0;
+            6.0;-1.0;5.0;
+         };});
+     };
+     And{
+        let mat1 = rt_op(sub_matrix{mat;1;0;});1;
+     };
+     Then{
+       rt_op(approx_equal{25.0;rt_op(det{mat1;});}); 
+     };
+     And{
+       rt_op(approx_equal{25.0;rt_op(minor{mat;1;0;});}); 
+     };
+};
 
 let skip_summary = 0;
 let summary_only_failures = 0;

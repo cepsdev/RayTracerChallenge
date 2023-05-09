@@ -517,6 +517,32 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             auto m = rt::mk_matrix(*as_struct_ptr(children(ceps_struct)[0]));
             return mk_double_node(rt::det(m),all_zero_unit());
         } 
+    } else  if (name(ceps_struct) == "sub_matrix"){
+        if (children(ceps_struct).size() > 2 
+            && is<Ast_node_kind::structdef>(children(ceps_struct)[0]) 
+            && name(*as_struct_ptr(children(ceps_struct)[0]))=="matrix"
+            && is<Ast_node_kind::int_literal>(children(ceps_struct)[1])
+            && is<Ast_node_kind::int_literal>(children(ceps_struct)[2])
+            ){
+            auto m = rt::mk_matrix(*as_struct_ptr(children(ceps_struct)[0]));
+            auto row = value(as_int_ref(children(ceps_struct)[1]));
+            auto col = value(as_int_ref(children(ceps_struct)[2]));
+
+            return rt::mk_matrix(rt::sub_matrix(m,row,col));
+        } 
+    } else  if (name(ceps_struct) == "minor"){
+        if (children(ceps_struct).size() > 2 
+            && is<Ast_node_kind::structdef>(children(ceps_struct)[0]) 
+            && name(*as_struct_ptr(children(ceps_struct)[0]))=="matrix"
+            && is<Ast_node_kind::int_literal>(children(ceps_struct)[1])
+            && is<Ast_node_kind::int_literal>(children(ceps_struct)[2])
+            ){
+            auto m = rt::mk_matrix(*as_struct_ptr(children(ceps_struct)[0]));
+            auto row = value(as_int_ref(children(ceps_struct)[1]));
+            auto col = value(as_int_ref(children(ceps_struct)[2]));
+
+            return mk_double_node(rt::minor(m,row,col),all_zero_unit());
+        } 
     }
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));
