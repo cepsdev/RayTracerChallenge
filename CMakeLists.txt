@@ -27,7 +27,8 @@ include_directories(../include)
 link_directories($ENV{CEPSCORE}/bin)
 
 add_library(rt SHARED 
-           src/tests-entrypoint.cpp 
+           src/tests-entrypoint.cpp
+           src/rt.cpp 
            )
 
 target_link_libraries(rt cepscore)					
