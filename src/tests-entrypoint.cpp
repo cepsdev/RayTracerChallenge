@@ -432,7 +432,7 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             && is<Ast_node_kind::float_literal>(children(ceps_struct)[0])
             && is<Ast_node_kind::float_literal>(children(ceps_struct)[1])){
             auto l = value(as_double_ref(children(ceps_struct)[0]));
-            auto r = value(as_double_ref(children(ceps_struct)[0]));
+            auto r = value(as_double_ref(children(ceps_struct)[1]));
             auto n2 = std::abs(l - r);
             return mk_int_node(1 ? rt::small(n2): 0);
         } 
@@ -509,6 +509,13 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             && name(*as_struct_ptr(children(ceps_struct)[0]))=="matrix"){
             auto m = rt::mk_matrix(*as_struct_ptr(children(ceps_struct)[0]));
             return rt::mk_matrix(rt::transpose(m));
+        } 
+    } else  if (name(ceps_struct) == "det"){
+        if (children(ceps_struct).size() > 0 
+            && is<Ast_node_kind::structdef>(children(ceps_struct)[0]) 
+            && name(*as_struct_ptr(children(ceps_struct)[0]))=="matrix"){
+            auto m = rt::mk_matrix(*as_struct_ptr(children(ceps_struct)[0]));
+            return mk_double_node(rt::det(m),all_zero_unit());
         } 
     }
     auto result = mk_struct("error");

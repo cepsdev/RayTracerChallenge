@@ -121,6 +121,11 @@ namespace rt{
 
         return r;
     }
+    matrix_t::prec_t det(matrix_t const & m){
+        if (m.dim_x != m.dim_y) return 0;
+        if (m.dim_x == 1) return m.at(0,0);
+        if (m.dim_x == 2) return m.at(0,0)*m.at(1,1) - m.at(0,1)*m.at(1,0);     
+    }
 
 }
 

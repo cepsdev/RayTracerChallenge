@@ -175,8 +175,8 @@ namespace rt{
         return std::sqrt(acc); 
     }
     tuple_t operator * (matrix_t const & m, tuple_t t);
-
     matrix_t transpose(matrix_t const &);
+    matrix_t::prec_t det(matrix_t const &);
 
 
 

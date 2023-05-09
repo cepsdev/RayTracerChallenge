@@ -239,6 +239,21 @@ Scenario{
     };
 };
 
+Scenario{
+    title{label __chapter__3_scenario_10 title = "Calculating the determinant of a 2x2 matrix";};
+    Given{
+         let mat = rt_obj(matrix{
+         dim{2;2;};
+         data{
+            1.0; 5.0; 
+            -3.0; 2.0;
+         };});
+     };
+    Then{
+        rt_op(approx_equal{17.0;rt_op(det{mat;});});
+    };
+};
+
 
 let skip_summary = 0;
 let summary_only_failures = 0;
