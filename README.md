@@ -8,7 +8,7 @@ Test driven implementation of a basic ray tracer as described in the book 'The R
 ## Status
 - chapter 1: complete
 - chapter 2: complete
-- chapter 3: p.30
+- chapter 3: p.35
 - chapter 4: pending
 - chapter 5: pending
 - chapter 6: pending
