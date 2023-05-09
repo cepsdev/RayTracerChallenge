@@ -376,6 +376,19 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             }
             auto result = l * r;
             return rt::mk_matrix(result);
+        } else if (children(ceps_struct).size() > 1 
+            && is<Ast_node_kind::structdef>(children(ceps_struct)[0]) 
+            && is<Ast_node_kind::structdef>(children(ceps_struct)[1])
+            && name(*as_struct_ptr(children(ceps_struct)[0]))=="matrix"
+            && name(*as_struct_ptr(children(ceps_struct)[1]))=="tuple"){
+            auto l = rt::mk_matrix(*as_struct_ptr(children(ceps_struct)[0]));
+            auto r = rt::mk_tuple(*as_struct_ptr(children(ceps_struct)[1]));
+            if (l.dim_y != 4)     {
+                auto result = mk_struct("dimensions_dont_match");
+                return result;
+            }
+            auto result = l * r;
+            return rt::mk_tuple(result);
         }
     } else  if (name(ceps_struct) == "divide"){
         if (children(ceps_struct).size() > 1 

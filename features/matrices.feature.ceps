@@ -125,6 +125,31 @@ Scenario{
         rt_op(approx_equal{ rt_op(multiply{mat1;mat2;}) ;mat;});};
 };
 
+Scenario{
+    title{label __chapter__3_scenario_6 title = "A matrix multipled by a tuple";};
+     Given{
+         let mat = rt_obj(matrix{
+         dim{4;4;};
+         data{
+            1.0; 2.0; 3.0; 4.0; 
+            2.0; 4.0;4.0;2.0;
+            8.0;6.0;4.0;1.0;
+            0.0;0.0;0.0;1.0;
+         };});
+     };
+     And{
+        let tup = rt_obj(tuple{1.0;2.0;3.0;1.0;});
+        1;
+    };
+    ">>>>>>>>>>>>>";
+    ">>>>>>>>>>>>>";
+    rt_op(multiply{mat;tup;});
+    Then{
+        rt_op(approx_equal{tuple{18.0;24.0;33.0;1.0;};rt_op(multiply{mat;tup;}); } );
+    };
+};
+
+
 let skip_summary = 0;
 let summary_only_failures = 0;
 

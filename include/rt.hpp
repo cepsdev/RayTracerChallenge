@@ -164,5 +164,5 @@ namespace rt{
         for(auto c : m) acc += c*c;
         return std::sqrt(acc); 
     }
-
+    tuple_t operator * (matrix_t const & m, tuple_t t);
 }

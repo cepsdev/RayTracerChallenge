@@ -20,3 +20,4 @@ val summary_only_failures = 1;
 val mat = 0;
 val mat1 = 0;
 val mat2 = 0;
+val tup = 0;

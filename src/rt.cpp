@@ -103,5 +103,14 @@ namespace rt{
 
         return r;
     }
+    tuple_t operator * (matrix_t const & m, tuple_t t){
+        using namespace std;
+        tuple_t r{};
+        get<0>(r) = m.at(0,0) * get<0>(t) +  m.at(0,1) * get<1>(t) +  m.at(0,2) * get<2>(t) +  m.at(0,3) * get<3>(t);
+        get<1>(r) = m.at(1,0) * get<0>(t) +  m.at(1,1) * get<1>(t) +  m.at(1,2) * get<2>(t) +  m.at(1,3) * get<3>(t);
+        get<2>(r) = m.at(2,0) * get<0>(t) +  m.at(2,1) * get<1>(t) +  m.at(2,2) * get<2>(t) +  m.at(2,3) * get<3>(t);;
+        get<3>(r) = m.at(3,0) * get<0>(t) +  m.at(3,1) * get<1>(t) +  m.at(3,2) * get<2>(t) +  m.at(3,3) * get<3>(t);;
+        return r;
+    }
 
 }
