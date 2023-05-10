@@ -29,13 +29,13 @@ namespace rt{
     };
     struct vector_t;struct point_t;
     
-    struct point_t: private tuple_t{
+    struct point_t: public tuple_t{
         point_t() = default;
         point_t(precision_t a,precision_t b,precision_t c):tuple_t{a,b,c,1.0}{}
         friend point_t operator + (point_t , vector_t );
     };
 
-    struct vector_t: private tuple_t{
+    struct vector_t: public tuple_t{
         vector_t() = default;
         vector_t(precision_t a,precision_t b,precision_t c):tuple_t{a,b,c,0.0}{}
         friend point_t operator + (point_t , vector_t );

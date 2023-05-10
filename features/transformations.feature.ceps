@@ -1,0 +1,2 @@
+let skip_summary = 0;
+let summary_only_failures = 0;
