@@ -425,7 +425,7 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             auto l = rt::mk_matrix(*as_struct_ptr(children(ceps_struct)[0]));
             auto r = rt::mk_matrix(*as_struct_ptr(children(ceps_struct)[1]));
 
-            auto n2 = rt::norm_2(l - r);
+            auto n2 = rt::norm_max(l - r);
             return mk_int_node(1 ? rt::small(n2): 0);
         } else if (children(ceps_struct).size() > 1 
             && is<Ast_node_kind::float_literal>(children(ceps_struct)[0])
@@ -564,6 +564,20 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             auto col = value(as_int_ref(children(ceps_struct)[2]));
 
             return mk_double_node(rt::cofactor(m,row,col),all_zero_unit());
+        } 
+    } else  if (name(ceps_struct) == "invertible"){
+        if (children(ceps_struct).size() > 0 
+            && is<Ast_node_kind::structdef>(children(ceps_struct)[0]) 
+            && name(*as_struct_ptr(children(ceps_struct)[0]))=="matrix"){
+            auto m = rt::mk_matrix(*as_struct_ptr(children(ceps_struct)[0]));
+            return mk_int_node(rt::invertible(m));
+        } 
+    } else  if (name(ceps_struct) == "inverse"){
+        if (children(ceps_struct).size() > 0 
+            && is<Ast_node_kind::structdef>(children(ceps_struct)[0]) 
+            && name(*as_struct_ptr(children(ceps_struct)[0]))=="matrix"){
+            auto m = rt::mk_matrix(*as_struct_ptr(children(ceps_struct)[0]));
+            return rt::mk_matrix(rt::inverse(m));
         } 
     }
     auto result = mk_struct("error");

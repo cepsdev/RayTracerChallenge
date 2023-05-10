@@ -158,5 +158,16 @@ namespace rt{
     matrix_t::prec_t cofactor(matrix_t const & m,  int r,  int c){
         return minor(m,r,c)* ( (r + c) & 1 ? -1.0: 1.0) ;
     }
+    bool invertible(matrix_t const & m){
+        return !small(det(m));
+    }
+    matrix_t inverse(matrix_t const & m){
+        auto res{m};
+        auto d{det(m)};
+        for(matrix_t::idx_t r{}; r < m.dim_y; ++r)
+            for(matrix_t::idx_t c{}; c < m.dim_x; ++c)
+             res.at(c,r) = cofactor(m,r,c) / d;
+        return res;
+    }
 }
 

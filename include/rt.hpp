@@ -178,10 +178,17 @@ namespace rt{
         for(auto c : m) acc += c*c;
         return std::sqrt(acc); 
     }
+    inline precision_t norm_max(matrix_t m){
+        precision_t r{};
+        for(auto c : m) if (std::abs(c) > r) r = std::abs(c);
+        return r; 
+    }
     tuple_t operator * (matrix_t const & m, tuple_t t);
     matrix_t transpose(matrix_t const &);
     matrix_t::prec_t det(matrix_t const &);
     matrix_t sub_matrix(matrix_t const &,  int,  int);
     matrix_t::prec_t minor(matrix_t const &,  int,  int);
     matrix_t::prec_t cofactor(matrix_t const &,  int,  int);
+    bool invertible(matrix_t const &);
+    matrix_t inverse(matrix_t const &);
 }

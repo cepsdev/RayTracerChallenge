@@ -1,3 +1,5 @@
+let skip_summary = 0;
+let summary_only_failures = 0;
 
 
 
@@ -498,6 +500,148 @@ Scenario{
 
 };
 
+Scenario{
+    title{label __chapter__3_scenario_17 title = "Testing an invertible matrix for invertibility";};
+    Given{
+         let mat = rt_obj(matrix{
+         dim{4;4;};
+         data{
+            6.0;4.0;4.0;4.0;
+            5.0;5.0;7.0;6.0;
+            4.0;-9.0;3.0;-7.0;
+            9.0;1.0;7.0;-6.0;
+         };});
+     };
+     Then{
+       rt_op(
+        approx_equal{
+             -2120.0;
+             rt_op(
+                 det{mat;}
+             );
+        }
+       ); 
+     };
+    And{
+       rt_op(
+        invertible{
+         mat;
+        }
+       ); 
+     };
+};
+
+
+Scenario{
+    title{label __chapter__3_scenario_18 title = "Testing a noninvertible matrix for invertibility";};
+    Given{
+         let mat = rt_obj(matrix{
+         dim{4;4;};
+         data{
+            -4.0;2.0;-2.0;-3.0;
+            9.0;6.0;2.0;6.0;
+            0.0;-5.0;1.0;-5.0;
+            0.0;0.0;0.0;0.0;
+         };});
+     };
+     Then{
+       rt_op(
+        approx_equal{
+             0.0;
+             rt_op(
+                 det{mat;}
+             );
+        }
+       ); 
+     };
+    And{
+       !rt_op(
+        invertible{
+         mat;
+        }
+       ); 
+     };
+};
+
+Scenario{
+    title{label __chapter__3_scenario_19 title = "Calculating the inverse of a matrix";};
+    Given{
+         let mat = rt_obj(matrix{
+         dim{4;4;};
+         data{
+            -5.0;2.0;6.0;-8.0;
+            1.0;-5.0;1.0;8.0;
+            7.0;7.0;-6.0;-7.0;
+            1.0;-3.0;7.0;4.0;
+         };});
+     };
+     And{
+        let mat1 = rt_op(inverse{mat;});1;
+     };
+     Then{
+       rt_op(
+        approx_equal{
+             532.0;
+             rt_op(
+                 det{mat;}
+             );
+        }
+       ); 
+     };
+    And{
+       rt_op(
+        approx_equal{
+             -160.0;
+             rt_op(
+                 cofactor{mat;2;3;}
+             );
+        }
+       ); 
+     }; 
+     And{
+       rt_op(
+        approx_equal{
+             -160.0/532.0;
+             mat1.matrix.data.content().at(14);
+        }
+       );       
+     };
+     And{
+       rt_op(
+        approx_equal{
+             105.0;
+             rt_op(
+                 cofactor{mat;3;2;}
+             );
+        }
+       ); 
+     }; 
+     And{
+       rt_op(
+        approx_equal{
+             105.0/532.0;
+             mat1.matrix.data.content().at(11);
+        }
+       );       
+     };
+     And{
+       rt_op(
+        approx_equal{
+             mat1;
+             matrix{
+                dim{4;4;};
+                data{
+                    0.21805; 0.45113; 0.24060; -0.04511;
+                    -0.80827; -1.45677; -0.44361; 0.52068;
+                    -0.07895; -0.22368; -0.05263; 0.19737;
+                    -0.52256; -0.81391; -0.30075; 0.30639;
+                };
+             };
+        }
+       );       
+     };
+
+};
 
 
 
@@ -514,17 +658,4 @@ Scenario{
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-let skip_summary = 0;
-let summary_only_failures = 0;
 
