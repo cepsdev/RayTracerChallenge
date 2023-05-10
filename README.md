@@ -6,9 +6,9 @@ Test driven implementation of a basic ray tracer as described in the book 'The R
 - Exemplify the usage of ceps in connection with modern C++. 
 - Fun.
 ## Status
-- chapter 1: complete
-- chapter 2: complete
-- chapter 3: p.35
+- chapter 1: :heavy_check_mark:
+- chapter 2: :heavy_check_mark:
+- chapter 3: :heavy_check_mark:
 - chapter 4: pending
 - chapter 5: pending
 - chapter 6: pending
