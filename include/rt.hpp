@@ -191,4 +191,5 @@ namespace rt{
     matrix_t::prec_t cofactor(matrix_t const &,  int,  int);
     bool invertible(matrix_t const &);
     matrix_t inverse(matrix_t const &);
+    matrix_t translation(tuple_t::val_t, tuple_t::val_t,tuple_t::val_t );
 }

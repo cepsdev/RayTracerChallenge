@@ -169,5 +169,13 @@ namespace rt{
              res.at(c,r) = cofactor(m,r,c) / d;
         return res;
     }
+    matrix_t translation(tuple_t::val_t x, tuple_t::val_t y,tuple_t::val_t z ){
+        return matrix_t{ 4,4,   {1.0 , 0.0, 0.0 , x,
+                                 0.0, 1.0 , 0.0 , y,
+                                 0.0 , 0.0, 1.0, z,
+                                 0.0 , 0.0, 0.0, 1.0
+                                }
+                        };        
+    }
 }
 

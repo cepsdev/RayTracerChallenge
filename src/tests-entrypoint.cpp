@@ -265,6 +265,18 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t
         return rt::mk_canvas(rt::mk_canvas(ceps_struct));
     } else if (name(ceps_struct) == "matrix"){
         return rt::mk_matrix(rt::mk_matrix(ceps_struct));
+    } else if (name(ceps_struct) == "translation"){
+        if (children(ceps_struct).size() > 2 &&
+            is<Ast_node_kind::float_literal>(children(ceps_struct)[0]) &&
+            is<Ast_node_kind::float_literal>(children(ceps_struct)[1]) &&
+            is<Ast_node_kind::float_literal>(children(ceps_struct)[2])
+             ){
+            return rt::mk_matrix(rt::translation(
+                value(as_double_ref(children(ceps_struct)[0])),
+                value(as_double_ref(children(ceps_struct)[1])),
+                value(as_double_ref(children(ceps_struct)[2]))
+                ));
+        }
     }
 
     auto result = mk_struct("error");
@@ -579,7 +591,7 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             auto m = rt::mk_matrix(*as_struct_ptr(children(ceps_struct)[0]));
             return rt::mk_matrix(rt::inverse(m));
         } 
-    }
+    } 
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));
     return result;

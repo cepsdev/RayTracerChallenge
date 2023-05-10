@@ -1,2 +1,66 @@
 let skip_summary = 0;
 let summary_only_failures = 0;
+val transform = undef;
+val p = undef;
+val inv = undef;
+val v = undef;
+
+Scenario{
+     title{label __chapter__4_scenario_1 title = "Multiplying by a translation matrix";};
+     Given{
+         let transform = rt_obj(translation{5.0;-3.0;2.0;});
+     };
+     And{let p = rt_obj(point{-3.0;4.0;5.0;});1;};     
+     Then{
+        rt_op(approx_equal{
+            rt_obj(point{2.0;1.0;7.0;});
+            rt_op(
+                multiply{
+                    transform;
+                    p;
+                }
+            );
+        });
+    };
+};
+
+Scenario{
+     title{label __chapter__4_scenario_2 title = "Multiplying by the inverse of a translation matrix";};
+     Given{
+         let transform = rt_obj(translation{5.0;-3.0;2.0;});
+     };
+     And{
+        let inv = rt_op(inverse{transform;});1;
+     };
+     And{let p = rt_obj(point{-3.0;4.0;5.0;});1;};     
+     Then{
+        rt_op(approx_equal{
+            rt_obj(point{-8.0;7.0;3.0;});
+            rt_op(
+                multiply{
+                    inv;
+                    p;
+                }
+            );
+        });
+    };
+};
+
+Scenario{
+     title{label __chapter__4_scenario_3 title = "Translation does not affect vectors";};
+     Given{
+         let transform = rt_obj(translation{5.0;-3.0;2.0;});
+     };
+     And{let v = rt_obj(vector{-3.0;4.0;5.0;});1;};     
+     Then{
+        rt_op(approx_equal{
+            v;
+            rt_op(
+                multiply{
+                    transform;
+                    v;
+                }
+            );
+        });
+    };
+};
