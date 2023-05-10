@@ -202,7 +202,6 @@ rt::canvas_t rt::mk_canvas(ceps::ast::Struct s){
         auto& v{children(data)};
         for (auto iter = v.begin(); iter != v.end(); ++iter){
             if (!is<Ast_node_kind::structdef>(*iter)) continue;
-            auto col = mk_color(*as_struct_ptr(*iter));
             canvas.write_pixel(iter - v.begin(), mk_color(*as_struct_ptr(*iter)) );
         }
     }
@@ -542,6 +541,19 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             auto col = value(as_int_ref(children(ceps_struct)[2]));
 
             return mk_double_node(rt::minor(m,row,col),all_zero_unit());
+        } 
+    } else  if (name(ceps_struct) == "cofactor"){
+        if (children(ceps_struct).size() > 2 
+            && is<Ast_node_kind::structdef>(children(ceps_struct)[0]) 
+            && name(*as_struct_ptr(children(ceps_struct)[0]))=="matrix"
+            && is<Ast_node_kind::int_literal>(children(ceps_struct)[1])
+            && is<Ast_node_kind::int_literal>(children(ceps_struct)[2])
+            ){
+            auto m = rt::mk_matrix(*as_struct_ptr(children(ceps_struct)[0]));
+            auto row = value(as_int_ref(children(ceps_struct)[1]));
+            auto col = value(as_int_ref(children(ceps_struct)[2]));
+
+            return mk_double_node(rt::cofactor(m,row,col),all_zero_unit());
         } 
     }
     auto result = mk_struct("error");

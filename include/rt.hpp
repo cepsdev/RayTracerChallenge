@@ -178,4 +178,5 @@ namespace rt{
     matrix_t::prec_t det(matrix_t const &);
     matrix_t sub_matrix(matrix_t const &,  int,  int);
     matrix_t::prec_t minor(matrix_t const &,  int,  int);
+    matrix_t::prec_t cofactor(matrix_t const &,  int,  int);
 }

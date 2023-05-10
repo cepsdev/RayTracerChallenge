@@ -322,6 +322,94 @@ Scenario{
      };
 };
 
+Scenario{
+    title{label __chapter__3_scenario_14 title = "Calculating a cofactor of a 3x3 matrix";};
+    Given{
+         let mat = rt_obj(matrix{
+         dim{3;3;};
+         data{
+            3.0;5.0;0.0;
+            2.0;-1.0;-7.0;
+            6.0;-1.0;5.0;
+         };});
+     };
+     Then{
+       rt_op(
+        approx_equal{
+             -12.0;
+             rt_op(
+                 minor{mat;0;0;}
+             );
+        }
+       ); 
+     };
+    And{
+       rt_op(
+        approx_equal{
+             -12.0;
+             rt_op(
+                 cofactor{mat;0;0;}
+             );
+        }
+       ); 
+     };
+     And{
+       rt_op(
+        approx_equal{
+             25.0;
+             rt_op(
+                 minor{mat;1;0;}
+             );
+        }
+       ); 
+     };
+    And{
+       rt_op(
+        approx_equal{
+             -25.0;
+             rt_op(
+                 cofactor{mat;1;0;}
+             );
+        }
+       ); 
+     };
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 let skip_summary = 0;
 let summary_only_failures = 0;
 

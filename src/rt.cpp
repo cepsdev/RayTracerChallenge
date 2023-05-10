@@ -127,24 +127,28 @@ namespace rt{
         if (m.dim_x == 2) return m.at(0,0)*m.at(1,1) - m.at(0,1)*m.at(1,0);     
     }
     matrix_t sub_matrix(matrix_t const & m, int row, int col){
-        if (m.dim_x <= col || m.dim_y <= row) return {};
+        int const dx = m.dim_x; int const  dy = m.dim_y;
+        if (dx <= col || dy <= row) return {};
         matrix_t result{m.dim_y - 1, m.dim_x - 1};
         for(int r = 0; r < row ; ++r)
          for(int c = 0; c < col; ++c)
           result.at(r,c) = m.at(r,c);
         for(int r = 0; r < row; ++r)
-         for(int c = col + 1; c < m.dim_x; ++c)
+         for(int c = col + 1; c < dx; ++c)
           result.at(r,c-1) = m.at(r,c);
-        for(int r = row + 1; r < m.dim_y; ++r)
+        for(int r = row + 1; r < dy; ++r)
          for(int c = 0; c < col; ++c)
           result.at(r-1,c) = m.at(r,c);
-        for(int r = row + 1; r < m.dim_y; ++r)
-         for(int c = col + 1; c < m.dim_x ; ++c)
+        for(int r = row + 1; r < dy; ++r)
+         for(int c = col + 1; c < dx ; ++c)
           result.at(r-1,c-1) = m.at(r,c);
         return result;
     }
     matrix_t::prec_t minor(matrix_t const & m, int row, int col){
         return det(sub_matrix(m,row,col));
-   }
+    }
+    matrix_t::prec_t cofactor(matrix_t const & m,  int r,  int c){
+        return minor(m,r,c)* ( (r + c) & 1 ? -1.0: 1.0) ;
+    }
 }
 
