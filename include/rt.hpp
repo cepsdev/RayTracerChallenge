@@ -48,6 +48,7 @@ namespace rt{
     tuple_t operator * (precision_t scalar, tuple_t const & t);
     tuple_t operator - (tuple_t const & l, tuple_t const & r);
     precision_t norm_2(tuple_t t);
+
     precision_t dot(tuple_t l, tuple_t r);
     tuple_t cross (tuple_t v1, tuple_t v2);
 
@@ -71,6 +72,8 @@ namespace rt{
         friend color_t operator * (color_t , color_t);
         friend color_t clamp(color_t);
     };
+    precision_t norm_2(color_t t);
+
     inline color_t clamp(color_t c){
         return { clamp(c.r()), clamp(c.g()), clamp(c.b()) };
     }

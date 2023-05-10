@@ -312,14 +312,13 @@ Scenario{
      And{
          let c2 = rt_obj(color{0.9; 1.0; 0.1;});1;
      };
-
-     let c = rt_obj(color{0.9;0.2;0.04;});
      Then{ 
-        val result = rt_op(multiply{2.0;c1;});
-        rt_op( approx_equal{result.color.red.content();c.color.red.content();}) &&
-        rt_op( approx_equal{result.color.green.content();c.color.green.content();}) &&
-        rt_op( approx_equal{result.color.blue.content();c.color.blue.content();})
-        ;
+        val result = rt_op(multiply{c1;c2;});
+        rt_op( 
+            approx_equal{ 
+                result; 
+                color{r{0.9;};g{0.2;};b{0.04;};};
+            });
      };
   };
 

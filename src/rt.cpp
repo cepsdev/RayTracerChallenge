@@ -32,6 +32,10 @@ namespace rt{
         return std::sqrt(get<0>(t)*get<0>(t) + get<1>(t)*get<1>(t)+get<2>(t)*get<2>(t)+get<3>(t)*get<3>(t)); 
     }
 
+    precision_t norm_2(color_t t){
+        return std::sqrt(t.r()*t.r() + t.g()*t.g()+t.b()*t.b()); 
+    }
+
     precision_t dot(tuple_t l, tuple_t r){
             return get<0>(l)*get<0>(r) + get<1>(l)*get<1>(r)+get<2>(l)*get<2>(r)+get<3>(l)*get<3>(r);
     }
