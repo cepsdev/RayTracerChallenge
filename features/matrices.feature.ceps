@@ -373,15 +373,130 @@ Scenario{
         }
        ); 
      };
+};
+
+
+Scenario{
+    title{label __chapter__3_scenario_15 title = "Calculating the determinant of a 3x3 matrix";};
+    Given{
+         let mat = rt_obj(matrix{
+         dim{3;3;};
+         data{
+            1.0;2.0;6.0;
+            -5.0;8.0;-4.0;
+            2.0;6.0;4.0;
+         };});
+     };
+     Then{
+       rt_op(
+        approx_equal{
+             56.0;
+             rt_op(
+                 cofactor{mat;0;0;}
+             );
+        }
+       ); 
+     };
+    And{
+       rt_op(
+        approx_equal{
+             12.0;
+             rt_op(
+                 cofactor{mat;0;1;}
+             );
+        }
+       ); 
+     };
+     And{
+       rt_op(
+        approx_equal{
+             -46.0;
+             rt_op(
+                 cofactor{mat;0;2;}
+             );
+        }
+       ); 
+     };
+    And{
+       rt_op(
+        approx_equal{
+             -196.0;
+             rt_op(
+                 det{mat;}
+             );
+        }
+       ); 
+     };
 
 };
 
 
 
+Scenario{
+    title{label __chapter__3_scenario_16 title = "Calculating the determinant of a 4x4 matrix";};
+    Given{
+         let mat = rt_obj(matrix{
+         dim{4;4;};
+         data{
+            -2.0;-8.0;3.0;5.0;
+            -3.0;1.0;7.0;3.0;
+            1.0;2.0;-9.0;6.0;
+            -6.0;7.0;7.0;-9.0;
+         };});
+     };
+     Then{
+       rt_op(
+        approx_equal{
+             690.0;
+             rt_op(
+                 cofactor{mat;0;0;}
+             );
+        }
+       ); 
+     };
+    And{
+       rt_op(
+        approx_equal{
+             447.0;
+             rt_op(
+                 cofactor{mat;0;1;}
+             );
+        }
+       ); 
+     };
+     And{
+       rt_op(
+        approx_equal{
+             210.0;
+             rt_op(
+                 cofactor{mat;0;2;}
+             );
+        }
+       ); 
+     };
+     And{
+       rt_op(
+        approx_equal{
+             51.0;
+             rt_op(
+                 cofactor{mat;0;3;}
+             );
+        }
+       ); 
+     };
 
+    And{
+       rt_op(
+        approx_equal{
+             -4071.0;
+             rt_op(
+                 det{mat;}
+             );
+        }
+       ); 
+     };
 
-
-
+};
 
 
 

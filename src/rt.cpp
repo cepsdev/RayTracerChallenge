@@ -128,7 +128,11 @@ namespace rt{
     matrix_t::prec_t det(matrix_t const & m){
         if (m.dim_x != m.dim_y) return 0;
         if (m.dim_x == 1) return m.at(0,0);
-        if (m.dim_x == 2) return m.at(0,0)*m.at(1,1) - m.at(0,1)*m.at(1,0);     
+        if (m.dim_x == 2) return m.at(0,0)*m.at(1,1) - m.at(0,1)*m.at(1,0);
+        matrix_t::prec_t acc{};
+        for(matrix_t::idx_t i{}; i < m.dim_x;++i)
+         acc += m.at(0,i)*cofactor(m,0,i);
+        return acc;     
     }
     matrix_t sub_matrix(matrix_t const & m, int row, int col){
         int const dx = m.dim_x; int const  dy = m.dim_y;

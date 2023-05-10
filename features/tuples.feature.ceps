@@ -322,5 +322,23 @@ Scenario{
      };
   };
 
+Scenario{
+     title{label __chapter__2_scenario_6 title = "Multiplying colors";};
+     Given{
+         let c1 = rt_obj(color{1.0; 0.2; 0.4;});
+     };
+     And{
+         let c2 = rt_obj(color{0.9; 1.0; 0.1;});1;
+     };
+     Then{ 
+        val result = rt_op(multiply{c1;c2;});
+        rt_op( 
+            approx_equal{ 
+                result; 
+                color{r{0.9;};g{0.2;};b{0.04;};};
+            });
+     };
+  };
+
 let skip_summary = 0;
 let summary_only_failures = 0;

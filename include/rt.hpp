@@ -141,6 +141,8 @@ namespace rt{
     struct matrix_t{
             using prec_t = precision_t;
             using dim_t = unsigned int;
+            using idx_t = dim_t;
+
 
             dim_t dim_y{};
             dim_t dim_x{};
