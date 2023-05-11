@@ -192,4 +192,5 @@ namespace rt{
     bool invertible(matrix_t const &);
     matrix_t inverse(matrix_t const &);
     matrix_t translation(tuple_t::val_t, tuple_t::val_t,tuple_t::val_t );
+    matrix_t scaling(tuple_t::val_t, tuple_t::val_t,tuple_t::val_t );
 }

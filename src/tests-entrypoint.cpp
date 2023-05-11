@@ -243,6 +243,22 @@ rt::tuple_t tuple_from_ceps(ceps::ast::Struct& ceps_struct){
     return {};
 }
 
+
+template<typename T> bool check(ceps::ast::node_t);
+template<> bool check<double>(ceps::ast::node_t n){ return n && ceps::ast::is<ceps::ast::Ast_node_kind::float_literal>(n); }
+
+template<typename T> T fetch(ceps::ast::node_t);
+template<> double fetch<double>(ceps::ast::node_t n){ return value(as_double_ref(n));}
+
+
+template<typename T> 
+std::optional<T> read_value(size_t idx, ceps::ast::Struct& s){
+    auto & v{children(s)};
+    if(v.size() <= idx || !check<T>(v[idx])) return {};
+    return fetch<T>(v[idx]);
+}
+
+
 ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t params){
     using namespace std;
     using namespace ceps::ast;
@@ -266,17 +282,23 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t
     } else if (name(ceps_struct) == "matrix"){
         return rt::mk_matrix(rt::mk_matrix(ceps_struct));
     } else if (name(ceps_struct) == "translation"){
-        if (children(ceps_struct).size() > 2 &&
-            is<Ast_node_kind::float_literal>(children(ceps_struct)[0]) &&
-            is<Ast_node_kind::float_literal>(children(ceps_struct)[1]) &&
-            is<Ast_node_kind::float_literal>(children(ceps_struct)[2])
-             ){
-            return rt::mk_matrix(rt::translation(
-                value(as_double_ref(children(ceps_struct)[0])),
-                value(as_double_ref(children(ceps_struct)[1])),
-                value(as_double_ref(children(ceps_struct)[2]))
+        auto x{read_value<double>(0,ceps_struct)};
+        auto y{read_value<double>(1,ceps_struct)};
+        auto z{read_value<double>(2,ceps_struct)};
+        if (x && y && z) return rt::mk_matrix(rt::translation(
+                *x,
+                *y,
+                *z
                 ));
-        }
+    } else if (name(ceps_struct) == "scaling"){
+        auto x{read_value<double>(0,ceps_struct)};
+        auto y{read_value<double>(1,ceps_struct)};
+        auto z{read_value<double>(2,ceps_struct)};
+        if (x && y && z) return rt::mk_matrix(rt::scaling(
+                *x,
+                *y,
+                *z
+                ));
     }
 
     auto result = mk_struct("error");

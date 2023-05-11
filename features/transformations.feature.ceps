@@ -68,7 +68,7 @@ Scenario{
 Scenario{
      title{label __chapter__4_scenario_4 title = "A scaling matrix applied to a point";};
      Given{
-         let transform = rt_obj(scalling{2.0;3.0;4.0;});
+         let transform = rt_obj(scaling{2.0;3.0;4.0;});
      };
      And{let p = rt_obj(point{-4.0;6.0;8.0;});1;};     
      Then{
@@ -84,11 +84,10 @@ Scenario{
     };
 };
 
-
 Scenario{
      title{label __chapter__4_scenario_5 title = "A scaling matrix applied to a vector";};
      Given{
-         let transform = rt_obj(scalling{2.0;3.0;4.0;});
+         let transform = rt_obj(scaling{2.0;3.0;4.0;});
      };
      And{let v = rt_obj(vector{-4.0;6.0;8.0;});1;};     
      Then{
@@ -108,9 +107,9 @@ Scenario{
 Scenario{
      title{label __chapter__4_scenario_6 title = "Multiplying by the inverse of a scaling matrix";};
      Given{
-         let transform = rt_obj(scalling{2.0;3.0;4.0;});
+         let transform = rt_obj(scaling{2.0;3.0;4.0;});
      };
-     And{let inv = rt_op(inverse{transfom;});};
+     And{let inv = rt_op(inverse{transform;});1;};
      And{let v = rt_obj(vector{-4.0;6.0;8.0;});1;};     
      Then{
         rt_op(approx_equal{
@@ -124,7 +123,6 @@ Scenario{
         });
     };
 };
-
 
 
 
