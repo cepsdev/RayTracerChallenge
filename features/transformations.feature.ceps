@@ -4,6 +4,9 @@ val transform = undef;
 val p = undef;
 val inv = undef;
 val v = undef;
+val half_quarter=undef;
+val full_quarter=undef;
+val pi_approx = 3.14159265359;
 
 Scenario{
      title{label __chapter__4_scenario_1 title = "Multiplying by a translation matrix";};
@@ -143,8 +146,119 @@ Scenario{
     };
 };
 
+Scenario{
+     title{label __chapter__4_scenario_8 title = "Rotating a point around the x axis";};
+     Given{
+         let p = rt_obj(point{0.0;1.0;0.0;});
+     };
+     And{let half_quarter = rt_obj(rotation_x{pi_approx / 4.0;});1;};     
+     And{let full_quarter = rt_obj(rotation_x{pi_approx / 2.0;});1;};
+     Then{
+        rt_op(approx_equal{
+            rt_obj(point{0.0;1.0 / sqrt(2.0);1.0 / sqrt(2.0);});
+            rt_op(
+                multiply{
+                    half_quarter;
+                    p;
+                }
+            );
+        });
+    };
+    And{
+        rt_op(approx_equal{
+            rt_obj(point{0.0;0.0;1.0;});
+            rt_op(
+                multiply{
+                    full_quarter;
+                    p;
+                }
+            );
+        });
+    };
 
+};
 
+Scenario{
+     title{label __chapter__4_scenario_9 title = "The inverse of an x-rotation rotates in the opposite direction";};
+     Given{
+         let p = rt_obj(point{0.0;1.0;0.0;});
+     };
+     And{let half_quarter = rt_obj(rotation_x{pi_approx / 4.0;});1;};     
+     And{let inv = rt_op(inverse{half_quarter;});1;};
+     Then{
+        rt_op(approx_equal{
+            rt_obj(point{0.0;1.0 / sqrt(2.0);-1.0 / sqrt(2.0);});
+            rt_op(
+                multiply{
+                    inv;
+                    p;
+                }
+            );
+        });
+    };
+};
+
+Scenario{
+     title{label __chapter__4_scenario_10 title = "Rotating a point around the y axis";};
+     Given{
+         let p = rt_obj(point{0.0;0.0;1.0;});
+     };
+     And{let half_quarter = rt_obj(rotation_y{pi_approx / 4.0;});1;};     
+     And{let full_quarter = rt_obj(rotation_y{pi_approx / 2.0;});1;};
+     Then{
+        rt_op(approx_equal{
+            rt_obj(point{1.0 / sqrt(2.0);0.0;1.0 / sqrt(2.0);});
+            rt_op(
+                multiply{
+                    half_quarter;
+                    p;
+                }
+            );
+        });
+    };
+    And{
+        rt_op(approx_equal{
+            rt_obj(point{1.0;0.0;0.0;});
+            rt_op(
+                multiply{
+                    full_quarter;
+                    p;
+                }
+            );
+        });
+    };
+};
+
+Scenario{
+     title{label __chapter__4_scenario_10 title = "Rotating a point around the z axis";};
+     Given{
+         let p = rt_obj(point{0.0;1.0;0.0;});
+     };
+     And{let half_quarter = rt_obj(rotation_z{pi_approx / 4.0;});1;};     
+     And{let full_quarter = rt_obj(rotation_z{pi_approx / 2.0;});1;};
+     Then{
+        rt_op(approx_equal{
+            rt_obj(point{- 1.0 / sqrt(2.0);1.0 / sqrt(2.0);0.0;});
+            rt_op(
+                multiply{
+                    half_quarter;
+                    p;
+                }
+            );
+        });
+    };
+    And{
+        rt_op(approx_equal{
+            rt_obj(point{-1.0;0.0;0.0;});
+            rt_op(
+                multiply{
+                    full_quarter;
+                    p;
+                }
+            );
+        });
+    };
+};
 
 
 

@@ -183,5 +183,24 @@ namespace rt{
                                 0.0, 0.0, z,   0.0,
                                 0.0, 0.0, 0.0, 1.0}};
     }
+    matrix_t rotation_x(tuple_t::val_t rad){
+        return matrix_t{ 4,4 , {1.0  , 0.0, 0.0, 0.0, 
+                                0.0, std::cos(rad), -std::sin(rad), 0.0, 
+                                0.0, std::sin(rad), std::cos(rad),  0.0,
+                                0.0, 0.0,           0.0,            1.0}};
+    }
+    matrix_t rotation_y(tuple_t::val_t rad){
+        return matrix_t{ 4,4 , {std::cos(rad), 0.0, std::sin(rad), 0.0, 
+                                0.0,           1.0, 0.0,           0.0, 
+                                -std::sin(rad), 0.0, std::cos(rad), 0.0,
+                                0.0, 0.0,           0.0,            1.0}};
+
+    }
+    matrix_t rotation_z(tuple_t::val_t rad){
+        return matrix_t{ 4,4, {std::cos(rad),  -std::sin(rad), 0.0, 0.0, 
+                                std::sin(rad), std::cos(rad) , 0.0, 0.0,
+                                0.0,           0.0,            1.0, 0.0,
+                                0.0,           0.0,            0.0, 1.0}};
+    }
 }
 

@@ -267,40 +267,29 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t
     auto data = get_first_child(params);    
     if (!is<Ast_node_kind::structdef>(data)) return nullptr;
     auto& ceps_struct = *as_struct_ptr(data);
-    /*cout << "cepsplugin::plugin_entrypoint:\n";
-    for(auto e : children(ceps_struct)){
-        cout <<"\t"<< * e << "\n";
-    }
-    cout <<"\n\n";*/
+    auto& nm {name(ceps_struct)};
 
-    if (name(ceps_struct) == "tuple" || name(ceps_struct) == "point" || name(ceps_struct) == "vector"){
+    if (nm == "tuple" || nm == "point" || nm == "vector"){
         return rt::mk_tuple(tuple_from_ceps(ceps_struct));
-    } else if (name(ceps_struct) == "color"){
+    } else if (nm == "color"){
         return rt::mk_color(rt::mk_color(ceps_struct));
-    } else if (name(ceps_struct) == "canvas"){
+    } else if (nm == "canvas"){
         return rt::mk_canvas(rt::mk_canvas(ceps_struct));
-    } else if (name(ceps_struct) == "matrix"){
+    } else if (nm == "matrix"){
         return rt::mk_matrix(rt::mk_matrix(ceps_struct));
-    } else if (name(ceps_struct) == "translation"){
+    } else if (nm == "translation" || nm == "scaling"){
         auto x{read_value<double>(0,ceps_struct)};
         auto y{read_value<double>(1,ceps_struct)};
         auto z{read_value<double>(2,ceps_struct)};
-        if (x && y && z) return rt::mk_matrix(rt::translation(
-                *x,
-                *y,
-                *z
-                ));
-    } else if (name(ceps_struct) == "scaling"){
-        auto x{read_value<double>(0,ceps_struct)};
-        auto y{read_value<double>(1,ceps_struct)};
-        auto z{read_value<double>(2,ceps_struct)};
-        if (x && y && z) return rt::mk_matrix(rt::scaling(
-                *x,
-                *y,
-                *z
-                ));
+        if (x && y && z) return rt::mk_matrix( nm == "translation" ? 
+         rt::translation(*x,*y,*z) : 
+         rt::scaling(*x,*y,*z));
+    } else if (nm == "rotation_x" || nm == "rotation_y" || nm == "rotation_z"){
+        auto rad{read_value<double>(0,ceps_struct)};
+        
+        if(rad) return rt::mk_matrix(  nm=="rotation_x" ? rt::rotation_x(*rad) :
+                        (nm=="rotation_y" ? rt::rotation_y(*rad) : rt::rotation_z(*rad) ));
     }
-
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));
     return result;
