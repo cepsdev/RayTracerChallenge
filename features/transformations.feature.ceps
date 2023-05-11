@@ -7,6 +7,15 @@ val v = undef;
 val half_quarter=undef;
 val full_quarter=undef;
 val pi_approx = 3.14159265359;
+val p2 = undef;
+val p3 = undef;
+val p4 = undef;
+val A = undef;
+val B = undef;
+val C = undef;
+val T = undef;
+
+
 
 Scenario{
      title{label __chapter__4_scenario_1 title = "Multiplying by a translation matrix";};
@@ -387,7 +396,7 @@ Scenario{
 };
 
 Scenario{
-     title{label __chapter__4_scenario_15 title = "A shearing transformation moves z in proportion to y";};
+     title{label __chapter__4_scenario_16 title = "A shearing transformation moves z in proportion to y";};
        Given{
          let transform = rt_obj(shearing{0.0;0.0;0.0;0.0;0.0;1.0;});
        };
@@ -407,6 +416,64 @@ Scenario{
     };
 };
 
+Scenario{
+     title{label __chapter__4_scenario_17 title = "Individual transformations are applied in sequence";};
+       Given{
+         let p = rt_obj(point{1.0;0.0;1.0;});
+       };
+       And{
+        let A = rt_obj(rotation_x{pi_approx / 2.0;});1;
+       };
+       And{
+        let B = rt_obj(scaling{5.0;5.0;5.0;});1;
+       };
+       And{
+        let C = rt_obj(translation{10.0;5.0;7.0;});1;
+       };
+       When{let p2 = rt_op(multiply{A;p;}); };
+       Then{
+        rt_op(approx_equal{
+            rt_obj(point{1.0;-1.0;0.0;});
+            p2;
+        });
+       };
+       When{let p3 = rt_op(multiply{B;p2;}); };
+       Then{
+        rt_op(approx_equal{
+            rt_obj(point{5.0;-5.0;0.0;});
+            p3;
+        });
+       };
+       When{let p4 = rt_op(multiply{C;p3;}); };
+       Then{
+        rt_op(approx_equal{
+            rt_obj(point{15.0;0.0;7.0;});
+            p4;
+        });
+       };
+
+};
 
 
-
+Scenario{
+     title{label __chapter__4_scenario_18 title = "Chained transformations must be applied in reverse order";};
+       Given{
+         let p = rt_obj(point{1.0;0.0;1.0;});
+       };
+       And{
+        let A = rt_obj(rotation_x{pi_approx / 2.0;});1;
+       };
+       And{
+        let B = rt_obj(scaling{5.0;5.0;5.0;});1;
+       };
+       And{
+        let C = rt_obj(translation{10.0;5.0;7.0;});1;
+       };
+       When{let T = rt_op(multiply{C;rt_op(multiply{B;A;});}); };
+       Then{
+        rt_op(approx_equal{
+            rt_obj(point{15.0;0.0;7.0;});
+            rt_op(multiply{T;p;});
+        });
+       };
+};
