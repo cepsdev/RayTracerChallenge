@@ -124,6 +124,26 @@ Scenario{
     };
 };
 
+Scenario{
+     title{label __chapter__4_scenario_7 title = "Reflection is scaling by a negative value";};
+     Given{
+         let transform = rt_obj(scaling{-1.0;1.0;1.0;});
+     };
+     And{let p = rt_obj(point{2.0;3.0;4.0;});1;};     
+     Then{
+        rt_op(approx_equal{
+            rt_obj(point{-2.0;3.0;4.0;});
+            rt_op(
+                multiply{
+                    transform;
+                    p;
+                }
+            );
+        });
+    };
+};
+
+
 
 
 
