@@ -289,6 +289,15 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t
         
         if(rad) return rt::mk_matrix(  nm=="rotation_x" ? rt::rotation_x(*rad) :
                         (nm=="rotation_y" ? rt::rotation_y(*rad) : rt::rotation_z(*rad) ));
+    } else if (nm == "shearing"){        
+        auto x_by_y{read_value<double>(0,ceps_struct)};
+        auto x_by_z{read_value<double>(1,ceps_struct)};
+        auto y_by_x{read_value<double>(2,ceps_struct)};
+        auto y_by_z{read_value<double>(3,ceps_struct)};
+        auto z_by_x{read_value<double>(4,ceps_struct)};
+        auto z_by_y{read_value<double>(5,ceps_struct)};
+        if (x_by_y && x_by_z && y_by_x && y_by_z && z_by_x && z_by_y)
+         return rt::mk_matrix(rt::shearing(*x_by_y, *x_by_z, *y_by_x, *y_by_z, *z_by_x, *z_by_y));
     }
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));

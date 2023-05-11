@@ -202,5 +202,15 @@ namespace rt{
                                 0.0,           0.0,            1.0, 0.0,
                                 0.0,           0.0,            0.0, 1.0}};
     }
+    matrix_t shearing(tuple_t::val_t x_by_y, tuple_t::val_t x_by_z ,tuple_t::val_t y_by_x, tuple_t::val_t y_by_z , tuple_t::val_t z_by_x ,tuple_t::val_t z_by_y){
+        return matrix_t{ 4,4, 
+         {1.0,    x_by_y, x_by_z, 0.0,
+          y_by_x, 1.0,    y_by_z, 0.0,
+          z_by_x, z_by_y, 1.0,    0.0,
+          0.0,    0.0,    0.0,    1.0
+         }};
+    }
+
+
 }
 

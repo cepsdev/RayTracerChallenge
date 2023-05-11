@@ -196,4 +196,5 @@ namespace rt{
     matrix_t rotation_x(tuple_t::val_t);
     matrix_t rotation_y(tuple_t::val_t);
     matrix_t rotation_z(tuple_t::val_t);
+    matrix_t shearing(tuple_t::val_t, tuple_t::val_t,tuple_t::val_t,tuple_t::val_t, tuple_t::val_t,tuple_t::val_t );
 }

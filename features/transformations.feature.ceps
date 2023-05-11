@@ -261,15 +261,151 @@ Scenario{
 };
 
 
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+docinfo_se(
+
+"
+In three dimensions each component may be affected by either of the other two
+components, so there are a total of six parameters that may be used to define
+the shear transformation.
+- x in proportion to y
+- x in proportion to z
+- y in proportion to x
+- y in proportion to z
+- z in proportion to x
+- z in proportion to y.
+"
+
+);
+
+Scenario{
+     title{label __chapter__4_scenario_11 title = "A shearing transformation moves x in proportion to y";};
+       Given{
+         let transform = rt_obj(shearing{1.0;0.0;0.0;0.0;0.0;0.0;});
+       };
+       And{
+        let p = rt_obj(point{2.0;3.0;4.0;});1;
+       };
+       Then{
+        rt_op(approx_equal{
+            rt_obj(point{5.0;3.0;4.0;});
+            rt_op(
+                multiply{
+                    transform;
+                    p;
+                }
+            );
+        });
+    };
+};
+
+Scenario{
+     title{label __chapter__4_scenario_12 title = "A shearing transformation moves x in proportion to z";};
+       Given{
+         let transform = rt_obj(shearing{0.0;1.0;0.0;0.0;0.0;0.0;});
+       };
+       And{
+        let p = rt_obj(point{2.0;3.0;4.0;});1;
+       };
+       Then{
+        rt_op(approx_equal{
+            rt_obj(point{6.0;3.0;4.0;});
+            rt_op(
+                multiply{
+                    transform;
+                    p;
+                }
+            );
+        });
+    };
+};
 
 
+Scenario{
+     title{label __chapter__4_scenario_13 title = "A shearing transformation moves y in proportion to x";};
+       Given{
+         let transform = rt_obj(shearing{0.0;0.0;1.0;0.0;0.0;0.0;});
+       };
+       And{
+        let p = rt_obj(point{2.0;3.0;4.0;});1;
+       };
+       Then{
+        rt_op(approx_equal{
+            rt_obj(point{2.0;5.0;4.0;});
+            rt_op(
+                multiply{
+                    transform;
+                    p;
+                }
+            );
+        });
+    };
+};
 
+Scenario{
+     title{label __chapter__4_scenario_14 title = "A shearing transformation moves y in proportion to z";};
+       Given{
+         let transform = rt_obj(shearing{0.0;0.0;0.0;1.0;0.0;0.0;});
+       };
+       And{
+        let p = rt_obj(point{2.0;3.0;4.0;});1;
+       };
+       Then{
+        rt_op(approx_equal{
+            rt_obj(point{2.0;7.0;4.0;});
+            rt_op(
+                multiply{
+                    transform;
+                    p;
+                }
+            );
+        });
+    };
+};
 
+Scenario{
+     title{label __chapter__4_scenario_15 title = "A shearing transformation moves z in proportion to x";};
+       Given{
+         let transform = rt_obj(shearing{0.0;0.0;0.0;0.0;1.0;0.0;});
+       };
+       And{
+        let p = rt_obj(point{2.0;3.0;4.0;});1;
+       };
+       Then{
+        rt_op(approx_equal{
+            rt_obj(point{2.0;3.0;6.0;});
+            rt_op(
+                multiply{
+                    transform;
+                    p;
+                }
+            );
+        });
+    };
+};
 
-
-
-
-
+Scenario{
+     title{label __chapter__4_scenario_15 title = "A shearing transformation moves z in proportion to y";};
+       Given{
+         let transform = rt_obj(shearing{0.0;0.0;0.0;0.0;0.0;1.0;});
+       };
+       And{
+        let p = rt_obj(point{2.0;3.0;4.0;});1;
+       };
+       Then{
+        rt_op(approx_equal{
+            rt_obj(point{2.0;3.0;7.0;});
+            rt_op(
+                multiply{
+                    transform;
+                    p;
+                }
+            );
+        });
+    };
+};
 
 
 
