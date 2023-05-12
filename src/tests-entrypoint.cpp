@@ -257,12 +257,18 @@ template<> bool check<rt::tuple_t>(ceps::ast::node_t n){
   children(*as_struct_ptr(n)).size() > 3; }
 
 template<> bool check<rt::ray_t>(ceps::ast::node_t n){ 
-    using namespace ceps::ast; 
+ using namespace ceps::ast; 
  return n && 
   is<Ast_node_kind::structdef>(n) && 
   children(*as_struct_ptr(n)).size() > 1 &&
   is<Ast_node_kind::structdef>(children(*as_struct_ptr(n))[0]) &&
   is<Ast_node_kind::structdef>(children(*as_struct_ptr(n))[1]) ; }
+
+template<> bool check<rt::sphere_t>(ceps::ast::node_t n){ 
+ using namespace ceps::ast; 
+ return n && 
+  is<Ast_node_kind::structdef>(n);
+}
 
 template<> rt::tuple_t fetch<rt::tuple_t>(ceps::ast::node_t n){ 
     using namespace ceps::ast;
@@ -284,6 +290,15 @@ template<> rt::ray_t fetch<rt::ray_t>(ceps::ast::node_t n){
     auto& v {children(*as_struct_ptr(n))};
 
     return { fetch<tuple_t>(children(*as_struct_ptr(v[0]))[0]), fetch<tuple_t>(children(*as_struct_ptr(v[1]))[0])};
+}
+
+template<> rt::sphere_t fetch<rt::sphere_t>(ceps::ast::node_t n){ 
+    using namespace ceps::ast;
+    using namespace rt;
+    using namespace std;
+    auto& v {children(*as_struct_ptr(n))};
+
+    return {};
 }
 
 
@@ -332,6 +347,26 @@ template<> ceps::ast::node_t ast_rep<rt::tuple_t>(rt::tuple_t t){
     return result;
 }
 
+template<> ceps::ast::node_t ast_rep<rt::sphere_t>(rt::sphere_t t){
+    using namespace ceps::ast;
+    using namespace ceps::interpreter;
+    
+    auto result = mk_struct("sphere");
+    return result;
+}
+
+template<> ceps::ast::node_t ast_rep<rt::intersection_t>(rt::intersection_t t){
+    using namespace ceps::ast;
+    using namespace ceps::interpreter;
+    
+    auto result = mk_struct("intersection");
+    if (t.size()){
+        children(*result).push_back(mk_double_node(t[0],all_zero_unit()));
+        if (t.size() > 1) children(*result).push_back(mk_double_node(t[1],all_zero_unit()));
+    }
+    return result;
+}
+
 ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t params){
     using namespace std;
     using namespace ceps::ast;
@@ -376,6 +411,10 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t
         auto direction{read_value<rt::tuple_t>(1,ceps_struct)};
         if (origin && direction)
          return ast_rep(rt::ray_t{*origin,*direction});
+    } else if (nm == "sphere"){
+         return ast_rep(rt::sphere_t{});
+    }else if (nm == "intersection"){
+         return ast_rep(rt::intersection_t{});
     }
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));
@@ -694,6 +733,11 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
         auto t{read_value<double>(1,ceps_struct)};
         if(ray && t) 
          return ast_rep(rt::postion(*ray,*t));
+    } else  if (name(ceps_struct) == "intersect"){
+        auto sphere{read_value<rt::sphere_t>(1,ceps_struct)};
+        auto ray{read_value<rt::ray_t>(1,ceps_struct)};
+        if(ray && sphere) 
+         return ast_rep(rt::intersect(*sphere, *ray));
     } 
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));

@@ -214,5 +214,18 @@ namespace rt{
     tuple_t postion(ray_t ray, tuple_t::val_t t){
         return ray.origin + t * ray.direction;
     }
+
+    template<> intersection_t intersect<sphere_t>(sphere_t sphere, ray_t ray){
+        auto sphere_to_ray{ray.origin - sphere.center};
+        auto a{dot(ray.direction, ray.direction)};
+        auto b{2*dot(ray.direction, sphere_to_ray)};
+        auto c{dot(sphere_to_ray, sphere_to_ray) -1.0};
+        auto discriminant{b*b - 4 * a * c};
+        if (discriminant < 0.0 && !small(discriminant)) return {};
+        auto t1{ (- b - std::sqrt(discriminant)) / (2.0*a)};
+        auto t2{ (- b + std::sqrt(discriminant)) / (2.0*a)};
+        if (t1 < t2) return{t1, t2};
+        return{t2, t1};
+    }
 }
 

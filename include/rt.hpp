@@ -206,4 +206,22 @@ namespace rt{
     };
 
     tuple_t postion(ray_t, tuple_t::val_t);
+    struct sphere_t{
+        tuple_t::val_t radius{1.0};
+        tuple_t center{0.0,0.0,0.0,1.0 };
+        sphere_t() = default;
+    };
+
+    struct intersection_t{
+        std::optional<std::tuple<tuple_t::val_t,tuple_t::val_t>> is{};
+        intersection_t() = default;
+        intersection_t(tuple_t::val_t v1,tuple_t::val_t v2): is{std::tuple<tuple_t::val_t,tuple_t::val_t>{ v1,v2} } {} 
+        size_t size() {if (!is) return 0; return 2;}
+        tuple_t::val_t operator [](size_t idx) {
+            if (!is) return {};
+            if (idx == 0) return std::get<0>(*is);
+            else return std::get<1>(*is);
+        }
+    };
+    template<typename T> intersection_t intersect(T obj, ray_t);    
 }
