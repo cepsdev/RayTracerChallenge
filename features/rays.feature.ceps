@@ -39,23 +39,34 @@ Scenario{
 };
 
 Scenario{
-     title{label __chapter__5_scenario_1 title = "Creating and querying a ray";};
+     title{label __chapter__5_scenario_2 title = "Computing a point from a distance";};
      Given{
-         let orig = rt_obj(point{1.0;2.0;3.0;});
+         let r = rt_obj(ray{rt_obj(point{2.0;3.0;4.0;});rt_obj(vector{1.0;0.0;0.0;});});
      };
-     And{let dir = rt_obj(vector{4.0;5.0;6.0;});1;};
-     When{let r = rt_obj(ray{orig;dir;}); };     
      Then{
         rt_op(approx_equal{
-            r.ray.origin.tuple;
-            orig.tuple;
+            rt_op(position{r; 0.0;});
+            rt_obj(point{2.0;3.0;4.0;});
         });
     };
     And{
         rt_op(approx_equal{
-            r.ray.direction.tuple;
-            dir.tuple;
+            rt_op(position{r; 1.0;});
+            rt_obj(point{3.0;3.0;4.0;});
         });
     };
+    And{
+        rt_op(approx_equal{
+            rt_op(position{r; -1.0;});
+            rt_obj(point{1.0;3.0;4.0;});
+        });
+    };
+    And{
+        rt_op(approx_equal{
+            rt_op(position{r; 2.5;});
+            rt_obj(point{4.5;3.0;4.0;});
+        });
+    };
+
 };
 

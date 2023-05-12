@@ -211,6 +211,8 @@ namespace rt{
          }};
     }
 
-
+    tuple_t postion(ray_t ray, tuple_t::val_t t){
+        return ray.origin + t * ray.direction;
+    }
 }
 

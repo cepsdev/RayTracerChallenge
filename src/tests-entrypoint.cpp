@@ -250,12 +250,19 @@ template<> bool check<double>(ceps::ast::node_t n){ return n && ceps::ast::is<ce
 template<typename T> T fetch(ceps::ast::node_t);
 template<> double fetch<double>(ceps::ast::node_t n){ return value(as_double_ref(n));}
 
-template<typename T> bool check(ceps::ast::node_t);
 template<> bool check<rt::tuple_t>(ceps::ast::node_t n){ 
     using namespace ceps::ast; 
  return n && 
   is<Ast_node_kind::structdef>(n) && 
   children(*as_struct_ptr(n)).size() > 3; }
+
+template<> bool check<rt::ray_t>(ceps::ast::node_t n){ 
+    using namespace ceps::ast; 
+ return n && 
+  is<Ast_node_kind::structdef>(n) && 
+  children(*as_struct_ptr(n)).size() > 1 &&
+  is<Ast_node_kind::structdef>(children(*as_struct_ptr(n))[0]) &&
+  is<Ast_node_kind::structdef>(children(*as_struct_ptr(n))[1]) ; }
 
 template<> rt::tuple_t fetch<rt::tuple_t>(ceps::ast::node_t n){ 
     using namespace ceps::ast;
@@ -268,6 +275,15 @@ template<> rt::tuple_t fetch<rt::tuple_t>(ceps::ast::node_t n){
         fetch<tuple_t::val_t>( children(*as_struct_ptr(v[2]))[0]),
         fetch<tuple_t::val_t>( children(*as_struct_ptr(v[3]))[0])
     };
+}
+
+template<> rt::ray_t fetch<rt::ray_t>(ceps::ast::node_t n){ 
+    using namespace ceps::ast;
+    using namespace rt;
+    using namespace std;
+    auto& v {children(*as_struct_ptr(n))};
+
+    return { fetch<tuple_t>(children(*as_struct_ptr(v[0]))[0]), fetch<tuple_t>(children(*as_struct_ptr(v[1]))[0])};
 }
 
 
@@ -290,6 +306,29 @@ template<> ceps::ast::node_t ast_rep<rt::ray_t>(rt::ray_t ray){
     children(*result).push_back(d);
     children(*o).push_back(mk_tuple(ray.origin));
     children(*d).push_back(mk_tuple(ray.direction));
+    return result;
+}
+
+template<> ceps::ast::node_t ast_rep<rt::tuple_t>(rt::tuple_t t){
+    using namespace ceps::ast;
+    using namespace ceps::interpreter;
+    
+    auto result = mk_struct("tuple");
+    auto x = mk_struct("x");
+    auto y = mk_struct("y");
+    auto z = mk_struct("z");
+    auto w = mk_struct("w");
+    
+    children(*result).push_back(x);
+    children(*result).push_back(y);
+    children(*result).push_back(z);
+    children(*result).push_back(w);
+
+    children(*x).push_back(mk_double_node(std::get<0>(t),all_zero_unit()));
+    children(*y).push_back(mk_double_node(std::get<1>(t),all_zero_unit()));
+    children(*z).push_back(mk_double_node(std::get<2>(t),all_zero_unit()));
+    children(*w).push_back(mk_double_node(std::get<3>(t),all_zero_unit()));
+
     return result;
 }
 
@@ -650,6 +689,11 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             auto m = rt::mk_matrix(*as_struct_ptr(children(ceps_struct)[0]));
             return rt::mk_matrix(rt::inverse(m));
         } 
+    } else  if (name(ceps_struct) == "position"){
+        auto ray{read_value<rt::ray_t>(0,ceps_struct)};
+        auto t{read_value<double>(1,ceps_struct)};
+        if(ray && t) 
+         return ast_rep(rt::postion(*ray,*t));
     } 
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));

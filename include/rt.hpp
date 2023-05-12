@@ -205,16 +205,5 @@ namespace rt{
         ray_t(tuple_t origin, tuple_t direction ):origin{origin}, direction{direction}{}
     };
 
-
-
-
-
-
-
-
-
-
-
-
-
+    tuple_t postion(ray_t, tuple_t::val_t);
 }
