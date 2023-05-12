@@ -197,4 +197,24 @@ namespace rt{
     matrix_t rotation_y(tuple_t::val_t);
     matrix_t rotation_z(tuple_t::val_t);
     matrix_t shearing(tuple_t::val_t, tuple_t::val_t,tuple_t::val_t,tuple_t::val_t, tuple_t::val_t,tuple_t::val_t );
+
+    struct ray_t{
+        tuple_t origin;
+        tuple_t direction;
+        ray_t() = default;
+        ray_t(tuple_t origin, tuple_t direction ):origin{origin}, direction{direction}{}
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

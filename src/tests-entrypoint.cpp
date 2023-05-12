@@ -250,6 +250,26 @@ template<> bool check<double>(ceps::ast::node_t n){ return n && ceps::ast::is<ce
 template<typename T> T fetch(ceps::ast::node_t);
 template<> double fetch<double>(ceps::ast::node_t n){ return value(as_double_ref(n));}
 
+template<typename T> bool check(ceps::ast::node_t);
+template<> bool check<rt::tuple_t>(ceps::ast::node_t n){ 
+    using namespace ceps::ast; 
+ return n && 
+  is<Ast_node_kind::structdef>(n) && 
+  children(*as_struct_ptr(n)).size() > 3; }
+
+template<> rt::tuple_t fetch<rt::tuple_t>(ceps::ast::node_t n){ 
+    using namespace ceps::ast;
+    using namespace rt;
+    auto& v {children(*as_struct_ptr(n))};
+
+    return tuple_t{
+        fetch<tuple_t::val_t>( children(*as_struct_ptr(v[0]))[0]),
+        fetch<tuple_t::val_t>( children(*as_struct_ptr(v[1]))[0]),
+        fetch<tuple_t::val_t>( children(*as_struct_ptr(v[2]))[0]),
+        fetch<tuple_t::val_t>( children(*as_struct_ptr(v[3]))[0])
+    };
+}
+
 
 template<typename T> 
 std::optional<T> read_value(size_t idx, ceps::ast::Struct& s){
@@ -258,6 +278,20 @@ std::optional<T> read_value(size_t idx, ceps::ast::Struct& s){
     return fetch<T>(v[idx]);
 }
 
+template<typename T> ceps::ast::node_t ast_rep (T entity);
+template<> ceps::ast::node_t ast_rep<rt::ray_t>(rt::ray_t ray){
+    using namespace ceps::ast;
+    using namespace ceps::interpreter;
+    
+    auto result = mk_struct("ray");
+    auto o = mk_struct("origin");
+    auto d = mk_struct("direction");
+    children(*result).push_back(o);
+    children(*result).push_back(d);
+    children(*o).push_back(mk_tuple(ray.origin));
+    children(*d).push_back(mk_tuple(ray.direction));
+    return result;
+}
 
 ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t params){
     using namespace std;
@@ -298,6 +332,11 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t
         auto z_by_y{read_value<double>(5,ceps_struct)};
         if (x_by_y && x_by_z && y_by_x && y_by_z && z_by_x && z_by_y)
          return rt::mk_matrix(rt::shearing(*x_by_y, *x_by_z, *y_by_x, *y_by_z, *z_by_x, *z_by_y));
+    } else if (nm == "ray"){
+        auto origin{read_value<rt::tuple_t>(0,ceps_struct)};
+        auto direction{read_value<rt::tuple_t>(1,ceps_struct)};
+        if (origin && direction)
+         return ast_rep(rt::ray_t{*origin,*direction});
     }
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));

@@ -10,7 +10,7 @@ Test driven implementation of a basic ray tracer as described in the book 'The R
 - chapter 2: :heavy_check_mark:
 - chapter 3: :heavy_check_mark:
 - chapter 4: :heavy_check_mark:
-- chapter 5: pending
+- chapter 5: p. 58
 - chapter 6: pending
 - chapter 7: pending
 - chapter 8: pending

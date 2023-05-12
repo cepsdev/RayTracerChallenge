@@ -1,0 +1,61 @@
+
+let skip_summary = 0;
+let summary_only_failures = 0;
+
+val p = undef;
+val r = undef;
+val orig = undef;
+val dir = undef;
+
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+docinfo_se(
+
+"
+"
+
+);
+
+Scenario{
+     title{label __chapter__5_scenario_1 title = "Creating and querying a ray";};
+     Given{
+         let orig = rt_obj(point{1.0;2.0;3.0;});
+     };
+     And{let dir = rt_obj(vector{4.0;5.0;6.0;});1;};
+     When{let r = rt_obj(ray{orig;dir;}); };     
+     Then{
+        rt_op(approx_equal{
+            r.ray.origin.tuple;
+            orig.tuple;
+        });
+    };
+    And{
+        rt_op(approx_equal{
+            r.ray.direction.tuple;
+            dir.tuple;
+        });
+    };
+};
+
+Scenario{
+     title{label __chapter__5_scenario_1 title = "Creating and querying a ray";};
+     Given{
+         let orig = rt_obj(point{1.0;2.0;3.0;});
+     };
+     And{let dir = rt_obj(vector{4.0;5.0;6.0;});1;};
+     When{let r = rt_obj(ray{orig;dir;}); };     
+     Then{
+        rt_op(approx_equal{
+            r.ray.origin.tuple;
+            orig.tuple;
+        });
+    };
+    And{
+        rt_op(approx_equal{
+            r.ray.direction.tuple;
+            dir.tuple;
+        });
+    };
+};
+
