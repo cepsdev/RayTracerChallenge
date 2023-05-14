@@ -1,0 +1,75 @@
+
+let skip_summary = 0;
+let summary_only_failures = 0;
+
+val p = undef;
+val r = undef;
+val orig = undef;
+val dir = undef;
+val sp = undef;
+val xs = undef;
+val i = undef;
+val i1 = undef;
+val i2 = undef;
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+docinfo_se(
+
+"
+"
+
+);
+
+
+Scenario{
+     title{label __chapter__5_scenario_tracking_intersections_1 title = "An intersection encapsulates t and object";};
+     Given{
+         let sp = rt_obj(sphere{});
+     };
+     When{let i = rt_obj(intersection{3.5;s;});1;};
+     i;
+     Then{
+        i.t.content() == 3.5;
+     };
+     And{
+        symbolic_equality(i.object.content(),rt_obj(sphere{})).diff.equal.content();
+     };
+};
+
+Scenario{
+     title{label __chapter__5_scenario_tracking_intersections_2 title = "Aggregating intersections";};
+     Given{
+         let sp = rt_obj(sphere{});
+     };
+     And{let i1 = rt_obj(intersection{1.0;sp;});1;};
+     And{let i2 = rt_obj(intersection{2.0;sp;});1;};
+     When{let xs = rt_obj(intersections{i1;i2;});1;};
+     Then{
+        xs.intersection.size() == 2;
+     };
+     And{
+        xs.intersection.at(0).t == 1.0;
+     };
+     And{
+        xs.intersection.at(1).t == 2.0;
+     };
+};
+
+Scenario{
+     title{label __chapter__5_scenario_tracking_intersections_3 title = "Intersect sets te object on the intersection";};
+     Given{
+         let r = rt_obj(ray{rt_obj(point{0.0;0.0;-5.0;});rt_obj(vector{0.0;0.0;1.0;});});
+     };
+     And{let sp = rt_obj(sphere{});1;};
+     When{let xs = rt_op(intersect{sp;r;});1;};
+     Then{
+        xs.intersection.size() == 2;
+     };
+     And{
+         symbolic_equality(xs.intersection.at(0).object.content(),rt_obj(sphere{})).diff.equal.content();
+     };
+     And{
+         symbolic_equality(xs.intersection.at(1).object.content(),rt_obj(sphere{})).diff.equal.content();
+     };
+};

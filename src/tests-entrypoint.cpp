@@ -414,7 +414,7 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t
     } else if (nm == "sphere"){
          return ast_rep(rt::sphere_t{});
     }else if (nm == "intersection"){
-         return ast_rep(rt::intersect_result_t{});
+         //return ast_rep(rt::intersect_result_t{});
     }
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));

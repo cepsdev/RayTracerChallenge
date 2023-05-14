@@ -227,5 +227,14 @@ namespace rt{
         if (t1 < t2) return{t1, t2};
         return{t2, t1};
     }
+
+    intersections Sphere::intersect(ray_t r){
+        auto t{rt::intersect<sphere_t>(sphere_t{},r)};
+        if (t.size() == 0) return {};
+        intersections result;
+        result.add({t[0],this});
+        result.add({t[1],this});
+        return result;        
+    }
 }
 

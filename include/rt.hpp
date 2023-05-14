@@ -223,5 +223,33 @@ namespace rt{
             else return std::get<1>(*is);
         }
     };
-    template<typename T> intersect_result_t intersect(T obj, ray_t);    
+    template<typename T> intersect_result_t intersect(T obj, ray_t);
+
+    struct intersections;
+    
+    class Serializable{
+        public:
+            virtual void* serialize() = 0;
+    };
+
+    class Shape: public Serializable{
+        public:
+         virtual intersections intersect(ray_t) = 0;
+    };
+
+    struct intersection{
+        tuple_t::val_t t;
+        Shape* obj;
+    };
+
+    struct intersections{
+        std::vector<intersection> is;
+        intersections() = default;
+        void add(intersection i) {is.push_back(i);}
+    };
+
+    class Sphere : public Shape{
+        public:
+         intersections intersect(ray_t) override;
+    };
 }
