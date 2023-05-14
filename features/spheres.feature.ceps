@@ -1,0 +1,132 @@
+
+let skip_summary = 0;
+let summary_only_failures = 0;
+
+val p = undef;
+val r = undef;
+val orig = undef;
+val dir = undef;
+val sp = undef;
+val xs = undef;
+
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+docinfo_se(
+
+"
+"
+
+);
+
+
+
+Scenario{
+     title{label __chapter__5_scenario_3 title = "A ray intersects a sphere at two points";};
+     Given{
+         let r = rt_obj(ray{ rt_obj(point{0.0;0.0;-5.0;}); rt_obj(vector{0.0;0.0;1.0;});});
+     };
+     And{let sp = rt_obj(sphere{});1;};
+     When{let xs = rt_op(intersect{s;r;}); };     
+     Then{
+        xs.content().size() == 2;
+    };
+    And{
+        rt_op(approx_equal{
+            xs.content().at(0);
+            4.0;
+        });
+    };
+    And{
+        rt_op(approx_equal{
+            xs.content().at(1);
+            6.0;
+        });
+    };
+
+};
+
+Scenario{
+     title{label __chapter__5_scenario_4 title = "A ray intersects a sphere at a tangent";};
+     Given{
+         let r = rt_obj(ray{ rt_obj(point{0.0;1.0;-5.0;}); rt_obj(vector{0.0;0.0;1.0;});});
+     };
+     And{let sp = rt_obj(sphere{});1;};
+     When{let xs = rt_op(intersect{s;r;});};     
+     Then{
+        xs.content().size() == 2;
+    };
+    And{
+        rt_op(approx_equal{
+            xs.content().at(0);
+            5.0;
+        });
+    };
+    And{
+        rt_op(approx_equal{
+            xs.content().at(1);
+            5.0;
+        });
+    };
+};
+
+Scenario{
+     title{label __chapter__5_scenario_5 title = "A ray misses a sphere";};
+     Given{
+         let r = rt_obj(ray{ rt_obj(point{0.0;2.0;-5.0;}); rt_obj(vector{0.0;0.0;1.0;});});
+     };
+     And{let sp = rt_obj(sphere{});1;};
+     When{let xs = rt_op(intersect{s;r;}); };     
+     Then{
+        xs.content().size() == 0;
+    };
+};
+
+Scenario{
+     title{label __chapter__5_scenario_6 title = "A ray originates inside a sphere";};
+     Given{
+         let r = rt_obj(ray{ rt_obj(point{0.0;0.0;0.0;}); rt_obj(vector{0.0;0.0;1.0;});});
+     };
+     And{let sp = rt_obj(sphere{});1;};
+     When{let xs = rt_op(intersect{s;r;}); };     
+     Then{
+        xs.content().size() == 2;
+    };
+    And{
+        rt_op(approx_equal{
+            xs.content().at(0);
+            -1.0;
+        });
+    };
+    And{
+        rt_op(approx_equal{
+            xs.content().at(1);
+            1.0;
+        });
+    };
+};
+
+
+Scenario{
+     title{label __chapter__5_scenario_7 title = "A sphere is behind a ray";};
+     Given{
+         let r = rt_obj(ray{ rt_obj(point{0.0;0.0;5.0;}); rt_obj(vector{0.0;0.0;1.0;});});
+     };
+     And{let sp = rt_obj(sphere{});1;};
+     When{let xs = rt_op(intersect{s;r;}); };     
+     Then{
+        xs.content().size() == 2;
+    };
+    And{
+        rt_op(approx_equal{
+            xs.content().at(0);
+            -6.0;
+        });
+    };
+    And{
+        rt_op(approx_equal{
+            xs.content().at(1);
+            -4.0;
+        });
+    };
+};

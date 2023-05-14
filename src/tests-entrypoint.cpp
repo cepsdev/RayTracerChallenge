@@ -355,11 +355,11 @@ template<> ceps::ast::node_t ast_rep<rt::sphere_t>(rt::sphere_t t){
     return result;
 }
 
-template<> ceps::ast::node_t ast_rep<rt::intersection_t>(rt::intersection_t t){
+template<> ceps::ast::node_t ast_rep<rt::intersect_result_t>(rt::intersect_result_t t){
     using namespace ceps::ast;
     using namespace ceps::interpreter;
     
-    auto result = mk_struct("intersection");
+    auto result = mk_struct("intersect_result");
     if (t.size()){
         children(*result).push_back(mk_double_node(t[0],all_zero_unit()));
         if (t.size() > 1) children(*result).push_back(mk_double_node(t[1],all_zero_unit()));
@@ -414,7 +414,7 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t
     } else if (nm == "sphere"){
          return ast_rep(rt::sphere_t{});
     }else if (nm == "intersection"){
-         return ast_rep(rt::intersection_t{});
+         return ast_rep(rt::intersect_result_t{});
     }
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));

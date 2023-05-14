@@ -215,7 +215,7 @@ namespace rt{
         return ray.origin + t * ray.direction;
     }
 
-    template<> intersection_t intersect<sphere_t>(sphere_t sphere, ray_t ray){
+    template<> intersect_result_t intersect<sphere_t>(sphere_t sphere, ray_t ray){
         auto sphere_to_ray{ray.origin - sphere.center};
         auto a{dot(ray.direction, ray.direction)};
         auto b{2*dot(ray.direction, sphere_to_ray)};

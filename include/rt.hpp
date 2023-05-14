@@ -212,10 +212,10 @@ namespace rt{
         sphere_t() = default;
     };
 
-    struct intersection_t{
+    struct intersect_result_t{
         std::optional<std::tuple<tuple_t::val_t,tuple_t::val_t>> is{};
-        intersection_t() = default;
-        intersection_t(tuple_t::val_t v1,tuple_t::val_t v2): is{std::tuple<tuple_t::val_t,tuple_t::val_t>{ v1,v2} } {} 
+        intersect_result_t() = default;
+        intersect_result_t(tuple_t::val_t v1,tuple_t::val_t v2): is{std::tuple<tuple_t::val_t,tuple_t::val_t>{ v1,v2} } {} 
         size_t size() {if (!is) return 0; return 2;}
         tuple_t::val_t operator [](size_t idx) {
             if (!is) return {};
@@ -223,5 +223,5 @@ namespace rt{
             else return std::get<1>(*is);
         }
     };
-    template<typename T> intersection_t intersect(T obj, ray_t);    
+    template<typename T> intersect_result_t intersect(T obj, ray_t);    
 }
