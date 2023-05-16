@@ -1,6 +1,11 @@
 let skip_summary = 0;
 let summary_only_failures = 0;
 
+macro equality_test{
+   symbolic_equality(as_nodeset(arglist.at(0)),as_nodeset(arglist.at(1))).diff.equal.content();
+};
+
+
 
 Scenario{
      title{label __chapter__1_scenario_1 title = "A tuple with w=1.0 is a point";};
@@ -36,9 +41,10 @@ Scenario{
          let a = as_nodeset(point{4.0; -4.0; 3.0;});
      };
      let b = rt_obj(a.point);
-     val c = {tuple{x{4.0;};y{-4.0;};z{3.0;};w{1.0;};};};
-     
-     Then{symbolic_equality(c,b.tuple).diff.equal.content();};
+     val c = {tuple{x{4.0;};y{-4.0;};z{3.0;};w{1.0;};};};     
+     Then{
+        equality_test{c;b;};
+    };
 };
 
 Scenario{
@@ -48,8 +54,9 @@ Scenario{
      };
      let b = rt_obj(a.vector);
      val c = {tuple{x{4.0;};y{-4.0;};z{3.0;};w{0.0;};};};
-     
-     Then{symbolic_equality(c,b.tuple).diff.equal.content();};
+     Then{
+        equality_test{c;b;};
+    };
 };
 
 Scenario{
@@ -59,7 +66,13 @@ Scenario{
      };
      let b = as_nodeset(tuple{-2.0; 3.0; 1.0;0.0;});
      val c = {tuple{x{1.0;};y{1.0;};z{6.0;};w{1.0;};};};
-     Then{ symbolic_equality(rt_op(plus{a;b;}).tuple,c).diff.equal.content();};
+     Then{
+        equality_test{
+            rt_op( plus{a;b;} );
+            c;
+        };
+    };
+
 };
 
 Scenario{
@@ -69,7 +82,13 @@ Scenario{
      };
      let b = as_nodeset(point{5.0; 6.0; 7.0;});
      val c = rt_obj( vector{x{-2.0;};y{-4.0;};z{-6.0;};}  );
-     Then{ symbolic_equality(rt_op(minus{a;b;}).tuple,c.tuple).diff.equal.content();};
+     Then{
+        equality_test{
+            rt_op(minus{a;b;});
+            c;
+        };
+    };
+
 };
 
 Scenario{
@@ -79,7 +98,9 @@ Scenario{
      };
      let b = as_nodeset(vector{5.0; 6.0; 7.0;});
      val c = rt_obj( vector{x{-2.0;};y{-4.0;};z{-6.0;};}  );
-     Then{ symbolic_equality(rt_op(minus{a;b;}).tuple,c.tuple).diff.equal.content();};
+     Then{ 
+        equality_test{rt_op(minus{a;b;});c;};
+    };
 };
 
 Scenario{
@@ -90,7 +111,9 @@ Scenario{
      };
      let v = as_nodeset(vector{1.0; -2.0; 3.0;});
      val result = rt_obj( vector{x{-1.0;};y{2.0;};z{-3.0;};}  );
-     Then{ symbolic_equality(rt_op(minus{zero;v;}).tuple,result.tuple).diff.equal.content();};
+     Then{ 
+        equality_test{rt_op(minus{zero;v;});result;};
+    };
 };
 
 Scenario{
@@ -99,7 +122,9 @@ Scenario{
          let a = as_nodeset(tuple{1.0; -2.0; 3.0; -4.0;});
      };
      val result = rt_obj( tuple{x{-1.0;};y{2.0;};z{-3.0;};w{4.0;};}  );
-     Then{ symbolic_equality(rt_op(negate{a;}).tuple,result.tuple).diff.equal.content();};
+     Then{ 
+        equality_test{rt_op(negate{a;});result;};
+    };
 };
 
 Scenario{
@@ -108,7 +133,9 @@ Scenario{
          let a = rt_obj(tuple{1.0; -2.0; 3.0; -4.0;});
      };
      val result = rt_obj( tuple{x{3.5;};y{-7.0;};z{10.5;};w{-14.0;};}  );
-     Then{ symbolic_equality(rt_op(multiply{3.5;a;}).tuple,result.tuple).diff.equal.content();};
+     Then{ 
+        equality_test{rt_op(multiply{3.5;a;});result;};
+     };
 };
 Scenario{
      title{label __chapter__1_scenario_11 title = "Multiplying a tuple by a fraction";};
@@ -116,7 +143,11 @@ Scenario{
          let a = rt_obj(tuple{1.0; -2.0; 3.0; -4.0;});
      };
      val result = rt_obj( tuple{x{0.5;};y{-1.0;};z{1.5;};w{-2.0;};}  );
-     Then{ symbolic_equality(rt_op(multiply{0.5;a;}).tuple,result.tuple).diff.equal.content();};
+     Then{ 
+        equality_test{
+            rt_op(multiply{0.5;a;});result;
+        };
+    };
 };
 Scenario{
      title{label __chapter__1_scenario_12 title = "Dividing a tuple by scalar";};
@@ -124,7 +155,9 @@ Scenario{
          let a = rt_obj(tuple{1.0; -2.0; 3.0; -4.0;});
      };
      val result = rt_obj( tuple{x{0.5;};y{-1.0;};z{1.5;};w{-2.0;};}  );
-     Then{ symbolic_equality(rt_op(divide{a;2.0;}).tuple,result.tuple).diff.equal.content();};
+     Then{ 
+        equality_test{rt_op(divide{a;2.0;});result;};
+     };
 };
 
 Scenario{
@@ -178,7 +211,9 @@ Scenario{
          let v = rt_obj(vector{4.0; 0.0; 0.0;});
      };
      val result = rt_obj( vector{1.0;0.0;0.0;}  );
-     Then{ symbolic_equality(rt_op(normalize{v;}).tuple,result.tuple).diff.equal.content();};
+     Then{ 
+        equality_test{rt_op(normalize{v;});result;};
+    };
 };
 
 Scenario{
@@ -186,7 +221,6 @@ Scenario{
      Given{
          let v = rt_op(normalize{rt_obj(vector{1.0; 2.0; 3.0;});});
      };
-     "!!!!!!!!!!!";v;
      val result = rt_obj( vector{0.26726;0.53452;0.80178;}  );
      rt_op(approx_equal{v;result;});
      Then{ rt_op(approx_equal{v;result;});};
@@ -248,8 +282,12 @@ Scenario{
      };
      val result1 = rt_obj(vector{-1.0;2.0;-1.0;});
      val result2 = rt_obj(vector{1.0;-2.0;1.0;});
-     Then{ symbolic_equality(rt_op(cross{v1;v2;}).tuple,result1.tuple).diff.equal.content();};
-     And{ symbolic_equality(rt_op(cross{v2;v1;}).tuple,result2.tuple).diff.equal.content();};
+     Then{ 
+        equality_test{rt_op(cross{v1;v2;}).tuple;result1.tuple;};
+     };
+     And{
+        equality_test{rt_op(cross{v2;v1;}).tuple;result2.tuple;};
+     };
 };
 
 Scenario{
@@ -271,7 +309,9 @@ Scenario{
          let c2 = rt_obj(color{0.7; 0.1; 0.25;});1;
      };
      let c = rt_obj(color{1.6;0.7;1.0;});
-     Then{ symbolic_equality(rt_op(plus{c1;c2;}).color,c.color).diff.equal.content();};
+     Then{ 
+        equality_test{rt_op(plus{c1;c2;});c.color;};
+    };
   };
 
 Scenario{
