@@ -21,19 +21,22 @@ docinfo_se(
 
 );
 
+macro equality_test{
+   symbolic_equality(as_nodeset(arglist.at(0)),as_nodeset(arglist.at(1))).diff.equal.content();
+};
+
 
 Scenario{
      title{label __chapter__5_scenario_tracking_intersections_1 title = "An intersection encapsulates t and object";};
      Given{
          let sp = rt_obj(sphere{});
      };
-     When{let i = rt_obj(intersection{3.5;s;});1;};
-     i;
+     When{let i = rt_obj(intersection{3.5;sp;});1;};
      Then{
-        i.t.content() == 3.5;
+        i.intersection.t.content() == 3.5;
      };
      And{
-        symbolic_equality(i.object.content(),rt_obj(sphere{})).diff.equal.content();
+        equality_test{i.intersection.object.content(); rt_obj(sphere{}); };
      };
 };
 

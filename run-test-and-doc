@@ -1,0 +1,4 @@
+#!/bin/bash
+
+LD_LIBRARY_PATH=$(pwd)/bin:$LD_LIBRARY_PATH ceps features/common/prelude.ceps $1 features/common/summary.ceps \
+ --pluginlibrt.so --pe --format markdown					

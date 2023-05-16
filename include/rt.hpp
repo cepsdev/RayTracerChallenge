@@ -12,6 +12,7 @@
 #include <cmath>
 #include <vector>
 #include <tuple>
+#include "ceps_ast.hh"
 
 template<typename T> struct smallness;
 
@@ -225,16 +226,20 @@ namespace rt{
     };
     template<typename T> intersect_result_t intersect(T obj, ray_t);
 
+    class Shape;
     struct intersections;
     
-    class Serializable{
+    class Serializer{
         public:
-            virtual void* serialize() = 0;
+            virtual ceps::ast::node_t serialize(Shape&) = 0;
     };
 
-    class Shape: public Serializable{
+    class Shape{
+        Serializer& serializer;
         public:
+         Shape(Serializer& serializer):serializer{serializer}{}
          virtual intersections intersect(ray_t) = 0;
+         Serializer& get_serializer() {return serializer;}
     };
 
     struct intersection{
@@ -248,8 +253,17 @@ namespace rt{
         void add(intersection i) {is.push_back(i);}
     };
 
-    class Sphere : public Shape{
+    class UnknownShape : public Shape{
         public:
+         UnknownShape(Serializer& serializer):Shape{serializer}{}
+         intersections intersect(ray_t) override{
+            return {};
+         }
+    };
+
+    class Sphere : public Shape, public sphere_t{
+        public:
+         Sphere(Serializer& serializer):Shape{serializer}{}
          intersections intersect(ray_t) override;
     };
 }
