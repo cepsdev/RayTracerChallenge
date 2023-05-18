@@ -530,51 +530,6 @@ template<> rt::matrix_t fetch<rt::matrix_t>(ceps::ast::node_t n)
     return result;
 }
 
-/*rt::matrix_t rt::mk_matrix(ceps::ast::Struct s) {
-    auto& v{children(s)}; 
-    using namespace ceps::ast;
-    rt::matrix_t::dim_t dim[] = { {},{} };
-    size_t dim_pos{};
-    if (v.size() == 1 && is<Ast_node_kind::identifier>(v[0]) && ( name(as_id_ref(v[0])) == "id" || name(as_id_ref(v[0])) == "identity_matrix") ) return rt::id_4_4;
-    for(auto iter = v.begin(); iter != v.end() && dim_pos < sizeof(dim)/sizeof(rt::matrix_t::dim_t); ++iter)
-    {
-     if (is<Ast_node_kind::int_literal>(*iter)) 
-      dim[dim_pos++] = value(as_int_ref(*iter));
-     else if (is<Ast_node_kind::structdef>(*iter)){
-        auto& sub = *as_struct_ptr(*iter);
-        auto& nm = name(sub);
-        auto& ch = children(sub);
-        if (nm == "dim"){
-            if (ch.size() && is<Ast_node_kind::int_literal>(ch[0]))
-              dim[0] = value(as_int_ref(ch[0]));
-            if (ch.size() > 1 && is<Ast_node_kind::int_literal>(ch[1]))
-              dim[1] = value(as_int_ref(ch[1]));
-        }
-     }    
-    }
-    matrix_t m{dim[0],dim[1]};
-    for(auto iter = v.begin(); iter != v.end() ; ++iter)
-    {
-     if (is<Ast_node_kind::structdef>(*iter)){
-        auto& sub = *as_struct_ptr(*iter);
-        auto& nm = name(sub);
-        auto& ch = children(sub);
-        if (nm == "data"){
-            auto it = m.begin();
-            for( auto e : ch){
-                if(it == m.end()) break;
-                if (!is<Ast_node_kind::float_literal>(e)) continue;
-                *it = value(as_double_ref(e));
-                ++it;
-            }
-            break;
-        }
-     }
-    }
-    return m;   
-}*/
-
-
 ///// rt::matrix_t <<<<<<
 
 ///// rt::intersection >>>>>>
