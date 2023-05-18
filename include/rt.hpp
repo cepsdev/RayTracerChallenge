@@ -205,6 +205,7 @@ namespace rt{
         ray_t() = default;
         ray_t(tuple_t origin, tuple_t direction ):origin{origin}, direction{direction}{}
     };
+    ray_t operator * (matrix_t const & m, ray_t r);
 
     tuple_t postion(ray_t, tuple_t::val_t);
     struct sphere_t{

@@ -473,6 +473,110 @@ template<> ceps::ast::node_t ast_rep<rt::intersect_result_t>(rt::intersect_resul
     return result;
 }
 
+///// rt::matrix_t >>>>>>
+
+template<> bool check<rt::matrix_t>(ceps::ast::node_t n){
+    using namespace ceps::ast;
+    if (is<Ast_node_kind::identifier>(n) && ( name(as_id_ref(n)) == "id" || name(as_id_ref(n)) == "identity_matrix") ) return true;
+    if (!is<Ast_node_kind::structdef>(n)) return false;
+    return true;
+}
+
+template<> rt::matrix_t fetch<rt::matrix_t>(ceps::ast::node_t n)
+{
+    using namespace ceps::ast;
+    if (is<Ast_node_kind::identifier>(n) && ( name(as_id_ref(n)) == "id" || name(as_id_ref(n)) == "identity_matrix") ) return rt::id_4_4;
+    auto& s{*as_struct_ptr(n)};
+    rt::matrix_t::dim_t dim[] = { {},{} };
+    auto& v{children(s)};
+    size_t dim_pos{};
+    // get dimensions first
+    for(auto iter = v.begin(); iter != v.end() && dim_pos < sizeof(dim)/sizeof(rt::matrix_t::dim_t); ++iter)
+    {
+     if (is<Ast_node_kind::int_literal>(*iter)) 
+      dim[dim_pos++] = value(as_int_ref(*iter));
+     else if (is<Ast_node_kind::structdef>(*iter)){
+        auto& sub = *as_struct_ptr(*iter);
+        auto& nm = name(sub);
+        auto& ch = children(sub);
+        if (nm == "dim"){
+            if (ch.size() && is<Ast_node_kind::int_literal>(ch[0]))
+              dim[0] = value(as_int_ref(ch[0]));
+            if (ch.size() > 1 && is<Ast_node_kind::int_literal>(ch[1]))
+              dim[1] = value(as_int_ref(ch[1]));
+        }
+     }    
+    }
+    rt::matrix_t result{dim[0],dim[1]};
+    for(auto iter = v.begin(); iter != v.end() ; ++iter)
+    {  
+      if (is<Ast_node_kind::structdef>(*iter)){
+        auto& sub = *as_struct_ptr(*iter);
+        auto& nm = name(sub);
+        auto& ch = children(sub);
+        if (nm == "data"){
+            auto it = result.begin();
+            for( auto e : ch){
+                if(it == result.end()) break;
+                if (!is<Ast_node_kind::float_literal>(e)) continue;
+                *it = value(as_double_ref(e));
+                ++it;
+            }
+            break;
+        }
+     }
+    }
+
+    return result;
+}
+
+/*rt::matrix_t rt::mk_matrix(ceps::ast::Struct s) {
+    auto& v{children(s)}; 
+    using namespace ceps::ast;
+    rt::matrix_t::dim_t dim[] = { {},{} };
+    size_t dim_pos{};
+    if (v.size() == 1 && is<Ast_node_kind::identifier>(v[0]) && ( name(as_id_ref(v[0])) == "id" || name(as_id_ref(v[0])) == "identity_matrix") ) return rt::id_4_4;
+    for(auto iter = v.begin(); iter != v.end() && dim_pos < sizeof(dim)/sizeof(rt::matrix_t::dim_t); ++iter)
+    {
+     if (is<Ast_node_kind::int_literal>(*iter)) 
+      dim[dim_pos++] = value(as_int_ref(*iter));
+     else if (is<Ast_node_kind::structdef>(*iter)){
+        auto& sub = *as_struct_ptr(*iter);
+        auto& nm = name(sub);
+        auto& ch = children(sub);
+        if (nm == "dim"){
+            if (ch.size() && is<Ast_node_kind::int_literal>(ch[0]))
+              dim[0] = value(as_int_ref(ch[0]));
+            if (ch.size() > 1 && is<Ast_node_kind::int_literal>(ch[1]))
+              dim[1] = value(as_int_ref(ch[1]));
+        }
+     }    
+    }
+    matrix_t m{dim[0],dim[1]};
+    for(auto iter = v.begin(); iter != v.end() ; ++iter)
+    {
+     if (is<Ast_node_kind::structdef>(*iter)){
+        auto& sub = *as_struct_ptr(*iter);
+        auto& nm = name(sub);
+        auto& ch = children(sub);
+        if (nm == "data"){
+            auto it = m.begin();
+            for( auto e : ch){
+                if(it == m.end()) break;
+                if (!is<Ast_node_kind::float_literal>(e)) continue;
+                *it = value(as_double_ref(e));
+                ++it;
+            }
+            break;
+        }
+     }
+    }
+    return m;   
+}*/
+
+
+///// rt::matrix_t <<<<<<
+
 ///// rt::intersection >>>>>>
 template<> bool check<rt::intersection>(ceps::ast::Struct & s)
 {
@@ -574,7 +678,6 @@ namespace rt2ceps{
             if (t) return ast_rep(*t);
             return nullptr;
     }
-
 }
 
 ///////////////////////////////////////
@@ -973,6 +1076,14 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             auto hit_res{is->hit()};
             if (! hit_res) return mk_undef(); 
             return ast_rep( *hit_res);
+        }
+    } else  if (name(ceps_struct) == "transform"){
+    
+        auto r{read_value<rt::ray_t>(0,ceps_struct)};
+        auto m{read_value<rt::matrix_t>(1,ceps_struct)};
+        if(r && m){
+            auto t = *m * *r;
+            return ast_rep(t);
         }
     } 
     auto result = mk_struct("error");

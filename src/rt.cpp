@@ -117,6 +117,10 @@ namespace rt{
         return r;
     }
 
+    ray_t operator * (matrix_t const & m, ray_t r){
+        return{m * r.origin, m * r.direction};
+    }
+
     matrix_t transpose(matrix_t const & m){
         auto r{m};
         for (unsigned int row = 0; row < m.dim_y;++row)

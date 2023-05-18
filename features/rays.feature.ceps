@@ -4,10 +4,12 @@ let summary_only_failures = 0;
 
 val p = undef;
 val r = undef;
+val r2 = undef;
 val orig = undef;
 val dir = undef;
 val sp = undef;
 val xs = undef;
+val mat = undef;
 
 kind DocgenStringPrintNoEscape;
 DocgenStringPrintNoEscape docinfo_se;
@@ -24,7 +26,7 @@ Scenario{
      Given{
          let orig = rt_obj(point{1.0;2.0;3.0;});
      };
-     And{let dir = rt_obj(vector{4.0;5.0;6.0;});1;};
+     And{let dir = rt_obj(vector{4.0;5.0;6.0;});};
      When{let r = rt_obj(ray{orig;dir;}); };     
      Then{
         rt_op(approx_equal{
@@ -71,6 +73,50 @@ Scenario{
     };
 
 };
+
+
+Scenario{
+     title{label __chapter__5_scenario_2_a title = "Translating a ray";};
+     Given{
+         let r = rt_obj(ray{rt_obj(point{1.0;2.0;3.0;}); rt_obj(vector{0.0;1.0;0.0;});});
+     };
+     And{let mat = rt_obj(translation{3.0;4.0;5.0;});};
+     When{let r2 = rt_op(transform{r;mat;});}; 
+     Then{
+        rt_op(approx_equal{
+            r2.ray.origin.tuple;
+            rt_obj(point{4.0;6.0;8.0;});
+        });
+     };
+     And{
+        rt_op(approx_equal{
+            r2.ray.direction.tuple;
+            rt_obj(vector{0.0;1.0;0.0;});
+        });
+    };
+};
+
+Scenario{
+     title{label __chapter__5_scenario_2_b title = "Scaling a ray";};
+     Given{
+         let r = rt_obj(ray{rt_obj(point{1.0;2.0;3.0;}); rt_obj(vector{0.0;1.0;0.0;});});
+     };
+     And{let mat = rt_obj(scaling{2.0;3.0;4.0;});};
+     When{let r2 = rt_op(transform{r;mat;});};   
+     Then{
+        rt_op(approx_equal{
+            r2.ray.origin.tuple;
+            rt_obj(point{2.0;6.0;12.0;});
+        });
+     };
+     And{
+        rt_op(approx_equal{
+            r2.ray.direction.tuple;
+            rt_obj(vector{0.0;3.0;0.0;});
+        });
+    };
+};
+
 
 
 
