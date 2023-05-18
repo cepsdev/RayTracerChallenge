@@ -236,5 +236,15 @@ namespace rt{
         result.add({t[1],this});
         return result;        
     }
+
+    std::optional<intersection> intersections::hit() const{
+        std::optional<intersection> h{};
+        for(auto e : *this){
+                if( e.t >= 0.0 || small(e.t) )
+                 if(!h) h = e; else if (h->t  > e.t) h = e;
+        }
+        return h;
+    }
+
 }
 

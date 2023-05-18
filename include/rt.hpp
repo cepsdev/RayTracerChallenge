@@ -255,6 +255,7 @@ namespace rt{
         std::vector<intersection>::const_iterator begin() const {return is.begin();}
         std::vector<intersection>::iterator end() {return is.end();}
         std::vector<intersection>::const_iterator end() const {return is.end();}
+        std::optional<intersection> hit() const;
     };
 
     class UnknownShape : public Shape{

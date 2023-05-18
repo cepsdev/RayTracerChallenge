@@ -11,6 +11,10 @@ val xs = undef;
 val i = undef;
 val i1 = undef;
 val i2 = undef;
+val i3 = undef;
+val i4 = undef;
+
+
 kind DocgenStringPrintNoEscape;
 DocgenStringPrintNoEscape docinfo_se;
 
@@ -99,3 +103,101 @@ Scenario{
        };
      };
 };
+
+Scenario{
+     title{label __chapter__5_scenario_tracking_intersections_4 title = "The hit, when all intersections have positive t";};
+     Given{
+         let sp = rt_obj(sphere{});
+     };
+     And{let i1 = rt_obj(intersection{1.0;sp;});};
+     And{let i2 = rt_obj(intersection{2.0;sp;});};
+     And{let xs = rt_obj(intersections{i2;i1;});};
+     When{
+        let i = rt_op(hit{xs;});
+     };
+     Then{
+        equality_test{i; i1; };
+     };
+};
+
+Scenario{
+     title{label __chapter__5_scenario_tracking_intersections_5 title = "The hit, when some intersections have negative t";};
+     Given{
+         let sp = rt_obj(sphere{});
+     };
+     And{let i1 = rt_obj(intersection{-1.0;sp;});};
+     And{let i2 = rt_obj(intersection{1.0;sp;});};
+     And{let xs = rt_obj(intersections{i2;i1;});};
+     When{
+        let i = rt_op(hit{xs;});
+     };
+     Then{
+        equality_test{i; i2; };
+     };
+};
+
+Scenario{
+     title{label __chapter__5_scenario_tracking_intersections_6 title = "The hit, when all intersections have negative t";};
+     Given{
+         let sp = rt_obj(sphere{});
+     };
+     And{let i1 = rt_obj(intersection{-2.0;sp;});};
+     And{let i2 = rt_obj(intersection{-1.0;sp;});};
+     And{let xs = rt_obj(intersections{i2;i1;});};
+     When{
+        let i = rt_op(hit{xs;});
+     };
+     Then{
+        equality_test{i; undef; };
+     };
+};
+
+
+Scenario{
+     title{label __chapter__5_scenario_tracking_intersections_7 title = "The hit is always the lowest nonnegative intersection";};
+     Given{
+         let sp = rt_obj(sphere{});
+     };
+     And{let i1 = rt_obj(intersection{5.0;sp;});};
+     And{let i2 = rt_obj(intersection{7.0;sp;});};
+     And{let i3 = rt_obj(intersection{-3.0;sp;});};
+     And{let i4 = rt_obj(intersection{2.0;sp;});};
+
+     And{let xs = rt_obj(intersections{i1;i2;i3;i4;});};
+     When{
+        let i = rt_op(hit{xs;});
+     };
+     Then{
+        equality_test{i; i4; };
+     };
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

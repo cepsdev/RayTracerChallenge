@@ -522,13 +522,20 @@ template<> bool check<rt::intersection>(ceps::ast::node_t n){
 
 ///// rt::intersections >>>>>>
 
-
 template<> bool check<rt::intersections>(ceps::ast::Struct & s)
 {
     using namespace ceps::ast;
     for (auto e : children(s) ) 
      if (!check<rt::intersection>(e)) return false;
     return true;
+}
+
+template<> bool check<rt::intersections>(ceps::ast::node_t n)
+{
+    using namespace ceps::ast;
+    if (!is<Ast_node_kind::structdef>(n)) return false;
+    if (name(*as_struct_ptr(n)) != type_name<rt::intersections>()) return false;
+    return check<rt::intersections>(*as_struct_ptr(n));
 }
 
 template<> rt::intersections fetch<rt::intersections>(ceps::ast::Struct& s)
@@ -538,6 +545,11 @@ template<> rt::intersections fetch<rt::intersections>(ceps::ast::Struct& s)
     for (auto e : children(s))
      r.add(fetch<rt::intersection>(*as_struct_ptr(e)));
     return r;
+}
+template<> rt::intersections fetch<rt::intersections>(ceps::ast::node_t n)
+{
+    using namespace ceps::ast;
+    return fetch<rt::intersections>(*as_struct_ptr(n));
 }
 
 template<> ceps::ast::node_t ast_rep<rt::intersections>(rt::intersections t){
@@ -955,6 +967,13 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
         auto ray{read_value<rt::ray_t>(1,ceps_struct)};
         if(ray && shape) 
          return ast_rep( (*shape)->intersect(*ray));
+    } else  if (name(ceps_struct) == "hit"){
+        auto is{read_value<rt::intersections>(0,ceps_struct)};
+        if(is){
+            auto hit_res{is->hit()};
+            if (! hit_res) return mk_undef(); 
+            return ast_rep( *hit_res);
+        }
     } 
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));
