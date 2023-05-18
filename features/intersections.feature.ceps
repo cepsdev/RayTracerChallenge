@@ -31,7 +31,7 @@ Scenario{
      Given{
          let sp = rt_obj(sphere{});
      };
-     When{let i = rt_obj(intersection{3.5;sp;});1;};
+     When{let i = rt_obj(intersection{3.5;sp;});};
      Then{
         i.intersection.t.content() == 3.5;
      };
@@ -45,34 +45,57 @@ Scenario{
      Given{
          let sp = rt_obj(sphere{});
      };
-     And{let i1 = rt_obj(intersection{1.0;sp;});1;};
-     And{let i2 = rt_obj(intersection{2.0;sp;});1;};
-     When{let xs = rt_obj(intersections{i1;i2;});1;};
+     And{let i1 = rt_obj(intersection{1.0;sp;});};
+     And{let i2 = rt_obj(intersection{2.0;sp;});};
+     When{let xs = rt_obj(intersections{i1;i2;});};
      Then{
-        xs.intersection.size() == 2;
+        xs.content().size() == 2;
      };
      And{
-        xs.intersection.at(0).t == 1.0;
+       equality_test{
+         xs.intersections.intersection.at(0);
+         intersection{
+             t{1.0;};
+             object{sphere{};};
+         };
+       };
      };
      And{
-        xs.intersection.at(1).t == 2.0;
+       equality_test{
+         xs.intersections.intersection.at(1);
+         intersection{
+             t{2.0;};
+             object{sphere{};};
+         };
+       };
      };
 };
 
 Scenario{
-     title{label __chapter__5_scenario_tracking_intersections_3 title = "Intersect sets te object on the intersection";};
+     title{label __chapter__5_scenario_tracking_intersections_3 title = "Intersect sets the object on the intersection";};
      Given{
-         let r = rt_obj(ray{rt_obj(point{0.0;0.0;-5.0;});rt_obj(vector{0.0;0.0;1.0;});});
+         let r = rt_obj(
+            ray{
+               rt_obj(point{0.0;0.0;-5.0;});
+               rt_obj(vector{0.0;0.0;1.0;});
+            }
+         );
      };
-     And{let sp = rt_obj(sphere{});1;};
-     When{let xs = rt_op(intersect{sp;r;});1;};
+     And{let sp = rt_obj(sphere{});};
+     When{let xs = rt_op(intersect{sp;r;});};
      Then{
-        xs.intersection.size() == 2;
+        xs.intersections.intersection.size() == 2;
      };
      And{
-         symbolic_equality(xs.intersection.at(0).object.content(),rt_obj(sphere{})).diff.equal.content();
+       equality_test{
+         xs.intersections.intersection.at(0).content().object;
+        object{sphere{};};
+       };
      };
      And{
-         symbolic_equality(xs.intersection.at(1).object.content(),rt_obj(sphere{})).diff.equal.content();
+       equality_test{
+         xs.intersections.intersection.at(1).content().object;
+        object{sphere{};};
+       };
      };
 };

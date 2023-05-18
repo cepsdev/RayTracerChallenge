@@ -251,6 +251,10 @@ namespace rt{
         std::vector<intersection> is;
         intersections() = default;
         void add(intersection i) {is.push_back(i);}
+        std::vector<intersection>::iterator begin() {return is.begin();}
+        std::vector<intersection>::const_iterator begin() const {return is.begin();}
+        std::vector<intersection>::iterator end() {return is.end();}
+        std::vector<intersection>::const_iterator end() const {return is.end();}
     };
 
     class UnknownShape : public Shape{

@@ -26,20 +26,20 @@ Scenario{
      Given{
          let r = rt_obj(ray{ rt_obj(point{0.0;0.0;-5.0;}); rt_obj(vector{0.0;0.0;1.0;});});
      };
-     And{let sp = rt_obj(sphere{});1;};
-     When{let xs = rt_op(intersect{s;r;}); };     
+     And{let sp = rt_obj(sphere{});};
+     When{let xs = rt_op(intersect{sp;r;}); };     
      Then{
         xs.content().size() == 2;
     };
     And{
         rt_op(approx_equal{
-            xs.content().at(0);
+            xs.intersections.intersection.at(0).content().t.content();
             4.0;
         });
     };
     And{
         rt_op(approx_equal{
-            xs.content().at(1);
+            xs.intersections.intersection.at(1).content().t.content();
             6.0;
         });
     };
@@ -51,20 +51,20 @@ Scenario{
      Given{
          let r = rt_obj(ray{ rt_obj(point{0.0;1.0;-5.0;}); rt_obj(vector{0.0;0.0;1.0;});});
      };
-     And{let sp = rt_obj(sphere{});1;};
-     When{let xs = rt_op(intersect{s;r;});};     
+     And{let sp = rt_obj(sphere{});};
+     When{let xs = rt_op(intersect{sp;r;});};     
      Then{
         xs.content().size() == 2;
     };
     And{
         rt_op(approx_equal{
-            xs.content().at(0);
+            xs.intersections.intersection.at(0).content().t.content();
             5.0;
         });
     };
     And{
         rt_op(approx_equal{
-            xs.content().at(1);
+            xs.intersections.intersection.at(1).content().t.content();
             5.0;
         });
     };
@@ -75,10 +75,10 @@ Scenario{
      Given{
          let r = rt_obj(ray{ rt_obj(point{0.0;2.0;-5.0;}); rt_obj(vector{0.0;0.0;1.0;});});
      };
-     And{let sp = rt_obj(sphere{});1;};
-     When{let xs = rt_op(intersect{s;r;}); };     
+     And{let sp = rt_obj(sphere{});};
+     When{let xs = rt_op(intersect{sp;r;}); };     
      Then{
-        xs.content().size() == 0;
+        xs.intersections.content().size() == 0;
     };
 };
 
@@ -87,20 +87,20 @@ Scenario{
      Given{
          let r = rt_obj(ray{ rt_obj(point{0.0;0.0;0.0;}); rt_obj(vector{0.0;0.0;1.0;});});
      };
-     And{let sp = rt_obj(sphere{});1;};
-     When{let xs = rt_op(intersect{s;r;}); };     
+     And{let sp = rt_obj(sphere{});};
+     When{let xs = rt_op(intersect{sp;r;}); };     
      Then{
         xs.content().size() == 2;
     };
     And{
         rt_op(approx_equal{
-            xs.content().at(0);
+            xs.intersections.intersection.at(0).content().t.content();
             -1.0;
         });
     };
     And{
         rt_op(approx_equal{
-            xs.content().at(1);
+            xs.intersections.intersection.at(1).content().t.content();
             1.0;
         });
     };
@@ -112,20 +112,20 @@ Scenario{
      Given{
          let r = rt_obj(ray{ rt_obj(point{0.0;0.0;5.0;}); rt_obj(vector{0.0;0.0;1.0;});});
      };
-     And{let sp = rt_obj(sphere{});1;};
-     When{let xs = rt_op(intersect{s;r;}); };     
+     And{let sp = rt_obj(sphere{});};
+     When{let xs = rt_op(intersect{sp;r;}); };     
      Then{
         xs.content().size() == 2;
     };
     And{
         rt_op(approx_equal{
-            xs.content().at(0);
+            xs.intersections.intersection.at(0).content().t.content();
             -6.0;
         });
     };
     And{
         rt_op(approx_equal{
-            xs.content().at(1);
+            xs.intersections.intersection.at(1).content().t.content();
             -4.0;
         });
     };

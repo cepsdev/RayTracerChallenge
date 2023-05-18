@@ -242,6 +242,28 @@ rt::tuple_t tuple_from_ceps(ceps::ast::Struct& ceps_struct){
     }
     return {};
 }
+
+// Sane part starts here
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
+template <typename T> std::string type_name();
+template <> std::string type_name<rt::intersections>(){
+    return "intersections";
+}
+template <> std::string type_name<rt::intersection>(){
+    return "intersection";
+}
+
+
 template<typename T>
  class Serializer;
 
@@ -261,6 +283,7 @@ template<>
      }    
  };
 
+template<typename T> bool check(ceps::ast::Struct&);
 template<typename T> bool check(ceps::ast::node_t);
 template<> bool check<double>(ceps::ast::node_t n){ return n && ceps::ast::is<ceps::ast::Ast_node_kind::float_literal>(n); }
 
@@ -296,7 +319,6 @@ template<> rt::Sphere* create(){
     return new rt::Sphere{s};
 }
 
-template<typename T> bool check(ceps::ast::Struct&);
 template<typename T> T fetch(ceps::ast::Struct&);
 
 template<typename T> 
@@ -311,31 +333,9 @@ std::optional<rt::Shape*> read_value(size_t idx, ceps::ast::Struct& s){
         && ceps::ast::name(*as_struct_ptr(children(s)[idx])) == "sphere"){
         return create<rt::Sphere>();    
     }
-    return create<rt::UnknownShape>();    
+    return {};    
 }
 
-template<> bool check<rt::intersection>(ceps::ast::Struct & s)
-{
-    using namespace ceps::ast;
-    if (children(s).size() < 2)  return false;
-    if (!check<rt::sphere_t> (children(s)[1]))  return false;
-    if (!is<Ast_node_kind::structdef>(children(s)[0])&&
-         !is<Ast_node_kind::float_literal>(children(s)[0]))  return false;
-    if (is<Ast_node_kind::structdef>(children(s)[0]) &&
-       (name(*as_struct_ptr(children(s)[0])) != "t" ||
-        children(*as_struct_ptr(children(s)[0])).size() != 1 ||
-        !is<Ast_node_kind::float_literal>(children(*as_struct_ptr(children(s)[0]))[0] ))  )
-     return false;
-    return true;
-}
-
-template<> rt::intersection fetch<rt::intersection>(ceps::ast::Struct& s)
-{
-    auto t{read_value<double>(0,s)};
-    auto shape{read_value<rt::Shape*>(1,s)};
-    if (!t || !shape) return {};
-    return {*t,*shape};
-}
 
 template<> rt::tuple_t fetch<rt::tuple_t>(ceps::ast::node_t n){ 
     using namespace ceps::ast;
@@ -428,22 +428,6 @@ template<> ceps::ast::node_t ast_rep<rt::Shape*>(std::string field_name, rt::Sha
     return f;    
 }
 
-template<> ceps::ast::node_t ast_rep<rt::intersection>(rt::intersection inter){
-    using namespace ceps::ast;
-    using namespace ceps::interpreter;
-    
-    auto result = mk_struct("intersection");
-    add_field(result,ast_rep<double>("t",inter.t));
-    add_field(result,ast_rep<rt::Shape*>("object",inter.obj));
-
-    /*auto o = mk_struct("origin");
-    auto d = mk_struct("direction");
-    children(*result).push_back(o);
-    children(*result).push_back(d);
-    children(*o).push_back(mk_tuple(ray.origin));
-    children(*d).push_back(mk_tuple(ray.direction));*/
-    return result;
-}
 
 
 template<> ceps::ast::node_t ast_rep<rt::tuple_t>(rt::tuple_t t){
@@ -489,10 +473,119 @@ template<> ceps::ast::node_t ast_rep<rt::intersect_result_t>(rt::intersect_resul
     return result;
 }
 
+///// rt::intersection >>>>>>
+template<> bool check<rt::intersection>(ceps::ast::Struct & s)
+{
+    using namespace ceps::ast;
+    if (children(s).size() < 2)  return false;
+    if (!is<Ast_node_kind::structdef>(children(s)[0])&&
+         !is<Ast_node_kind::float_literal>(children(s)[0]))  return false;
+    if (is<Ast_node_kind::structdef>(children(s)[0]) &&
+       (name(*as_struct_ptr(children(s)[0])) != "t" ||
+        children(*as_struct_ptr(children(s)[0])).size() != 1 ||
+        !is<Ast_node_kind::float_literal>(children(*as_struct_ptr(children(s)[0]))[0] ))  )
+     return false;
+    return true;
+}
+
+template<> rt::intersection fetch<rt::intersection>(ceps::ast::Struct& s)
+{
+    using namespace ceps::ast;
+    auto t{read_value<double>(0,s)};
+    auto shape{read_value<rt::Shape*>(1,s)};
+    if (!t)
+     t = read_value<double>(0,*as_struct_ptr(children(s)[0]));
+    if (!shape)
+     shape = read_value<rt::Shape*>(0,*as_struct_ptr(children(s)[1]));
+    
+    if (!t || !shape) return {};
+    return {*t,*shape};
+}
+
+template<> ceps::ast::node_t ast_rep<rt::intersection>(rt::intersection inter){
+    using namespace ceps::ast;
+    using namespace ceps::interpreter;    
+    auto result = mk_struct(type_name<rt::intersection>());
+    add_field(result,ast_rep<double>("t",inter.t));
+    add_field(result,ast_rep<rt::Shape*>("object",inter.obj));
+    return result;
+}
+
+template<> bool check<rt::intersection>(ceps::ast::node_t n){
+    using namespace ceps::ast;
+    if (!is<Ast_node_kind::structdef>(n)) return false;
+    if ("intersection" != name(*as_struct_ptr(n))) return false;
+    return check<rt::intersection>(*as_struct_ptr(n));
+}
+
+///// rt::intersection <<<<<<
+
+///// rt::intersections >>>>>>
+
+
+template<> bool check<rt::intersections>(ceps::ast::Struct & s)
+{
+    using namespace ceps::ast;
+    for (auto e : children(s) ) 
+     if (!check<rt::intersection>(e)) return false;
+    return true;
+}
+
+template<> rt::intersections fetch<rt::intersections>(ceps::ast::Struct& s)
+{
+    using namespace ceps::ast;
+    rt::intersections r{};
+    for (auto e : children(s))
+     r.add(fetch<rt::intersection>(*as_struct_ptr(e)));
+    return r;
+}
+
+template<> ceps::ast::node_t ast_rep<rt::intersections>(rt::intersections t){
+    using namespace ceps::ast;
+    using namespace ceps::interpreter;
+    
+    auto result = mk_struct(type_name<rt::intersections>());
+    for(auto e : t)
+     add_field(result, ast_rep<rt::intersection>(e));
+    return result;
+}
+ 
+///// rt::intersections <<<<<<
+
+namespace rt2ceps{
+    using namespace ceps::ast;
+    using namespace ceps::interpreter;
+    using namespace std;    
+
+    template <typename T> node_t rt_obj(Struct& s){
+            auto t{read_value<T>(s)};
+            if (t) return ast_rep(*t);
+            return nullptr;
+    }
+
+}
+
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+///////////////////////////////////////
+
 ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t params){
     using namespace std;
     using namespace ceps::ast;
     using namespace ceps::interpreter;
+    static std::map<std::string, node_t (*) (Struct& )> n2f{ 
+        {type_name<rt::intersection>(), rt2ceps::rt_obj<rt::intersection>},
+        {type_name<rt::intersections>(), rt2ceps::rt_obj<rt::intersections>}
+    };
+
+
 
     auto data = get_first_child(params);    
     if (!is<Ast_node_kind::structdef>(data)) return nullptr;
@@ -535,10 +628,11 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t
          return ast_rep(rt::ray_t{*origin,*direction});
     } else if (nm == "sphere"){
          return ast_rep(rt::sphere_t{});
-    }else if (nm == "intersection"){
-        auto inter{read_value<rt::intersection>(ceps_struct)};
-        if (inter) return ast_rep(*inter);
-    }
+    }   
+    
+    auto it{n2f.find(nm)};
+    if (it != n2f.end() ) return it->second(ceps_struct);
+    
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));
     return result;
@@ -857,10 +951,10 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
         if(ray && t) 
          return ast_rep(rt::postion(*ray,*t));
     } else  if (name(ceps_struct) == "intersect"){
-        auto sphere{read_value<rt::sphere_t>(1,ceps_struct)};
+        auto shape{read_value<rt::Shape*>(0,ceps_struct)};
         auto ray{read_value<rt::ray_t>(1,ceps_struct)};
-        if(ray && sphere) 
-         return ast_rep(rt::intersect(*sphere, *ray));
+        if(ray && shape) 
+         return ast_rep( (*shape)->intersect(*ray));
     } 
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));
