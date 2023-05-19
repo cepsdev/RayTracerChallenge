@@ -255,6 +255,41 @@ rt::tuple_t tuple_from_ceps(ceps::ast::Struct& ceps_struct){
 ///////////////////////////////////////
 ///////////////////////////////////////
 
+ceps::ast::node_t add_field(ceps::ast::Struct* s, ceps::ast::node_t n){
+    children(*s).push_back(n);
+    return n;
+}
+
+template<typename T> T fetch(ceps::ast::Struct&);
+template<typename T> T fetch(ceps::ast::node_t);
+
+template<typename T> 
+std::optional<T> read_value(ceps::ast::Struct& s);
+template<typename T> 
+std::optional<T> read_value(size_t idx, ceps::ast::Struct& s);
+template<typename T>
+ class Serializer;
+template<typename T> bool check(ceps::ast::Struct&);
+template<typename T> bool check(ceps::ast::node_t);
+
+template<typename T> 
+std::optional<T> read_value(size_t idx, ceps::ast::Struct& s){
+    auto & v{children(s)};
+    if(v.size() <= idx || !check<T>(v[idx])) return {};
+    return fetch<T>(v[idx]);
+}
+
+template<typename T> 
+std::optional<T> read_value(ceps::ast::Struct& s){
+    if(!check<T>(s)) return {};
+    return fetch<T>(s);
+}
+
+template<typename T> ceps::ast::node_t ast_rep (T entity);
+template<typename T> ceps::ast::node_t ast_rep (std::string field_name, T value);
+template<typename T> ceps::ast::node_t ast_rep (T* entity);
+
+
 template <typename T> std::string type_name();
 template <> std::string type_name<rt::intersections>(){
     return "intersections";
@@ -264,12 +299,11 @@ template <> std::string type_name<rt::intersection>(){
 }
 
 
-template<typename T>
- class Serializer;
+template<> ceps::ast::node_t ast_rep<rt::matrix_t> (rt::matrix_t entity);
 
 template<>
  class Serializer<rt::UnknownShape> : public rt::Serializer{
-     ceps::ast::node_t serialize(rt::Shape&) override{
+     ceps::ast::node_t serialize(rt::Shape& shape) override{
         auto t {ceps::ast::mk_struct("shape")};
         return t;
      }    
@@ -277,17 +311,17 @@ template<>
 
 template<>
  class Serializer<rt::Sphere> : public rt::Serializer{
-     ceps::ast::node_t serialize(rt::Shape&) override{
+     ceps::ast::node_t serialize(rt::Shape& shape) override{
         auto t {ceps::ast::mk_struct("sphere")};
+        auto tt {ceps::ast::mk_struct("transform")};
+        add_field(t,tt);
+        add_field(tt,ast_rep(shape.transformation));
         return t;
      }    
  };
 
-template<typename T> bool check(ceps::ast::Struct&);
-template<typename T> bool check(ceps::ast::node_t);
 template<> bool check<double>(ceps::ast::node_t n){ return n && ceps::ast::is<ceps::ast::Ast_node_kind::float_literal>(n); }
 
-template<typename T> T fetch(ceps::ast::node_t);
 template<> double fetch<double>(ceps::ast::node_t n){ return value(as_double_ref(n));}
 
 template<> bool check<rt::tuple_t>(ceps::ast::node_t n){ 
@@ -319,24 +353,6 @@ template<> rt::Sphere* create(){
     return new rt::Sphere{s};
 }
 
-template<typename T> T fetch(ceps::ast::Struct&);
-
-template<typename T> 
-std::optional<T> read_value(ceps::ast::Struct& s);
-template<typename T> 
-std::optional<T> read_value(size_t idx, ceps::ast::Struct& s);
-template<> 
-std::optional<rt::Shape*> read_value(size_t idx, ceps::ast::Struct& s){
-    using namespace ceps::ast;
-
-    if (is<Ast_node_kind::structdef>(children(s)[idx])
-        && ceps::ast::name(*as_struct_ptr(children(s)[idx])) == "sphere"){
-        return create<rt::Sphere>();    
-    }
-    return {};    
-}
-
-
 template<> rt::tuple_t fetch<rt::tuple_t>(ceps::ast::node_t n){ 
     using namespace ceps::ast;
     using namespace rt;
@@ -359,33 +375,6 @@ template<> rt::ray_t fetch<rt::ray_t>(ceps::ast::node_t n){
     return { fetch<tuple_t>(children(*as_struct_ptr(v[0]))[0]), fetch<tuple_t>(children(*as_struct_ptr(v[1]))[0])};
 }
 
-template<> rt::sphere_t fetch<rt::sphere_t>(ceps::ast::node_t n){ 
-    using namespace ceps::ast;
-    using namespace rt;
-    using namespace std;
-    auto& v {children(*as_struct_ptr(n))};
-
-    return {};
-}
-
-
-template<typename T> 
-std::optional<T> read_value(size_t idx, ceps::ast::Struct& s){
-    auto & v{children(s)};
-    if(v.size() <= idx || !check<T>(v[idx])) return {};
-    return fetch<T>(v[idx]);
-}
-
-template<typename T> 
-std::optional<T> read_value(ceps::ast::Struct& s){
-    if(!check<T>(s)) return {};
-    return fetch<T>(s);
-}
-
-template<typename T> ceps::ast::node_t ast_rep (T entity);
-template<typename T> ceps::ast::node_t ast_rep (std::string field_name, T value);
-template<typename T> ceps::ast::node_t ast_rep (T* entity);
-
 template<> ceps::ast::node_t ast_rep<double>(std::string field_name, double value){
     using namespace ceps::ast;
     using namespace ceps::interpreter;
@@ -406,26 +395,6 @@ template<> ceps::ast::node_t ast_rep<rt::ray_t>(rt::ray_t ray){
     children(*o).push_back(mk_tuple(ray.origin));
     children(*d).push_back(mk_tuple(ray.direction));
     return result;
-}
-
-ceps::ast::node_t add_field(ceps::ast::Struct* s, ceps::ast::node_t n){
-    children(*s).push_back(n);
-    return n;
-}
-
-template<> ceps::ast::node_t ast_rep<rt::Shape>(rt::Shape* shape){
-    using namespace ceps::ast;
-    using namespace ceps::interpreter;
-    auto& ser{shape->get_serializer()};
-    return ser.serialize(*shape);
-}
-
-template<> ceps::ast::node_t ast_rep<rt::Shape*>(std::string field_name, rt::Shape* shape){
-    using namespace ceps::ast;
-    using namespace ceps::interpreter;
-    auto f = mk_struct(field_name);
-    children(*f).push_back(ast_rep<rt::Shape>(shape));
-    return f;    
 }
 
 
@@ -453,14 +422,6 @@ template<> ceps::ast::node_t ast_rep<rt::tuple_t>(rt::tuple_t t){
     return result;
 }
 
-template<> ceps::ast::node_t ast_rep<rt::sphere_t>(rt::sphere_t t){
-    using namespace ceps::ast;
-    using namespace ceps::interpreter;
-    
-    auto result = mk_struct("sphere");
-    return result;
-}
-
 template<> ceps::ast::node_t ast_rep<rt::intersect_result_t>(rt::intersect_result_t t){
     using namespace ceps::ast;
     using namespace ceps::interpreter;
@@ -473,7 +434,69 @@ template<> ceps::ast::node_t ast_rep<rt::intersect_result_t>(rt::intersect_resul
     return result;
 }
 
+///// rt::Shape >>>>>>
+
+template<> ceps::ast::node_t ast_rep<rt::Shape>(rt::Shape* shape){
+    using namespace ceps::ast;
+    using namespace ceps::interpreter;
+    auto& ser{shape->get_serializer()};
+    return ser.serialize(*shape);
+}
+
+template<> ceps::ast::node_t ast_rep<rt::Shape*>(std::string field_name, rt::Shape* shape){
+    using namespace ceps::ast;
+    using namespace ceps::interpreter;
+    auto f = mk_struct(field_name);
+    children(*f).push_back(ast_rep<rt::Shape>(shape));
+    return f;    
+}
+
+template<> bool check<rt::Shape*>(ceps::ast::node_t  n){
+    using namespace ceps::ast;
+    return true;
+}
+
+
+template<> bool check<rt::Shape*>(ceps::ast::Struct& s){
+    using namespace ceps::ast;
+    return true;
+}
+
+template<> rt::Shape* fetch<rt::Shape*>(ceps::ast::Struct& s)
+{
+    using namespace ceps::ast;
+
+    rt::Shape* result{};
+
+    result = create<rt::Sphere>();    
+
+    return result;
+}
+
+template<> rt::Shape* fetch<rt::Shape*>(ceps::ast::node_t  n)
+{
+    return fetch<rt::Shape*>(*ceps::ast::as_struct_ptr(n));
+}
+
+///// rt::Shape <<<<<<
+
 ///// rt::matrix_t >>>>>>
+
+template<> ceps::ast::node_t ast_rep<rt::matrix_t> (rt::matrix_t matrix){
+    using namespace ceps::ast;
+    using namespace ceps::interpreter;
+    auto result = mk_struct("matrix");
+    auto dim = mk_struct("dim");
+    auto data = mk_struct("data");
+    children(*result).push_back(dim);
+    children(*result).push_back(data);
+    for(auto v : matrix){
+     children(*data).push_back(mk_double_node(v,all_zero_unit()));
+    }
+    children(*dim).push_back(mk_int_node(matrix.dim_y));
+    children(*dim).push_back(mk_int_node(matrix.dim_x));
+    return result;
+}
 
 template<> bool check<rt::matrix_t>(ceps::ast::node_t n){
     using namespace ceps::ast;
@@ -697,7 +720,9 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t
         if (origin && direction)
          return ast_rep(rt::ray_t{*origin,*direction});
     } else if (nm == "sphere"){
-         return ast_rep(rt::sphere_t{});
+        auto shape{read_value<rt::Shape*>(ceps_struct)};
+        if (shape) 
+         return ast_rep(*shape);
     }   
     
     auto it{n2f.find(nm)};
@@ -1032,14 +1057,10 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             if (! hit_res) return mk_undef(); 
             return ast_rep( *hit_res);
         }
-    } else  if (name(ceps_struct) == "transform"){
-    
+    } else  if (name(ceps_struct) == "transform"){    
         auto r{read_value<rt::ray_t>(0,ceps_struct)};
         auto m{read_value<rt::matrix_t>(1,ceps_struct)};
-        if(r && m){
-            auto t = *m * *r;
-            return ast_rep(t);
-        }
+        if(r && m)  return ast_rep(rt::transform(*r,*m));
     } 
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));

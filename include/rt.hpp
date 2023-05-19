@@ -238,9 +238,10 @@ namespace rt{
     class Shape{
         Serializer& serializer;
         public:
-         Shape(Serializer& serializer):serializer{serializer}{}
+         Shape(Serializer& serializer):serializer{serializer},transformation{id_4_4}{}
          virtual intersections intersect(ray_t) = 0;
          Serializer& get_serializer() {return serializer;}
+         matrix_t transformation; 
     };
 
     struct intersection{
@@ -272,4 +273,6 @@ namespace rt{
          Sphere(Serializer& serializer):Shape{serializer}{}
          intersections intersect(ray_t) override;
     };
+
+    ray_t transform(ray_t, matrix_t);
 }

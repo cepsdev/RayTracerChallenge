@@ -249,6 +249,9 @@ namespace rt{
         }
         return h;
     }
+    ray_t transform(ray_t r, matrix_t m){
+        return m * r;
+    }
 
 }
 

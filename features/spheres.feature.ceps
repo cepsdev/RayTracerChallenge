@@ -8,6 +8,7 @@ val orig = undef;
 val dir = undef;
 val sp = undef;
 val xs = undef;
+val trans = undef; 
 
 kind DocgenStringPrintNoEscape;
 DocgenStringPrintNoEscape docinfo_se;
@@ -19,6 +20,9 @@ docinfo_se(
 
 );
 
+macro equality_test{
+   symbolic_equality(as_nodeset(arglist.at(0)),as_nodeset(arglist.at(1))).diff.equal.content();
+};
 
 
 Scenario{
@@ -115,7 +119,7 @@ Scenario{
      And{let sp = rt_obj(sphere{});};
      When{let xs = rt_op(intersect{sp;r;}); };     
      Then{
-        xs.content().size() == 2;
+        xs.intersections.size() && xs.content().size() == 2;
     };
     And{
         rt_op(approx_equal{
@@ -130,3 +134,113 @@ Scenario{
         });
     };
 };
+
+Scenario{
+ title{label __chapter__5_p69_1 title = "A sphere's default transformation";};
+ Given{
+    let sp = rt_obj(sphere{});
+ };
+ Then{
+    equality_test{
+      sp.transform;
+      transform{rt_obj(matrix{identity_matrix;});};};
+ };
+};
+"!!!!!!!!";sp.transform;
+"????????";transform{rt_obj(matrix{identity_matrix;});};
+
+Scenario{
+ title{label __chapter__5_p69_2 title = "Changing a spheres's transformation";};
+ Given{
+    let sp = rt_obj(sphere{});
+ };
+ And{
+    let trans = rt_obj(translation{2.0;3.0;4.0;});
+ };
+ When{
+    let sp = rt_op(set_transform{sp;trans;});
+ };
+ Then{
+    equality_test{
+      sp.transform;
+      transform{trans;};};
+ };
+};
+
+
+Scenario{
+ title{label __chapter__5_p69_3 title = "Intersecting a scaled sphere with a ray";};
+ Given{
+    let r = rt_obj(ray{rt_obj(point{0.0;0.0;-5.0;}); rt_obj(vector{0.0;0.0;1.0;});});
+ };
+ And{
+    let sp = rt_obj(sphere{});
+ };
+ When{
+    let sp = rt_op(set_transform{sp;rt_obj(scaling{2.0;2.0;2.0;});});
+ };
+ And{
+   let xs = rt_op(intersect{sp;r;});
+ };
+ Then{
+    xs.intersections.intersection.size() == 2;
+ };
+ And{
+    rt_op(approx_equal{
+        xs.intersections.intersection.at(0).content().t.content();
+        3.0;
+    });
+ };
+ And{
+    rt_op(approx_equal{
+        xs.intersections.intersection.at(1).content().t.content();
+        7.0;
+    });
+ };
+};
+
+
+Scenario{
+ title{label __chapter__5_p70 title = "Intersecting a translated sphere with a ray";};
+ Given{
+    let r = rt_obj(ray{rt_obj(point{0.0;0.0;-5.0;}); rt_obj(vector{0.0;0.0;1.0;});});
+ };
+ And{
+    let sp = rt_obj(sphere{});
+ };
+ When{
+    let sp = rt_op(set_transform{sp;rt_obj(translation{5.0;0.0;0.0;});});
+ };
+ And{
+   let xs = rt_op(intersect{sp;r;});
+ };
+ Then{
+    xs.intersections.size() && xs.intersections.intersection.size() == 0;
+ };
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
