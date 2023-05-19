@@ -233,7 +233,7 @@ namespace rt{
     }
 
     intersections Sphere::intersect(ray_t r){
-        auto t{rt::intersect<sphere_t>(sphere_t{},r)};
+        auto t{rt::intersect<sphere_t>(sphere_t{},inverse(transformation)*r)};
         if (t.size() == 0) return {};
         intersections result;
         result.add({t[0],this});

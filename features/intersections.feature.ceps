@@ -46,18 +46,21 @@ Scenario{
 
 kind SymEqMatcherAny;
 SymEqMatcherAny ANY;
-
 Scenario{
      title{label __chapter__5_scenario_tracking_intersections_2 title = "Aggregating intersections";};
      Given{
          let sp = rt_obj(sphere{});
      };
+     
      And{let i1 = rt_obj(intersection{1.0;sp;});};
+     
      And{let i2 = rt_obj(intersection{2.0;sp;});};
+     
      When{let xs = rt_obj(intersections{i1;i2;});};
      Then{
         xs.content().size() == 2;
      };
+     
      And{
        equality_test{
          xs.intersections.intersection.at(0);
@@ -77,6 +80,8 @@ Scenario{
        };
      };
 };
+
+
 
 Scenario{
      title{label __chapter__5_scenario_tracking_intersections_3 title = "Intersect sets the object on the intersection";};
