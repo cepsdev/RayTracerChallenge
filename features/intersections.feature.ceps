@@ -44,6 +44,9 @@ Scenario{
      };
 };
 
+kind SymEqMatcherAny;
+SymEqMatcherAny ANY;
+
 Scenario{
      title{label __chapter__5_scenario_tracking_intersections_2 title = "Aggregating intersections";};
      Given{
@@ -60,7 +63,7 @@ Scenario{
          xs.intersections.intersection.at(0);
          intersection{
              t{1.0;};
-             object{sphere{};};
+             object{sphere{ANY;};};
          };
        };
      };
@@ -69,7 +72,7 @@ Scenario{
          xs.intersections.intersection.at(1);
          intersection{
              t{2.0;};
-             object{sphere{};};
+             object{sphere{ANY;};};
          };
        };
      };
@@ -93,13 +96,13 @@ Scenario{
      And{
        equality_test{
          xs.intersections.intersection.at(0).content().object;
-        object{sphere{};};
+        object{sphere{ANY;};};
        };
      };
      And{
        equality_test{
          xs.intersections.intersection.at(1).content().object;
-        object{sphere{};};
+        object{sphere{ANY;};};
        };
      };
 };
