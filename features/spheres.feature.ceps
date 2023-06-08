@@ -9,6 +9,7 @@ val dir = undef;
 val sp = undef;
 val xs = undef;
 val trans = undef; 
+val normal = undef;
 
 kind DocgenStringPrintNoEscape;
 DocgenStringPrintNoEscape docinfo_se;
@@ -218,10 +219,88 @@ Scenario{
  };
 };
 
+// Surface Normals
+
+Scenario{
+ title{label __chapter__6_1 title = "The normal on a sphere at a point on the x axis";};
+ Given{
+    let sp = rt_obj(sphere{});
+ };
+ When{
+    let normal = rt_op(normal_at{sp;rt_obj(point{1.0;0.0;0.0;});});
+ };
+ Then{
+    equality_test{
+      normal;
+      rt_obj(vector{1.0;0.0;0.0;});
+    };
+ };
+};
+
+Scenario{
+ title{label __chapter__6_2 title = "The normal on a sphere at a point on the y axis";};
+ Given{
+    let sp = rt_obj(sphere{});
+ };
+ When{
+    let normal = rt_op(normal_at{sp;rt_obj(point{0.0;1.0;0.0;});});
+ };
+ Then{
+    equality_test{
+      normal;
+      rt_obj(vector{0.0;1.0;0.0;});
+    };
+ };
+};
+
+Scenario{
+ title{label __chapter__6_3 title = "The normal on a sphere at a point on the z axis";};
+ Given{
+    let sp = rt_obj(sphere{});
+ };
+ When{
+    let normal = rt_op(normal_at{sp;rt_obj(point{0.0;0.0;1.0;});});
+ };
+ Then{
+    equality_test{
+      normal;
+      rt_obj(vector{0.0;0.0;1.0;});
+    };
+ };
+};
 
 
+Scenario{
+ title{label __chapter__6_4 title = "The normal on a sphere at a nonaxial point";};
+ Given{
+    let sp = rt_obj(sphere{});
+ };
+ When{
+    let normal = rt_op(normal_at{sp;rt_obj(point{sqrt(3.0)/3.0;sqrt(3.0)/3.0;sqrt(3.0)/3.0;});});
+ };
+ Then{
+    equality_test{
+      normal;
+      rt_obj(vector{sqrt(3.0)/3.0;sqrt(3.0)/3.0;sqrt(3.0)/3.0;});
+    };
+ };
+};
 
-
+Scenario{
+ title{label __chapter__6_5 title = "The normal is a normalized vector";};
+ Given{
+    let sp = rt_obj(sphere{});
+ };
+ When{
+    let normal = rt_op(normal_at{sp;rt_obj(point{sqrt(3.0)/3.0;sqrt(3.0)/3.0;sqrt(3.0)/3.0;});});
+ };
+ Then{
+    rt_op(approx_equal{
+            normal;
+            rt_op(normalize{normal;});
+    });
+ };
+};
 
 
 

@@ -235,6 +235,13 @@ namespace rt{
             virtual ceps::ast::node_t serialize(Shape&) = 0;
     };
 
+    class SerializerNone:public Serializer{
+        public:
+            ceps::ast::node_t serialize(Shape&) override{
+                return nullptr;
+            }
+    };
+
     class Shape{
         Serializer& serializer;
         public:
