@@ -10,6 +10,7 @@ val sp = undef;
 val xs = undef;
 val trans = undef; 
 val normal = undef;
+val mat = undef;
 
 kind DocgenStringPrintNoEscape;
 DocgenStringPrintNoEscape docinfo_se;
@@ -303,6 +304,46 @@ Scenario{
 };
 
 
+Scenario{
+ title{label __chapter__6_6 title = "Computing the normal on a translated sphere";};
+ Given{
+    let sp = rt_obj(sphere{});
+ };
+ And{
+    let sp = rt_op(set_transform{sp;rt_obj(translation{0.0;1.0;0.0;});});
+ };
+ When{
+    let normal = rt_op(normal_at{sp;rt_obj(point{0.0;1.70711;-0.70711;});});
+ };
+ Then{
+    rt_op(approx_equal{
+            normal;
+            rt_obj(vector{0.0;0.70711;-0.70711;});
+    });
+ };
+};
+
+Scenario{
+ title{label __chapter__6_7 title = "Computing the normal on a transformed sphere";};
+ Given{
+    let sp = rt_obj(sphere{});
+ };
+ And{
+    let mat = rt_op(multiply{rt_obj(scaling{1.0;0.5;1.0;}); rt_obj(rotation_z{3.141592/5.0;}) ;});
+ };
+ And{
+    let sp = rt_op(set_transform{sp;mat;});
+ };
+ When{
+    let normal = rt_op(normal_at{sp;rt_obj(point{0.0;sqrt(2.0)/2.0;-sqrt(2.0)/2.0;});});
+ };
+ Then{
+    rt_op(approx_equal{
+            normal;
+            rt_obj(vector{0.0;0.97014;-0.24254;});
+    });
+ };
+};
 
 
 

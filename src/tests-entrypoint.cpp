@@ -896,8 +896,8 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             auto l = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[0]));
             auto r = tuple_from_ceps(*as_struct_ptr(children(ceps_struct)[1]));
 
-            auto n2 = rt::norm_2(l - r);
-            return mk_int_node(1 ? rt::small(n2): 0);
+            auto n_inf = rt::norm_inf(l - r);
+            return mk_int_node(1 ? rt::small(n_inf): 0);
         } else  if (children(ceps_struct).size() > 1 
             && is<Ast_node_kind::structdef>(children(ceps_struct)[0])
             && is<Ast_node_kind::structdef>(children(ceps_struct)[1])            
@@ -1087,6 +1087,13 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
         if(shape && m) {
          (*shape)->transformation = *m;
          return ast_rep(*shape);   
+        }         
+    } else  if (name(ceps_struct) == "normal_at"){    
+        auto shape{read_value<rt::Shape*>(0,ceps_struct)};
+        auto p{read_value<rt::tuple_t>(1,ceps_struct)};
+        if(shape && p) {
+            auto r{(*shape)->normal_at(*p)};
+            return ast_rep(rt::tuple_t{get<0>(r),get<1>(r),get<2>(r),get<3>(r)});   
         }         
     } 
     auto result = mk_struct("error");

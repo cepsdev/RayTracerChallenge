@@ -3,7 +3,7 @@
 #include "rt.hpp"
 
 
-template<> struct smallness<double> { static constexpr double value = 0.00001;};
+template<> struct smallness<double> { static constexpr double value = 0.0001;};
 
 namespace rt{
     bool small(precision_t v) {
@@ -26,6 +26,14 @@ namespace rt{
         
     tuple_t operator - (tuple_t const & l, tuple_t const & r) { 
         return {get<0>(l)+ -1.0*get<0>(r),get<1>(l)+-1.0*get<1>(r),get<2>(l)+-1.0*get<2>(r),get<3>(l)+-1.0*get<3>(r)  };
+    }
+
+    precision_t norm_inf(tuple_t t){
+        auto tt {std::abs(get<0>(t))};
+        if (tt < std::abs(get<1>(t))) tt = std::abs(get<1>(t));
+        if (tt < std::abs(get<2>(t))) tt = std::abs(get<2>(t));
+        if (tt < std::abs(get<3>(t))) return std::abs(get<3>(t));
+        return tt;
     }
 
     precision_t norm_2(tuple_t t){
@@ -239,6 +247,16 @@ namespace rt{
         result.add({t[0],this});
         result.add({t[1],this});
         return result;        
+    }
+    
+    vector_t Sphere::normal_at(point_t world_point){
+        auto object_point{inverse(transformation) * world_point};
+        auto object_normal{ object_point - point_t{0.0,0.0,0.0}};
+        auto world_normal{transpose(inverse(transformation))*object_normal};
+        get<3>(world_normal) = 0.0;
+        auto n2 {rt::norm_2(world_normal)};
+        auto r{1/n2 * world_normal};
+        return {get<0>(r),get<1>(r),get<2>(r)};
     }
 
     std::optional<intersection> intersections::hit() const{

@@ -33,6 +33,8 @@ namespace rt{
     struct point_t: public tuple_t{
         point_t() = default;
         point_t(precision_t a,precision_t b,precision_t c):tuple_t{a,b,c,1.0}{}
+        point_t(tuple_t t):tuple_t{get<0>(t),get<1>(t),get<2>(t),1.0}{}
+
         friend point_t operator + (point_t , vector_t );
     };
 
@@ -49,6 +51,7 @@ namespace rt{
     tuple_t operator * (precision_t scalar, tuple_t const & t);
     tuple_t operator - (tuple_t const & l, tuple_t const & r);
     precision_t norm_2(tuple_t t);
+    precision_t norm_inf(tuple_t t);
 
     precision_t dot(tuple_t l, tuple_t r);
     tuple_t cross (tuple_t v1, tuple_t v2);
@@ -247,6 +250,7 @@ namespace rt{
         public:
          Shape(Serializer& serializer):serializer{serializer},transformation{id_4_4}{}
          virtual intersections intersect(ray_t) = 0;
+         virtual vector_t normal_at(point_t world_point) = 0;
          Serializer& get_serializer() {return serializer;}
          matrix_t transformation; 
     };
@@ -273,12 +277,14 @@ namespace rt{
          intersections intersect(ray_t) override{
             return {};
          }
+         vector_t normal_at(point_t) override { return {};}
     };
 
     class Sphere : public Shape, public sphere_t{
         public:
          Sphere(Serializer& serializer):Shape{serializer}{}
          intersections intersect(ray_t) override;
+         vector_t normal_at(point_t) override;
     };
 
     ray_t transform(ray_t, matrix_t);
