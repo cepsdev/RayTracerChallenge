@@ -345,6 +345,37 @@ Scenario{
  };
 };
 
+Scenario{
+ title{label __chapter__6_789 title = "A sphere has a default material";};
+ Given{
+    let sp = rt_obj(sphere{});
+ };
+ Then{
+   equality_test{
+      sp.material;
+      rt_obj(material{});
+   };
+ };
+};
+
+Scenario{
+ title{label __chapter__6_790 title = "A sphere may be assigned a material";};
+ Given{
+    let sp = rt_obj(sphere{});
+ };
+ And{
+   let mat = rt_obj(material{ambient{1.0;};});
+ };
+ When{
+   let sp = rt_op(material{sp;mat;});
+ };
+ Then{
+   equality_test{
+      sp.material;
+      mat;
+   };
+ };
+};
 
 
 

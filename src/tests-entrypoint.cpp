@@ -261,6 +261,15 @@ ceps::ast::node_t add_field(ceps::ast::Struct* s, ceps::ast::node_t n){
     return n;
 }
 
+ceps::ast::node_t add_field(ceps::ast::Struct* s,std::string name, ceps::ast::node_t n){
+    using namespace ceps::ast;
+    auto f = mk_struct(name);
+    children(*s).push_back(f);
+    children(*f).push_back(n);
+
+    return n;
+}
+
 template<typename T> T fetch(ceps::ast::Struct&);
 template<typename T> T fetch(ceps::ast::node_t);
 
@@ -666,6 +675,132 @@ template<> ceps::ast::node_t ast_rep<rt::intersections>(rt::intersections t){
  
 ///// rt::intersections <<<<<<
 
+
+
+
+
+
+///// rt::color_t >>>>>>
+
+template<> bool check<rt::color_t>(ceps::ast::Struct & s)
+{
+    using namespace ceps::ast;
+    return name(s) == "color";
+}
+
+template<> bool check<rt::color_t>(ceps::ast::node_t n)
+{
+    using namespace ceps::ast;
+    if (!is<Ast_node_kind::structdef>(n)) return false;
+    return check<rt::color_t>(*as_struct_ptr(n));
+}
+
+template<> rt::color_t fetch<rt::color_t>(ceps::ast::Struct& s)
+{
+    using namespace ceps::ast;
+    rt::color_t r{};
+    for (auto e : children(s)){
+     if (!is<Ast_node_kind::structdef>(e)) continue;
+     if ( (name(*as_struct_ptr(e)) == "r" || name(*as_struct_ptr(e)) == "red") && children(*as_struct_ptr(e)).size() ){
+        auto p{read_value<double>(0,*as_struct_ptr(e))};
+        if (p) r.r() = *p;
+     }
+     if ( (name(*as_struct_ptr(e)) == "g" || name(*as_struct_ptr(e)) == "green") && children(*as_struct_ptr(e)).size() ){
+        auto p{read_value<double>(0,*as_struct_ptr(e))};
+        if (p) r.g() = *p;
+     }
+     if ( (name(*as_struct_ptr(e)) == "b" || name(*as_struct_ptr(e)) == "blue") && children(*as_struct_ptr(e)).size() ){
+        auto p{read_value<double>(0,*as_struct_ptr(e))};
+        if (p) r.b() = *p;
+
+     }
+
+
+    }
+    return r;
+}
+template<> rt::color_t fetch<rt::color_t>(ceps::ast::node_t n)
+{
+    using namespace ceps::ast;
+    return fetch<rt::color_t>(*as_struct_ptr(n));
+}
+
+
+template<> ceps::ast::node_t ast_rep<rt::color_t>(rt::color_t t){
+    using namespace ceps::ast;
+    using namespace ceps::interpreter;
+    
+    auto result = mk_struct("color");
+    auto r = mk_struct("red");
+    auto g = mk_struct("green");
+    auto b = mk_struct("blue");
+    
+    children(*result).push_back(r);
+    children(*result).push_back(g);
+    children(*result).push_back(b);
+
+    children(*r).push_back(mk_double_node(t.r(),all_zero_unit()));
+    children(*g).push_back(mk_double_node(t.g(),all_zero_unit()));
+    children(*b).push_back(mk_double_node(t.b(),all_zero_unit()));
+
+    return result;
+} 
+///// rt::color_t <<<<<<
+
+
+
+///// rt::point_light >>>>>>
+
+template<> bool check<rt::point_light>(ceps::ast::Struct & s)
+{
+    using namespace ceps::ast;
+    return name(s) == "point_light";
+}
+
+template<> bool check<rt::point_light>(ceps::ast::node_t n)
+{
+    using namespace ceps::ast;
+    if (!is<Ast_node_kind::structdef>(n)) return false;
+    return check<rt::point_light>(*as_struct_ptr(n));
+}
+
+template<> rt::point_light fetch<rt::point_light>(ceps::ast::Struct& s)
+{
+    using namespace ceps::ast;
+    rt::point_light r{};
+    for (auto e : children(s)){
+     if (!is<Ast_node_kind::structdef>(e)) continue;
+     if (name(*as_struct_ptr(e)) == "position" && children(*as_struct_ptr(e)).size() ){
+        auto p{read_value<rt::tuple_t>(0,*as_struct_ptr(e))};
+        if (p)
+         r.position = *p;
+     }
+     else if (name(*as_struct_ptr(e)) == "intensity" && children(*as_struct_ptr(e)).size() ){
+        auto p{read_value<rt::color_t>(0,*as_struct_ptr(e))};
+        if (p)
+         r.intensity = *p;
+     }
+    }
+    return r;
+}
+template<> rt::point_light fetch<rt::point_light>(ceps::ast::node_t n)
+{
+    using namespace ceps::ast;
+    return fetch<rt::point_light>(*as_struct_ptr(n));
+}
+
+template<> ceps::ast::node_t ast_rep<rt::point_light>(rt::point_light pl){
+    using namespace ceps::ast;
+    using namespace ceps::interpreter;
+    
+    auto result = mk_struct("point_light");
+    add_field(result,"position", ast_rep<rt::tuple_t>(pl.position));
+    add_field(result,"intensity", ast_rep<rt::color_t>(pl.intensity));
+    return result;
+}
+ 
+///// rt::point_light <<<<<<
+
 namespace rt2ceps{
     using namespace ceps::ast;
     using namespace ceps::interpreter;
@@ -743,7 +878,11 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t
         auto shape{read_value<rt::Shape*>(ceps_struct)};
         if (shape) 
          return ast_rep(*shape);
-    }   
+    } else if (nm == "point_light"){
+        auto pl{read_value<rt::point_light>(ceps_struct)};
+        if (pl)
+            return ast_rep(*pl);
+    }
     
     auto it{n2f.find(nm)};
     if (it != n2f.end() ) return it->second(ceps_struct);

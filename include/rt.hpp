@@ -31,7 +31,9 @@ namespace rt{
     struct vector_t;struct point_t;
     
     struct point_t: public tuple_t{
-        point_t() = default;
+        point_t():tuple_t{0.0,0.0,0.0,1.0}{
+
+        }
         point_t(precision_t a,precision_t b,precision_t c):tuple_t{a,b,c,1.0}{}
         point_t(tuple_t t):tuple_t{get<0>(t),get<1>(t),get<2>(t),1.0}{}
 
@@ -71,6 +73,9 @@ namespace rt{
         color_prec_t r() const { return std::get<0>(*this);}
         color_prec_t g() const { return std::get<1>(*this);}
         color_prec_t b() const { return std::get<2>(*this);}
+        color_prec_t& r()  { return std::get<0>(*this);}
+        color_prec_t& g() { return std::get<1>(*this);}
+        color_prec_t& b()  { return std::get<2>(*this);}
 
         friend color_t operator + (color_t , color_t );
         friend color_t operator - (color_t , color_t);
@@ -291,4 +296,8 @@ namespace rt{
 
     ray_t transform(ray_t, matrix_t);
     vector_t reflect(vector_t in, vector_t normal);
+    struct point_light{
+        point_t position;
+        color_t intensity;
+    };
 }

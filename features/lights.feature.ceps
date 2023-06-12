@@ -1,0 +1,54 @@
+
+let skip_summary = 0;
+let summary_only_failures = 0;
+
+val p = undef;
+val r = undef;
+val r2 = undef;
+val orig = undef;
+val dir = undef;
+val sp = undef;
+val xs = undef;
+val mat = undef;
+val intensity_v = undef;
+val position_v = undef;
+val light = undef;
+
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+docinfo_se(
+
+"
+"
+
+);
+macro equality_test{
+   symbolic_equality(as_nodeset(arglist.at(0)),as_nodeset(arglist.at(1))).diff.equal.content();
+};
+
+
+Scenario{
+     title{label __chapter__5_phong_scenario_1 title = "A point light has a position and intensity";};
+     Given{
+         let intensity_v = rt_obj(color{1.0;1.0;1.0;});
+     };
+     And{
+        let position_v = rt_obj(point{0.0;0.0;0.0;});
+     };
+     When{
+        let light = rt_obj(point_light{position{position_v;};intensity{intensity_v;};}); 
+     };     
+     Then{
+        equality_test{
+            light.point_light.position.content();
+            position_v;
+        };
+    };
+    And{
+        equality_test{
+            light.point_light.intensity.content();
+            intensity_v;
+        };
+    };
+};
