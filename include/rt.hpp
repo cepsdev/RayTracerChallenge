@@ -41,6 +41,8 @@ namespace rt{
     struct vector_t: public tuple_t{
         vector_t() = default;
         vector_t(precision_t a,precision_t b,precision_t c):tuple_t{a,b,c,0.0}{}
+        vector_t (tuple_t t):tuple_t{t}{std::get<3>(*this) = 0.0; }
+
         friend point_t operator + (point_t , vector_t );
         friend vector_t operator + (vector_t , vector_t);
     };
@@ -288,4 +290,5 @@ namespace rt{
     };
 
     ray_t transform(ray_t, matrix_t);
+    vector_t reflect(vector_t in, vector_t normal);
 }

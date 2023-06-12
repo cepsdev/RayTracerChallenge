@@ -1095,6 +1095,13 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             auto r{(*shape)->normal_at(*p)};
             return ast_rep(rt::tuple_t{get<0>(r),get<1>(r),get<2>(r),get<3>(r)});   
         }         
+    } else if (name(ceps_struct) == "reflect"){    
+        auto in{read_value<rt::tuple_t>(0,ceps_struct)};
+        auto normal{read_value<rt::tuple_t>(1,ceps_struct)};
+        if(in && normal) {
+            auto r{reflect(*in,*normal)};
+            return ast_rep(rt::tuple_t{get<0>(r),get<1>(r),get<2>(r),get<3>(r)});   
+        }         
     } 
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));

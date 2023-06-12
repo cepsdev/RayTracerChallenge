@@ -5,6 +5,9 @@ macro equality_test{
    symbolic_equality(as_nodeset(arglist.at(0)),as_nodeset(arglist.at(1))).diff.equal.content();
 };
 
+val normal = undef;
+val v = undef;
+val r = undef;
 
 
 Scenario{
@@ -370,7 +373,7 @@ Scenario{
          let c1 = rt_obj(color{1.0; 0.2; 0.4;});
      };
      And{
-         let c2 = rt_obj(color{0.9; 1.0; 0.1;});1;
+         let c2 = rt_obj(color{0.9; 1.0; 0.1;});
      };
      Then{ 
         val result = rt_op(multiply{c1;c2;});
@@ -381,4 +384,58 @@ Scenario{
             });
      };
   };
+
+
+Scenario{
+     title{label __chapter__6_reflecting_vecs_scenario_1 title = "Reflecting a vector approaching at 45°";};
+     Given{
+         let v = rt_obj(vector{1.0; -1.0; 0.0;});
+     };
+     And{
+         let normal = rt_obj(vector{0.0; 1.0; 0.0;});
+     };
+     When{
+        let r = rt_op(reflect{v;normal;});
+     };
+     Then{ 
+        rt_op( 
+            approx_equal{ 
+                rt_obj(vector{1.0;1.0;0.0;}); 
+                r;
+            });
+     };
+  };
+
+Scenario{
+     title{label __chapter__6_reflecting_vecs_scenario_2 title = "Reflecting a vector off a slanted surface";};
+     Given{
+         let v = rt_obj(vector{0.0; -1.0; 0.0;});
+     };
+     And{
+         let normal = rt_obj(vector{sqrt(2.0)/2.0; sqrt(2.0)/2.0; 0.0;});
+     };
+     When{
+        let r = rt_op(reflect{v;normal;});
+     };
+     Then{ 
+        rt_op( 
+            approx_equal{ 
+                rt_obj(vector{1.0;0.0;0.0;}); 
+                r;
+            });
+     };
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
 

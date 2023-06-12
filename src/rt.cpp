@@ -270,6 +270,8 @@ namespace rt{
     ray_t transform(ray_t r, matrix_t m){
         return m * r;
     }
-
+    vector_t reflect(vector_t in, vector_t normal){
+        return in - 2 * dot(in, normal) * normal;
+    }
 }
 
