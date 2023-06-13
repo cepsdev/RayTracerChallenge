@@ -310,6 +310,7 @@ template <> std::string type_name<rt::intersection>(){
 
 
 template<> ceps::ast::node_t ast_rep<rt::matrix_t> (rt::matrix_t entity);
+template<> ceps::ast::node_t ast_rep<rt::material_t> (rt::material_t entity);
 
 template<>
  class Serializer<rt::UnknownShape> : public rt::Serializer{
@@ -326,6 +327,8 @@ template<>
         auto tt {ceps::ast::mk_struct("transform")};
         add_field(t,tt);
         add_field(tt,ast_rep(shape.transformation));
+        add_field(t,ast_rep(shape.material));
+
         return t;
      }    
  };
@@ -1320,6 +1323,13 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
         if(in && normal) {
             auto r{reflect(*in,*normal)};
             return ast_rep(rt::tuple_t{get<0>(r),get<1>(r),get<2>(r),get<3>(r)});   
+        }         
+    } else  if (name(ceps_struct) == "set_material"){    
+        auto shape{read_value<rt::Shape*>(0,ceps_struct)};
+        auto m{read_value<rt::material_t>(1,ceps_struct)};
+        if(shape && m) {
+         (*shape)->material = *m;
+         return ast_rep(*shape);   
         }         
     } 
     auto result = mk_struct("error");

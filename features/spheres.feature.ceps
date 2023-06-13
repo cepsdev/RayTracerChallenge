@@ -352,7 +352,7 @@ Scenario{
  };
  Then{
    equality_test{
-      sp.material;
+      sp.sphere.material;
       rt_obj(material{});
    };
  };
@@ -367,11 +367,11 @@ Scenario{
    let mat = rt_obj(material{ambient{1.0;};});
  };
  When{
-   let sp = rt_op(material{sp;mat;});
+   let sp = rt_op(set_material{sp;mat;});
  };
  Then{
    equality_test{
-      sp.material;
+      sp.sphere.material;
       mat;
    };
  };
