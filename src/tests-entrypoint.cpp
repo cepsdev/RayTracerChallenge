@@ -393,6 +393,12 @@ template<> ceps::ast::node_t ast_rep<double>(std::string field_name, double valu
     return f;    
 }
 
+template<> ceps::ast::node_t ast_rep<double>( double value){
+    using namespace ceps::ast;
+    using namespace ceps::interpreter;
+    return mk_double_node(value,all_zero_unit());
+}
+
 template<> ceps::ast::node_t ast_rep<rt::ray_t>(rt::ray_t ray){
     using namespace ceps::ast;
     using namespace ceps::interpreter;
@@ -801,6 +807,76 @@ template<> ceps::ast::node_t ast_rep<rt::point_light>(rt::point_light pl){
  
 ///// rt::point_light <<<<<<
 
+///// rt::material_t >>>>>>
+
+template<> bool check<rt::material_t>(ceps::ast::Struct & s)
+{
+    using namespace ceps::ast;
+    return name(s) == "material";
+}
+
+template<> bool check<rt::material_t>(ceps::ast::node_t n)
+{
+    using namespace ceps::ast;
+    if (!is<Ast_node_kind::structdef>(n)) return false;
+    return check<rt::material_t>(*as_struct_ptr(n));
+}
+
+template<> rt::material_t fetch<rt::material_t>(ceps::ast::Struct& s)
+{
+    using namespace ceps::ast;
+    rt::material_t r{};
+    for (auto e : children(s)){
+     if (!is<Ast_node_kind::structdef>(e)) continue;
+     if (name(*as_struct_ptr(e)) == "color" && children(*as_struct_ptr(e)).size() ){
+        auto p{read_value<rt::color_t>(0,*as_struct_ptr(e))};
+        if (p)
+         r.color = *p;
+     }
+     else if (name(*as_struct_ptr(e)) == "ambient" && children(*as_struct_ptr(e)).size() ){
+        auto p{read_value<rt::precision_t>(0,*as_struct_ptr(e))};
+        if (p)
+         r.ambient = *p;
+     }
+     else if (name(*as_struct_ptr(e)) == "diffuse" && children(*as_struct_ptr(e)).size() ){
+        auto p{read_value<rt::precision_t>(0,*as_struct_ptr(e))};
+        if (p)
+         r.diffuse = *p;
+     }
+     else if (name(*as_struct_ptr(e)) == "specular" && children(*as_struct_ptr(e)).size() ){
+        auto p{read_value<rt::precision_t>(0,*as_struct_ptr(e))};
+        if (p)
+         r.specular = *p;
+     }
+     else if (name(*as_struct_ptr(e)) == "shininess" && children(*as_struct_ptr(e)).size() ){
+        auto p{read_value<rt::precision_t>(0,*as_struct_ptr(e))};
+        if (p)
+         r.shininess = *p;
+     }
+    }
+    return r;
+}
+template<> rt::material_t fetch<rt::material_t>(ceps::ast::node_t n)
+{
+    using namespace ceps::ast;
+    return fetch<rt::material_t>(*as_struct_ptr(n));
+}
+
+template<> ceps::ast::node_t ast_rep<rt::material_t>(rt::material_t m){
+    using namespace ceps::ast;
+    using namespace ceps::interpreter;
+    
+    auto result = mk_struct("material");
+    add_field(result,"color", ast_rep<rt::color_t>(m.color));
+    add_field(result,"ambient", ast_rep<rt::precision_t>(m.ambient));
+    add_field(result,"diffuse", ast_rep<rt::precision_t>(m.diffuse));
+    add_field(result,"specular", ast_rep<rt::precision_t>(m.specular));
+    add_field(result,"shininess", ast_rep<rt::precision_t>(m.shininess));
+    return result;
+}
+ 
+///// rt::material_t <<<<<<
+
 namespace rt2ceps{
     using namespace ceps::ast;
     using namespace ceps::interpreter;
@@ -882,6 +958,10 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t
         auto pl{read_value<rt::point_light>(ceps_struct)};
         if (pl)
             return ast_rep(*pl);
+    } else if (nm == "material"){
+        auto m{read_value<rt::material_t>(ceps_struct)};
+        if (m)
+            return ast_rep(*m);
     }
     
     auto it{n2f.find(nm)};

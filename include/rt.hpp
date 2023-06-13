@@ -252,16 +252,6 @@ namespace rt{
             }
     };
 
-    class Shape{
-        Serializer& serializer;
-        public:
-         Shape(Serializer& serializer):serializer{serializer},transformation{id_4_4}{}
-         virtual intersections intersect(ray_t) = 0;
-         virtual vector_t normal_at(point_t world_point) = 0;
-         Serializer& get_serializer() {return serializer;}
-         matrix_t transformation; 
-    };
-
     struct intersection{
         tuple_t::val_t t;
         Shape* obj;
@@ -276,6 +266,30 @@ namespace rt{
         std::vector<intersection>::iterator end() {return is.end();}
         std::vector<intersection>::const_iterator end() const {return is.end();}
         std::optional<intersection> hit() const;
+    };
+
+    struct point_light{
+        point_t position;
+        color_t intensity;
+    };
+
+    struct material_t{
+        color_t color{1.0,1.0,1.0};
+        precision_t ambient{0.1};
+        precision_t diffuse{0.9};
+        precision_t specular{0.9};
+        precision_t shininess{200.0};
+    };
+
+    class Shape{
+        Serializer& serializer;
+        public:
+         Shape(Serializer& serializer):serializer{serializer},transformation{id_4_4}{}
+         virtual intersections intersect(ray_t) = 0;
+         virtual vector_t normal_at(point_t world_point) = 0;
+         Serializer& get_serializer() {return serializer;}
+         matrix_t transformation;
+         material_t material{}; 
     };
 
     class UnknownShape : public Shape{
@@ -296,8 +310,6 @@ namespace rt{
 
     ray_t transform(ray_t, matrix_t);
     vector_t reflect(vector_t in, vector_t normal);
-    struct point_light{
-        point_t position;
-        color_t intensity;
-    };
+
+
 }

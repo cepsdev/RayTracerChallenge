@@ -35,31 +35,31 @@ Scenario{
      };
      Then{
         equality_test{
-            mat.color;
-            color{1.0;1.0;1.0;};
+            mat.content().color.content();
+            rt_obj(color{1.0;1.0;1.0;});
         };
     };
     And{
         equality_test{
-            mat.ambient;
+            mat.content().ambient;
             ambient{0.1;};
         };
     };
     And{
         equality_test{
-            mat.diffuse;
+            mat.content().diffuse;
             diffuse{0.9;};
         };
     };
     And{
         equality_test{
-            mat.specular;
+            mat.content().specular;
             specular{0.9;};
         };
     };
     And{
         equality_test{
-            mat.shininess;
+            mat.content().shininess;
             shininess{200.0;};
         };
     };
