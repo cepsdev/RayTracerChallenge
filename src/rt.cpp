@@ -273,5 +273,39 @@ namespace rt{
     vector_t reflect(vector_t in, vector_t normal){
         return in - 2 * dot(in, normal) * normal;
     }
+
+    color_t lighting(material_t material, point_light light, point_t point, vector_t eyev, vector_t normalv){
+
+        auto normalize = [](vector_t v) {  return 1.0/norm_2(v) * v; };
+        // combine the surface color with the light's color/intensity
+        auto effective_color{material.color * light.intensity};
+        // find the direction to the light source
+        auto lightv{normalize(light.position - point)};
+        // compute the ambient contribution
+        auto ambient{material.ambient * effective_color};
+        // light_dot_normal represents the cosine of the angle between the
+        // light vector and the normal vector. A negative number means the
+        // light is on the other side of the surface.
+        auto light_dot_normal{dot(lightv,normalv)};
+        color_t diffuse{};
+        color_t specular{};
+
+        if (light_dot_normal >= 0.0){
+            // compute the diffuse contribution
+            diffuse = light_dot_normal * material.diffuse * effective_color ;
+            // reflect_dot_eye represents the cosine of the amgle between the
+            // reflection vector and the eye vector. A negative number means the
+            // light reflects away from the eye.
+            auto reflectv{reflect(-1.0*lightv, normalv)};
+            auto reflect_dot_eye{dot(reflectv, eyev)};
+            if (reflect_dot_eye > 0.0){
+                // compute the specular contribution
+                auto factor {std::pow(reflect_dot_eye, material.shininess)};
+                specular = material.specular * factor * light.intensity;
+            }
+        }
+
+        return ambient + diffuse + specular;
+    }
 }
 

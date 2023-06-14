@@ -1331,6 +1331,16 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
          (*shape)->material = *m;
          return ast_rep(*shape);   
         }         
+    } else  if (name(ceps_struct) == "lighting"){    
+        auto material{read_value<rt::material_t>(0,ceps_struct)};
+        auto light{read_value<rt::point_light>(1,ceps_struct)};
+        auto point{read_value<rt::tuple_t>(2,ceps_struct)};
+        auto eyev{read_value<rt::tuple_t>(3,ceps_struct)};
+        auto normalv{read_value<rt::tuple_t>(4,ceps_struct)};
+        if (material && light && point && eyev && normalv){
+            auto r = lighting(*material, *light, *point, *eyev, *normalv);
+            return ast_rep(r);
+        }
     } 
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));

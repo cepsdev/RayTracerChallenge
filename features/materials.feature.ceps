@@ -13,6 +13,9 @@ val mat = undef;
 val intensity = undef;
 val position = undef;
 val light = undef;
+val eyev = undef;
+val normalv = undef;
+val result = undef;
 
 kind DocgenStringPrintNoEscape;
 DocgenStringPrintNoEscape docinfo_se;
@@ -63,7 +66,145 @@ Scenario{
             shininess{200.0;};
         };
     };
-
-
 };
+
+macro Background{
+ Given{let mat = rt_obj(material{});};
+ And{let position = rt_obj(point{0.0;0.0;0.0;});};  
+};
+
+
+Scenario{
+     title{label __chapter__6_XX title = "Lighting with the eye between the light and the surface";};
+     Background{};
+     Given{
+         let eyev = rt_obj(vector{0.0;0.0;-1.0;});
+     };
+    And{
+        let normalv = rt_obj(vector{0.0;0.0;-1.0;});
+    };
+    And{
+        let light = rt_obj(point_light{position{rt_obj(point{0.0;0.0;-10.0;});};intensity{rt_obj(color{1.0;1.0;1.0;});};}); 
+    };
+    When{
+        let result = rt_op(lighting{mat;light;position;eyev;normalv;});
+    };
+    Then{
+        rt_op( 
+            approx_equal{ 
+                rt_obj(color{1.9;1.9;1.9;}); 
+                result;
+            });
+    };
+};
+
+
+Scenario{
+     title{label __chapter__6_XX title = "Lighting with the eye between light and surface, eye offset 45°";};
+     Background{};
+     Given{
+         let eyev = rt_obj(vector{0.0;sqrt(2.0)/2.0;sqrt(2.0)/2.0;});
+     };
+    And{
+        let normalv = rt_obj(vector{0.0;0.0;-1.0;});
+    };
+    And{
+        let light = rt_obj(point_light{position{rt_obj(point{0.0;0.0;-10.0;});};intensity{rt_obj(color{1.0;1.0;1.0;});};}); 
+    };
+    When{
+        let result = rt_op(lighting{mat;light;position;eyev;normalv;});
+    };
+    Then{
+        rt_op( 
+            approx_equal{ 
+                rt_obj(color{1.0;1.0;1.0;}); 
+                result;
+            });
+    };
+};
+
+Scenario{
+     title{label __chapter__6_XX title = "Lighting with eye opposite surface, light offset 45°";};
+     Background{};
+     Given{
+         let eyev = rt_obj(vector{0.0;0.0;-1.0;});
+     };
+    And{
+        let normalv = rt_obj(vector{0.0;0.0;-1.0;});
+    };
+    And{
+        let light = rt_obj(point_light{position{rt_obj(point{0.0;10.0;-10.0;});};intensity{rt_obj(color{1.0;1.0;1.0;});};}); 
+    };
+    When{
+        let result = rt_op(lighting{mat;light;position;eyev;normalv;});
+    };
+    Then{
+        rt_op( 
+            approx_equal{ 
+                rt_obj(color{0.7364;0.7364;0.7364;}); 
+                result;
+            });
+    };
+};
+Scenario{
+     title{label __chapter__6_XX title = "Lighting with eye in the path of the reflection vector";};
+     Background{};
+     Given{
+         let eyev = rt_obj(vector{0.0;-sqrt(2.0)/2.0;-sqrt(2.0)/2.0;});
+     };
+    And{
+        let normalv = rt_obj(vector{0.0;0.0;-1.0;});
+    };
+    And{
+        let light = rt_obj(point_light{position{rt_obj(point{0.0;10.0;-10.0;});};intensity{rt_obj(color{1.0;1.0;1.0;});};}); 
+    };
+    When{
+        let result = rt_op(lighting{mat;light;position;eyev;normalv;});
+    };
+    Then{
+        rt_op( 
+            approx_equal{ 
+                rt_obj(color{1.6364;1.6364;1.6364;}); 
+                result;
+            });
+    };
+};
+
+
+Scenario{
+     title{label __chapter__6_XX title = "Lighting with the light behind the surface";};
+     Background{};
+     Given{
+         let eyev = rt_obj(vector{0.0;0.0;-1.0;});
+     };
+    And{
+        let normalv = rt_obj(vector{0.0;0.0;-1.0;});
+    };
+    And{
+        let light = rt_obj(point_light{position{rt_obj(point{0.0;0.0;10.0;});};intensity{rt_obj(color{1.0;1.0;1.0;});};}); 
+    };
+    When{
+        let result = rt_op(lighting{mat;light;position;eyev;normalv;});
+    };
+    Then{
+        rt_op( 
+            approx_equal{ 
+                rt_obj(color{0.1;0.1;0.1;}); 
+                result;
+            });
+    };
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
 
