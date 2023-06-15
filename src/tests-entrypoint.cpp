@@ -1402,14 +1402,15 @@ ceps::ast::node_t cepsplugin::renderch6(ceps::ast::node_callparameters_t params)
 
     SerializerNone sn;
     Sphere sphere{sn};
-    point_t eye{0.0,0.0,10.0};
-    point_light light{point_t{-10.0,10.0,-10.0},color_t{1.0,0.2, 1.0}};
+    sphere.material.color = {1.0,0.2, 1.0};
+    point_t eye{0.0,0.0,-5.0};
+    point_light light{point_t{-10.0,10.0,-10.0},color_t{1.0,1.0, 1.0}};
 
 
     int w = 200;
     int h = 200;
-    double box_w = 2.4;
-    double box_h = 2.4;
+    double box_w = 7.0;
+    double box_h = 7.0;
     double dw {box_w / w };
     double dh {box_h / h };
 
@@ -1417,14 +1418,22 @@ ceps::ast::node_t cepsplugin::renderch6(ceps::ast::node_callparameters_t params)
 
     for (auto i = 1; i <= w;++i){
      for (auto j = 1; j <= h;++j){
-        point_t p{ dw *i - box_w / 2.0 ,dh*j - box_h / 2.0,0.0};
-        ray_t r{eye, p - eye};
+        point_t p{ dw *i - box_w / 2.0 ,box_h / 2.0 - dh*j,10.0};
+        ray_t r{eye, norm_2((p - eye)) * (p - eye)};
         auto hit{sphere.intersect(r)};
         if (hit.hit()){
          auto rd = 1.0/norm_2(r.direction) * r.direction;
-         //auto c = 
-         hit.hit()->obj->material;
-         out.canvas.write_pixel(i-1,j-1,color_t{1.0,0.0,0.0});
+         auto pos = r.origin + hit.hit()->t* r.direction;
+         
+         auto color{lighting(
+            hit.hit()->obj->material,
+            light,
+            pos,
+            -1.0 * rd,
+            hit.hit()->obj->normal_at(pos)
+         )};
+      
+         out.canvas.write_pixel(i-1,j-1,color);
         }
      }
     }

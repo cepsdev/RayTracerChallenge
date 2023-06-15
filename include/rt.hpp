@@ -124,10 +124,10 @@ namespace rt{
         unsigned short width{};
         unsigned short height{};
         void write_pixel(unsigned short x, unsigned short y, color_t color){
-            data[y*width+x] = color;
+            data[y*width+x] = clamp(color);
         }
         void write_pixel( unsigned int pos, color_t color){
-            data[pos] = color;
+            data[pos] = clamp(color);
         }
         color_t pixel_at(short x, short y) const {return data[y*width+x];}
     };
