@@ -1,7 +1,7 @@
 
 #include "ceps_ast.hh"
 #include "rt.hpp"
-
+#include<algorithm>
 
 template<> struct smallness<double> { static constexpr double value = 0.0001;};
 
@@ -306,6 +306,21 @@ namespace rt{
         }
 
         return ambient + diffuse + specular;
+    }
+
+    void intersections::sort(){
+       std::sort(is.begin(), is.end());
+    }
+
+    intersections World::intersect(ray_t r){
+        intersections is;
+        for(auto obj : objects){
+            auto hit = obj->intersect(r).hit();
+            if (!hit) continue;
+            is.add(*hit);
+        }
+        is.sort();
+        return is;
     }
 }
 

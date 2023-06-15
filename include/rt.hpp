@@ -12,17 +12,19 @@
 #include <cmath>
 #include <vector>
 #include <tuple>
+#include <memory>
 #include "ceps_ast.hh"
 
 template<typename T> struct smallness;
 
 namespace rt{
+    using namespace std;
     using precision_t = double;
     using color_prec_t = double;
 
     bool small(precision_t v);
     
-    using tuple_base_t = std::tuple<precision_t,precision_t,precision_t,precision_t>;
+    using tuple_base_t = tuple<precision_t,precision_t,precision_t,precision_t>;
     struct tuple_t: public tuple_base_t{
         using val_t = precision_t;
         tuple_t() = default;
@@ -67,15 +69,15 @@ namespace rt{
         return v > 1.0 ? 1.0 : (v < 0.0 ? 0.0 : v); 
     }
 
-    struct color_t: private std::tuple<color_prec_t,color_prec_t,color_prec_t>{
+    struct color_t: private tuple<color_prec_t,color_prec_t,color_prec_t>{
         color_t() = default;
         color_t(color_prec_t r,color_prec_t g,color_prec_t b):tuple{r,g,b}{}
-        color_prec_t r() const { return std::get<0>(*this);}
-        color_prec_t g() const { return std::get<1>(*this);}
-        color_prec_t b() const { return std::get<2>(*this);}
-        color_prec_t& r()  { return std::get<0>(*this);}
-        color_prec_t& g() { return std::get<1>(*this);}
-        color_prec_t& b()  { return std::get<2>(*this);}
+        color_prec_t r() const { return get<0>(*this);}
+        color_prec_t g() const { return get<1>(*this);}
+        color_prec_t b() const { return get<2>(*this);}
+        color_prec_t& r()  { return get<0>(*this);}
+        color_prec_t& g() { return get<1>(*this);}
+        color_prec_t& b()  { return get<2>(*this);}
 
         friend color_t operator + (color_t , color_t );
         friend color_t operator - (color_t , color_t);
@@ -108,7 +110,7 @@ namespace rt{
     ceps::ast::node_struct_t mk_color(color_t);
 
     class canvas_t{
-        std::vector<color_t> data;
+        vector<color_t> data;
         public:
         canvas_t() = default;
         canvas_t(unsigned short width, unsigned short height):width{width}, height{height}{
@@ -144,10 +146,10 @@ namespace rt{
         ppm(canvas_t canvas, int clamp_high = clamp_high_default) : canvas{canvas}{
             for(auto& c: this->canvas) c = clamp(c);
         }
-        friend std::ostream& operator << (std::ostream& out, ppm const &);
+        friend ostream& operator << (ostream& out, ppm const &);
     };
 
-    std::ostream& operator << (std::ostream& out, ppm const & p);
+    ostream& operator << (ostream& out, ppm const & p);
 
     struct matrix_t{
             using prec_t = precision_t;
@@ -161,12 +163,12 @@ namespace rt{
             matrix_t() = default;
             matrix_t(unsigned int dim_y, unsigned int dim_x):
             dim_y{dim_y}, dim_x{dim_x} {data.resize(dim_y*dim_x);};
-            matrix_t(unsigned int dim_y, unsigned int dim_x, std::vector<prec_t> const & data):
+            matrix_t(unsigned int dim_y, unsigned int dim_x, vector<prec_t> const & data):
             dim_y{dim_y}, dim_x{dim_x}, data{data} {};
             matrix_t(matrix_t const & rhs): dim_y{rhs.dim_y}, dim_x{rhs.dim_x}, data{rhs.data} {}
 
-            using iterator = std::vector<prec_t>::iterator;
-            using const_iterator = std::vector<prec_t>::const_iterator;
+            using iterator = vector<prec_t>::iterator;
+            using const_iterator = vector<prec_t>::const_iterator;
             iterator begin(){return data.begin();}
             iterator end(){return data.end();}
             const_iterator begin() const {return data.begin();}
@@ -187,11 +189,11 @@ namespace rt{
     inline precision_t norm_2(matrix_t m){
         precision_t acc{};
         for(auto c : m) acc += c*c;
-        return std::sqrt(acc); 
+        return sqrt(acc); 
     }
     inline precision_t norm_max(matrix_t m){
         precision_t r{};
-        for(auto c : m) if (std::abs(c) > r) r = std::abs(c);
+        for(auto c : m) if (abs(c) > r) r = abs(c);
         return r; 
     }
     tuple_t operator * (matrix_t const & m, tuple_t t);
@@ -225,14 +227,14 @@ namespace rt{
     };
 
     struct intersect_result_t{
-        std::optional<std::tuple<tuple_t::val_t,tuple_t::val_t>> is{};
+        optional<tuple<tuple_t::val_t,tuple_t::val_t>> is{};
         intersect_result_t() = default;
         intersect_result_t(tuple_t::val_t v1,tuple_t::val_t v2): is{std::tuple<tuple_t::val_t,tuple_t::val_t>{ v1,v2} } {} 
         size_t size() {if (!is) return 0; return 2;}
         tuple_t::val_t operator [](size_t idx) {
             if (!is) return {};
-            if (idx == 0) return std::get<0>(*is);
-            else return std::get<1>(*is);
+            if (idx == 0) return get<0>(*is);
+            else return get<1>(*is);
         }
     };
     template<typename T> intersect_result_t intersect(T obj, ray_t);
@@ -257,6 +259,11 @@ namespace rt{
         Shape* obj;
     };
 
+    inline bool operator < (intersection lhs, intersection rhs) { return lhs.t < rhs.t;}
+    inline bool operator > (intersection lhs, intersection rhs) { return lhs.t > rhs.t;}
+    inline bool operator == (intersection lhs, intersection rhs) { return lhs.t == rhs.t;}
+    inline bool operator != (intersection lhs, intersection rhs) { return lhs.t != rhs.t;}
+
     struct intersections{
         std::vector<intersection> is;
         intersections() = default;
@@ -266,6 +273,7 @@ namespace rt{
         std::vector<intersection>::iterator end() {return is.end();}
         std::vector<intersection>::const_iterator end() const {return is.end();}
         std::optional<intersection> hit() const;
+        void sort();
     };
 
     struct point_light{
@@ -311,4 +319,11 @@ namespace rt{
     ray_t transform(ray_t, matrix_t);
     vector_t reflect(vector_t in, vector_t normal);
     color_t lighting(material_t material, point_light light, point_t point, vector_t eyev, vector_t normalv);
+
+    class World{
+        public:
+            vector<shared_ptr<Shape>> objects;
+            vector<point_light> lights;
+            intersections intersect(ray_t);
+    };
 }

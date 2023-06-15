@@ -1,0 +1,135 @@
+
+let skip_summary = 0;
+let summary_only_failures = 0;
+
+val p = undef;
+val r = undef;
+val orig = undef;
+val dir = undef;
+val sp = undef;
+val xs = undef;
+val trans = undef; 
+val normal = undef;
+val mat = undef;
+val w = undef;
+val a_light = undef;
+val s1 = undef;
+val s2 = undef;
+
+
+kind DocgenStringPrintNoEscape;
+DocgenStringPrintNoEscape docinfo_se;
+
+docinfo_se(
+
+"
+"
+
+);
+
+macro equality_test{
+   symbolic_equality(as_nodeset(arglist.at(0)),as_nodeset(arglist.at(1))).diff.equal.content();
+};
+
+
+Scenario{
+     title{label __chapter__7_world_1 title = "Creating a world";};
+     Given{
+         let w = rt_obj(world{});
+     };
+     Then{
+        w.world.size() && w.world.objects.size() == 0;
+     };
+     And{
+         w.world.light_sources.size() == 0;
+     };
+};
+
+Scenario{
+     title{label __chapter__7_world_2 title = "The default world";};
+     Given{
+         let a_light = rt_obj(point_light{rt_obj(point{-10.0;10.0;-10.0;});rt_obj(color{1.0;1.0;1.0;}); });
+     };
+     And{
+         let s1 = rt_obj(sphere{
+                           rt_obj(material{
+                              rt_obj(color{0.8;1.0;0.6;});
+                              diffuse{0.7;};
+                              specular{0.2;};
+                           });
+                         }
+                        );
+     };
+     And{
+         let s2 = rt_obj(
+            sphere{
+               transform{
+                  rt_obj(scaling{0.5;0.5;0.5;});
+               };
+            }
+         );
+     };
+     When{
+         let w = rt_obj(default_world{});
+     };
+     Then{
+        equality_test{
+         w.light;
+         a_light;
+        };
+     };
+     And{
+        equality_test{
+         w.objects;
+         objects{
+            s1;
+            s2;
+         };
+        };
+     };
+};
+
+Scenario{
+     title{label __chapter__7_world_3 title = "Intersect a world with a ray";};
+     Given{
+         let w = rt_obj(default_world{});
+     };
+     And{
+      let r = rt_obj(ray{rt_obj(point{0.0;0.0;-5.0;});rt_obj(vector{0.0;0.0;1.0;});});
+     };
+     When{
+        let xs = rt_op(intersect_world{w;r;});
+     };
+     Then{
+         xs.content.size() == 4;
+     };
+     And{
+         xs.content.at(0);
+         intersection{
+             t{4.0;};
+             object{ANY;};
+         };
+     };
+     And{
+         xs.content.at(1);
+         intersection{
+             t{4.5;};
+             object{ANY;};
+         };
+     };
+     And{
+         xs.content.at(2);
+         intersection{
+             t{5.5;};
+             object{ANY;};
+         };
+     };
+     And{
+         xs.content.at(3);
+         intersection{
+             t{6.0;};
+             object{ANY;};
+         };
+     };
+};
+
