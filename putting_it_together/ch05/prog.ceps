@@ -8,4 +8,5 @@ docinfo_se(
 
 );
 
-rt_render(scene{});
+rt_render_putting_it_together_ch5();
+rt_render_putting_it_together_ch6();

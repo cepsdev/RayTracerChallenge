@@ -32,7 +32,8 @@ namespace cepsplugin{
     ceps::ast::node_t plugin_entrypoint(ceps::ast::node_callparameters_t params);
     ceps::ast::node_t obj_type_as_str(ceps::ast::node_callparameters_t params);
     ceps::ast::node_t op(ceps::ast::node_callparameters_t params);
-    ceps::ast::node_t render(ceps::ast::node_callparameters_t params);
+    ceps::ast::node_t renderch5(ceps::ast::node_callparameters_t params);
+    ceps::ast::node_t renderch6(ceps::ast::node_callparameters_t params);
 }
 
 //////////////////////////////////////////////
@@ -1363,7 +1364,7 @@ ceps::ast::node_t cepsplugin::obj_type_as_str(ceps::ast::node_callparameters_t p
     return mk_string(name(ceps_struct));
 }
 
-ceps::ast::node_t cepsplugin::render(ceps::ast::node_callparameters_t params){
+ceps::ast::node_t cepsplugin::renderch5(ceps::ast::node_callparameters_t params){
     using namespace std;
     using namespace rt;
 
@@ -1395,13 +1396,53 @@ ceps::ast::node_t cepsplugin::render(ceps::ast::node_callparameters_t params){
     return nullptr;
 }
 
+ceps::ast::node_t cepsplugin::renderch6(ceps::ast::node_callparameters_t params){
+    using namespace std;
+    using namespace rt;
+
+    SerializerNone sn;
+    Sphere sphere{sn};
+    point_t eye{0.0,0.0,10.0};
+    point_light light{point_t{-10.0,10.0,-10.0},color_t{1.0,0.2, 1.0}};
+
+
+    int w = 200;
+    int h = 200;
+    double box_w = 2.4;
+    double box_h = 2.4;
+    double dw {box_w / w };
+    double dh {box_h / h };
+
+    ppm out{canvas_t{w,h}};
+
+    for (auto i = 1; i <= w;++i){
+     for (auto j = 1; j <= h;++j){
+        point_t p{ dw *i - box_w / 2.0 ,dh*j - box_h / 2.0,0.0};
+        ray_t r{eye, p - eye};
+        auto hit{sphere.intersect(r)};
+        if (hit.hit()){
+         auto rd = 1.0/norm_2(r.direction) * r.direction;
+         //auto c = 
+         hit.hit()->obj->material;
+         out.canvas.write_pixel(i-1,j-1,color_t{1.0,0.0,0.0});
+        }
+     }
+    }
+
+    ofstream f{"pics/ch6.ppm"};
+    f << out;
+
+    return nullptr;
+}
 extern "C" void init_plugin(IUserdefined_function_registry* smc)
 {
   cepsplugin::plugin_master = smc->get_plugin_interface();
   cepsplugin::plugin_master->reg_ceps_phase0plugin("rt_obj", cepsplugin::plugin_entrypoint);
   cepsplugin::plugin_master->reg_ceps_phase0plugin("rt_obj_type_as_str", cepsplugin::obj_type_as_str);
   cepsplugin::plugin_master->reg_ceps_phase0plugin("rt_op", cepsplugin::op);
-  cepsplugin::plugin_master->reg_ceps_phase0plugin("rt_render", cepsplugin::render);
+  cepsplugin::plugin_master->reg_ceps_phase0plugin("rt_render_putting_it_together_ch5", cepsplugin::renderch5);
+  cepsplugin::plugin_master->reg_ceps_phase0plugin("rt_render_putting_it_together_ch6", cepsplugin::renderch6);
+
 }					
 				
                 
