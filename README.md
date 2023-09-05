@@ -33,4 +33,6 @@ Test driven implementation of a basic ray tracer as described in the book 'The R
 - ./rebuild.sh 
 ### Run the Gherkin Tests
 - ./run-test features/NAME_OF_FEATURE_TEST
-
+### Some Pictures
+#### Chapter 6
+![phomng](./pics/ch6.jpg)
