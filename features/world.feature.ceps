@@ -63,10 +63,10 @@ Scenario{
          let w = rt_obj(world{});
      };
      Then{
-        w.world.size() && w.world.objects.content().size() == 0;
+        w.world.objects.size() && w.world.objects.content().size() == 0;
      };
      And{
-         w.world.light_sources.size() == 0;
+         w.world.lights.size() && w.world.lights.content().size() == 0;
      };
 };
 
@@ -113,6 +113,8 @@ Scenario{
         };
      };
 };
+
+"!!!!!!!!!!!!! >>>>>>>"; w;
 
 Scenario{
      title{label __chapter__7_world_3 title = "Intersect a world with a ray";};
