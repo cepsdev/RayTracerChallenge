@@ -1,3 +1,26 @@
+/*
+MIT License
+
+Copyright (c) 2023,2024 Tomas Prerovsky
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
 
 #include <stdlib.h>
 #include <iostream>
@@ -266,9 +289,8 @@ ceps::ast::node_t add_field(ceps::ast::Struct* s,std::string name, ceps::ast::no
     using namespace ceps::ast;
     auto f = mk_struct(name);
     children(*s).push_back(f);
-    children(*f).push_back(n);
-
-    return n;
+    if (n) children(*f).push_back(n);
+    return f;
 }
 
 template<typename T> T fetch(ceps::ast::Struct&);
@@ -881,6 +903,66 @@ template<> ceps::ast::node_t ast_rep<rt::material_t>(rt::material_t m){
  
 ///// rt::material_t <<<<<<
 
+
+
+
+
+///// rt::World >>>>>>
+
+template<> bool check<rt::World>(ceps::ast::Struct & s)
+{
+    using namespace ceps::ast;
+    return name(s) == "world";
+}
+
+template<> bool check<rt::World>(ceps::ast::node_t n)
+{
+    using namespace ceps::ast;
+    if (!is<Ast_node_kind::structdef>(n)) return false;
+    return check<rt::World>(*as_struct_ptr(n));
+}
+
+template<> rt::World fetch<rt::World>(ceps::ast::Struct& s)
+{
+    using namespace ceps::ast;
+    rt::World w{};
+    for (auto e : children(s)){
+     if (!is<Ast_node_kind::structdef>(e)) continue;
+     if (name(*as_struct_ptr(e)) == "objects" && children(*as_struct_ptr(e)).size() ){
+        for (auto ee : children(*as_struct_ptr(e))){
+            if (!is<Ast_node_kind::structdef>(ee)) continue;
+            auto shape{read_value<rt::Shape*>(*as_struct_ptr(ee))};
+        }
+     } else if (name(*as_struct_ptr(e)) == "lights" && children(*as_struct_ptr(e)).size() ){
+        for (auto ee : children(*as_struct_ptr(e))){
+            if (!is<Ast_node_kind::structdef>(ee)) continue;
+            auto light{read_value<rt::point_light>( *as_struct_ptr(ee) )};
+        }
+     }
+    }
+    return w;
+}
+template<> rt::World fetch<rt::World>(ceps::ast::node_t n)
+{
+    using namespace ceps::ast;
+    return fetch<rt::World>(*as_struct_ptr(n));
+}
+
+template<> ceps::ast::node_t ast_rep<rt::World>(rt::World m){
+    using namespace ceps::ast;
+    using namespace ceps::interpreter;
+    
+    auto result = mk_struct("world");
+    auto objs{add_field(result,"objects", nullptr)};
+    auto lights{add_field(result,"lights", nullptr)};
+
+    return result;
+}
+ 
+///// rt::World <<<<<<
+
+
+
 namespace rt2ceps{
     using namespace ceps::ast;
     using namespace ceps::interpreter;
@@ -966,7 +1048,12 @@ ceps::ast::node_t cepsplugin::plugin_entrypoint(ceps::ast::node_callparameters_t
         auto m{read_value<rt::material_t>(ceps_struct)};
         if (m)
             return ast_rep(*m);
+    } else if (nm == "world"){
+        auto m{read_value<rt::World>(ceps_struct)};
+        if (m)
+            return ast_rep(*m);
     }
+    
     
     auto it{n2f.find(nm)};
     if (it != n2f.end() ) return it->second(ceps_struct);
