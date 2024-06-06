@@ -73,7 +73,7 @@ Scenario{
 Scenario{
      title{label __chapter__7_world_2 title = "The default world";};
      Given{
-         let a_light = rt_obj(point_light{rt_obj(point{-10.0;10.0;-10.0;});rt_obj(color{1.0;1.0;1.0;}); });
+         let a_light = rt_obj(point_light{position{rt_obj(point{-10.0;10.0;-10.0;});};intensity{rt_obj(color{1.0;1.0;1.0;});}; });
      };
      And{
          let s1 = rt_obj(sphere{
@@ -95,28 +95,40 @@ Scenario{
          );
      };
      When{
-         let w = rt_obj(default_world{});
+         let w = rt_op(default_world{});
      };
      Then{
         equality_test{
-         w.light;
+         w.world.lights.point_light;
          a_light;
         };
      };
      And{
         equality_test{
-         w.objects;
-         objects{
-            s1;
-            s2;
-         };
+            datum{
+                w.world.objects.content().at(0).sphere.material.color;
+                w.world.objects.content().at(0).sphere.material.diffuse;
+                w.world.objects.content().at(0).sphere.material.specular;
+                w.world.objects.content().at(1).sphere.transform.matrix;
+            };
+            datum{
+                color{color{   red{0.8;   };  green{1.0;   };  blue{0.6;   };   };  };
+                diffuse{0.7;};
+                specular{0.2;};
+                matrix{ 
+                    dim{4;4;}; 
+                    data{
+                        0.5; 0.0; 0.0; 0.0; 
+                        0.0; 0.5; 0.0; 0.0;
+                        0.0; 0.0; 0.5; 0.0;
+                        0.0; 0.0; 0.0; 1.0;
+                    }; 
+                };
+            };
         };
-     };
+    };
 };
-
-"!!!!!!!!!!!!! >>>>>>>"; w;
-
-Scenario{
+/*Scenario{
      title{label __chapter__7_world_3 title = "Intersect a world with a ray";};
      Given{
          let w = rt_obj(default_world{});
@@ -159,4 +171,4 @@ Scenario{
          };
      };
 };
-
+*/

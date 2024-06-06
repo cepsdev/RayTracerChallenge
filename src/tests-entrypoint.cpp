@@ -907,60 +907,7 @@ template<> ceps::ast::node_t ast_rep<rt::material_t>(rt::material_t m){
 
 
 
-///// rt::World >>>>>>
-
-template<> bool check<rt::World>(ceps::ast::Struct & s)
-{
-    using namespace ceps::ast;
-    return name(s) == "world";
-}
-
-template<> bool check<rt::World>(ceps::ast::node_t n)
-{
-    using namespace ceps::ast;
-    if (!is<Ast_node_kind::structdef>(n)) return false;
-    return check<rt::World>(*as_struct_ptr(n));
-}
-
-template<> rt::World fetch<rt::World>(ceps::ast::Struct& s)
-{
-    using namespace ceps::ast;
-    rt::World w{};
-    for (auto e : children(s)){
-     if (!is<Ast_node_kind::structdef>(e)) continue;
-     if (name(*as_struct_ptr(e)) == "objects" && children(*as_struct_ptr(e)).size() ){
-        for (auto ee : children(*as_struct_ptr(e))){
-            if (!is<Ast_node_kind::structdef>(ee)) continue;
-            auto shape{read_value<rt::Shape*>(*as_struct_ptr(ee))};
-        }
-     } else if (name(*as_struct_ptr(e)) == "lights" && children(*as_struct_ptr(e)).size() ){
-        for (auto ee : children(*as_struct_ptr(e))){
-            if (!is<Ast_node_kind::structdef>(ee)) continue;
-            auto light{read_value<rt::point_light>( *as_struct_ptr(ee) )};
-        }
-     }
-    }
-    return w;
-}
-template<> rt::World fetch<rt::World>(ceps::ast::node_t n)
-{
-    using namespace ceps::ast;
-    return fetch<rt::World>(*as_struct_ptr(n));
-}
-
-template<> ceps::ast::node_t ast_rep<rt::World>(rt::World m){
-    using namespace ceps::ast;
-    using namespace ceps::interpreter;
-    
-    auto result = mk_struct("world");
-    auto objs{add_field(result,"objects", nullptr)};
-    auto lights{add_field(result,"lights", nullptr)};
-
-    return result;
-}
- 
-///// rt::World <<<<<<
-
+rt::World default_world();
 
 
 namespace rt2ceps{
@@ -1429,6 +1376,8 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
             auto r = lighting(*material, *light, *point, *eyev, *normalv);
             return ast_rep(r);
         }
+    } else  if (name(ceps_struct) == "default_world"){    
+        return ast_rep(default_world());
     } 
     auto result = mk_struct("error");
     children(*result).push_back(mk_int_node(0));

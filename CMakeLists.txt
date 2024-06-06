@@ -28,6 +28,7 @@ link_directories($ENV{CEPSCORE}/bin)
 
 add_library(rt SHARED 
            src/tests-entrypoint.cpp
+           src/test-interface-world.cpp
            src/rt.cpp 
            )
 
