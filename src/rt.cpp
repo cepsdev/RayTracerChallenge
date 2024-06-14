@@ -354,7 +354,7 @@ namespace rt{
             .object = shared_ptr<Shape>{inter.obj},
             .point = point,
             .eyev = -1.0 * ray.direction,
-            .normal_v = normal_v,
+            .normal_v = (inside?-1.0:1.0) * normal_v,
             .inside = inside
         };
     }
