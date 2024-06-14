@@ -56,7 +56,6 @@ macro equality_test{
    symbolic_equality(as_nodeset(arglist.at(0)),as_nodeset(arglist.at(1))).diff.equal.content();
 };
 
-
 Scenario{
      title{label __chapter__7_world_1 title = "Creating a world";};
      Given{
@@ -128,47 +127,31 @@ Scenario{
         };
     };
 };
-/*Scenario{
-     title{label __chapter__7_world_3 title = "Intersect a world with a ray";};
+
+Scenario{
+     title{label __chapter__7_world_3 title = "Intersect a world with a ray (pp. 92,93)";};
      Given{
-         let w = rt_obj(default_world{});
+        let w = rt_op(default_world{});
      };
      And{
-      let r = rt_obj(ray{rt_obj(point{0.0;0.0;-5.0;});rt_obj(vector{0.0;0.0;1.0;});});
+        let r = rt_obj(ray{rt_obj(point{0.0;0.0;-5.0;});rt_obj(vector{0.0;0.0;1.0;});});
      };
      When{
         let xs = rt_op(intersect_world{w;r;});
      };
      Then{
-         xs.content.size() == 4;
+         xs.intersections.intersection.t.content().size() == 4;
      };
      And{
-         xs.content.at(0);
-         intersection{
-             t{4.0;};
-             object{ANY;};
-         };
+        xs.intersections.intersection.t.content().at(0) == 4.0;
      };
      And{
-         xs.content.at(1);
-         intersection{
-             t{4.5;};
-             object{ANY;};
-         };
+        xs.intersections.intersection.t.content().at(1) == 4.5;     
      };
      And{
-         xs.content.at(2);
-         intersection{
-             t{5.5;};
-             object{ANY;};
-         };
+        xs.intersections.intersection.t.content().at(2) == 5.5;     
      };
      And{
-         xs.content.at(3);
-         intersection{
-             t{6.0;};
-             object{ANY;};
-         };
+        xs.intersections.intersection.t.content().at(3) == 6.0;
      };
 };
-*/

@@ -59,6 +59,14 @@ namespace cepsplugin{
     ceps::ast::node_t renderch6(ceps::ast::node_callparameters_t params);
 }
 
+namespace test_interface{
+    using namespace ceps::ast;
+    using namespace std;
+    using op_t = node_t (*) (node_struct_t);
+    map<string, op_t> ops;
+    void register_ops(rt::World);
+}
+
 //////////////////////////////////////////////
 ///////////////////Test Interface lives here//
 //////////////////////////////////////////////
@@ -1014,10 +1022,16 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
     using namespace std;
     using namespace ceps::ast;
     using namespace ceps::interpreter;
+    using namespace test_interface;
 
     auto data = get_first_child(params);   
     if (!is<Ast_node_kind::structdef>(data)) return nullptr;
     auto& ceps_struct = *as_struct_ptr(data);
+    
+    auto op_it{ops.find(name(ceps_struct))};
+    if (op_it != ops.end())
+     return op_it->second(&ceps_struct);
+
     if (name(ceps_struct) == "plus"){
         if (children(ceps_struct).size() > 1){
             if (
@@ -1479,15 +1493,17 @@ ceps::ast::node_t cepsplugin::renderch6(ceps::ast::node_callparameters_t params)
 
     return nullptr;
 }
+
 extern "C" void init_plugin(IUserdefined_function_registry* smc)
 {
+  test_interface::register_ops(rt::World{});
+
   cepsplugin::plugin_master = smc->get_plugin_interface();
   cepsplugin::plugin_master->reg_ceps_phase0plugin("rt_obj", cepsplugin::plugin_entrypoint);
   cepsplugin::plugin_master->reg_ceps_phase0plugin("rt_obj_type_as_str", cepsplugin::obj_type_as_str);
   cepsplugin::plugin_master->reg_ceps_phase0plugin("rt_op", cepsplugin::op);
   cepsplugin::plugin_master->reg_ceps_phase0plugin("rt_render_putting_it_together_ch5", cepsplugin::renderch5);
   cepsplugin::plugin_master->reg_ceps_phase0plugin("rt_render_putting_it_together_ch6", cepsplugin::renderch6);
-
 }					
 				
                 

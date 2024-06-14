@@ -25,25 +25,26 @@ SOFTWARE.
 
 #include "rt.hpp"
 #include "test-interface-base.hpp"
+using namespace ceps::ast;
+using namespace ceps::interpreter;
+using namespace std;
+
 
 ///// rt::World >>>>>>
 
 template<> bool check<rt::World>(ceps::ast::Struct & s)
 {
-    using namespace ceps::ast;
     return name(s) == "world";
 }
 
 template<> bool check<rt::World>(ceps::ast::node_t n)
 {
-    using namespace ceps::ast;
     if (!is<Ast_node_kind::structdef>(n)) return false;
     return check<rt::World>(*as_struct_ptr(n));
 }
 
 template<> rt::World fetch<rt::World>(ceps::ast::Struct& s)
 {
-    using namespace ceps::ast;
     rt::World w{};
     for (auto e : children(s)){
      if (!is<Ast_node_kind::structdef>(e)) continue;
@@ -51,26 +52,25 @@ template<> rt::World fetch<rt::World>(ceps::ast::Struct& s)
         for (auto ee : children(*as_struct_ptr(e))){
             if (!is<Ast_node_kind::structdef>(ee)) continue;
             auto shape{read_value<rt::Shape*>(*as_struct_ptr(ee))};
+            if(shape) w.objects.push_back(shared_ptr<rt::Shape>{*shape});
         }
      } else if (name(*as_struct_ptr(e)) == "lights" && children(*as_struct_ptr(e)).size() ){
         for (auto ee : children(*as_struct_ptr(e))){
             if (!is<Ast_node_kind::structdef>(ee)) continue;
             auto light{read_value<rt::point_light>( *as_struct_ptr(ee) )};
+            if (light) w.lights.push_back(*light);
         }
      }
     }
     return w;
 }
+
 template<> rt::World fetch<rt::World>(ceps::ast::node_t n)
 {
-    using namespace ceps::ast;
     return fetch<rt::World>(*as_struct_ptr(n));
 }
 
 template<> ceps::ast::node_t ast_rep<rt::World>(rt::World w){
-    using namespace ceps::ast;
-    using namespace ceps::interpreter;
-    
     auto result = mk_struct("world");
     auto objs{add_field(result,"objects", nullptr)};
     auto lights{add_field(result,"lights", nullptr)};
@@ -80,7 +80,6 @@ template<> ceps::ast::node_t ast_rep<rt::World>(rt::World w){
     for(auto o : w.objects){
         children(as_struct_ref(objs)).push_back(ast_rep<>(o.get()));
     }
-
     return result;
 }
  
@@ -95,10 +94,38 @@ rt::World default_world() {
         .specular = 0.2
     };
     world.objects.push_back(sphere1);
-    std::shared_ptr<rt::Sphere> sphere2 {create<rt::Sphere>()};
+    shared_ptr<rt::Sphere> sphere2 {create<rt::Sphere>()};
     sphere2->transformation = rt::scaling(0.5,0.5,0.5);
     world.objects.push_back(sphere2);
     return world; 
 }
+
+namespace test_interface{
+    using namespace ceps::ast;
+    using namespace std;
+    using op_t = node_t (*) (node_struct_t);
+    extern map<string, op_t> ops;   
+    void register_ops(rt::World);
+} 
+
+static node_t handle_intersect_world(Struct* op){
+    auto world{read_value<rt::World>(0,*op)};
+    auto ray{read_value<rt::ray_t>(1,*op)};
+    node_t result {};
+    if (!world || !ray){
+        result = mk_struct("error");
+    }
+    rt::intersections intersections_result{};
+    for (auto shape : world->objects){
+        auto r{shape->intersect(*ray)};
+        intersections_result.append(r);
+    }
+    intersections_result.sort();
+    return ast_rep(intersections_result);
+}
+
+void test_interface::register_ops(rt::World){
+    ops["intersect_world"] = handle_intersect_world;            
+}    
 
 ///// rt::World <<<<<<

@@ -60,3 +60,4 @@ template<typename T> ceps::ast::node_t ast_rep (T entity);
 template<typename T> ceps::ast::node_t ast_rep (std::string field_name, T value);
 template<typename T> ceps::ast::node_t ast_rep (T* entity);
 template<typename T> T* create();
+

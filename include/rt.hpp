@@ -298,6 +298,9 @@ namespace rt{
         std::vector<intersection>::iterator end() {return is.end();}
         std::vector<intersection>::const_iterator end() const {return is.end();}
         std::optional<intersection> hit() const;
+        void append(intersections const & other_is){
+            is.insert(is.end(),other_is.begin(),other_is.end());
+        }
         void sort();
     };
 
