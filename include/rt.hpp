@@ -244,7 +244,7 @@ namespace rt{
     };
     ray_t operator * (matrix_t const & m, ray_t r);
 
-    tuple_t postion(ray_t, tuple_t::val_t);
+    tuple_t position(ray_t, tuple_t::val_t);
     struct sphere_t{
         tuple_t::val_t radius{1.0};
         tuple_t center{0.0,0.0,0.0,1.0 };
@@ -354,4 +354,14 @@ namespace rt{
             vector<point_light> lights;
             intersections intersect(ray_t);
     };
+
+    struct prepare_computations_t{
+        decltype(intersection::t) t;
+        shared_ptr<Shape> object;
+        point_t point;
+        vector_t eyev;
+        vector_t normal_v;               
+    };
+
+    prepare_computations_t prepare_computations(intersection inter, ray_t ray);
 }

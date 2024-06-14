@@ -246,7 +246,7 @@ namespace rt{
          }};
     }
 
-    tuple_t postion(ray_t ray, tuple_t::val_t t){
+    tuple_t position(ray_t ray, tuple_t::val_t t){
         return ray.origin + t * ray.direction;
     }
 
@@ -345,5 +345,15 @@ namespace rt{
         is.sort();
         return is;
     }
+    prepare_computations_t prepare_computations(intersection inter, ray_t ray){
+        return prepare_computations_t{
+            .t = inter.t,
+            .object = shared_ptr<Shape>{inter.obj},
+            .point = position(ray,inter.t),
+            .eyev = -1.0 * ray.direction,
+            .normal_v = inter.obj->normal_at(position(ray,inter.t))
+        };
+    }
+
 }
 

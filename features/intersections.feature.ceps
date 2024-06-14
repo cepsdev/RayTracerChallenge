@@ -36,7 +36,8 @@ val i1 = undef;
 val i2 = undef;
 val i3 = undef;
 val i4 = undef;
-
+val shape = undef;
+val comps = undef;
 
 kind DocgenStringPrintNoEscape;
 DocgenStringPrintNoEscape docinfo_se;
@@ -183,7 +184,6 @@ Scenario{
      };
 };
 
-
 Scenario{
      title{label __chapter__5_scenario_tracking_intersections_7 title = "The hit is always the lowest nonnegative intersection";};
      Given{
@@ -203,6 +203,38 @@ Scenario{
      };
 };
 
+Scenario{
+     title{label __chapter__7_p_99 title = "Precomputing the state of an intersection";};
+     Given{
+         let r = rt_obj(ray{rt_obj(point{0.0;0.0;-5.0;});rt_obj(vector{0.0;0.0;1.0;});});
+     };
+     And{
+         let shape = rt_obj(sphere{});
+     };
+     And{
+         let i = rt_obj(intersection{4.0;shape;});
+     };
+     When{
+         let comps = rt_op(prepare_computations{i;r;});
+     };
+     Then{
+      equality_test{
+         datum{
+            comps.computations.object;
+            comps.computations.point;
+            comps.computations.eyev;
+            comps.computations.normalv;
+
+         };
+         datum{
+            i.intersection.object;
+            rt_obj(point{0.0;0.0;-1.0;});
+            rt_obj(vector{0.0;0.0;-1.0;});
+            rt_obj(vector{0.0;0.0;-1.0;});
+         };
+      };
+     };
+};
 
 
 

@@ -65,6 +65,7 @@ namespace test_interface{
     using op_t = node_t (*) (node_struct_t);
     map<string, op_t> ops;
     void register_ops(rt::World);
+    void register_ops(rt::prepare_computations_t);
 }
 
 //////////////////////////////////////////////
@@ -651,6 +652,11 @@ template<> rt::intersection fetch<rt::intersection>(ceps::ast::Struct& s)
     }
     if (!t || !shape) return {};
     return {*t,*shape};
+}
+
+template<> rt::intersection fetch<rt::intersection>(ceps::ast::node_t n)
+{
+    return fetch<rt::intersection>(*as_struct_ptr(n));
 }
 
 template<> ceps::ast::node_t ast_rep<rt::intersection>(rt::intersection inter){
@@ -1335,7 +1341,7 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
         auto ray{read_value<rt::ray_t>(0,ceps_struct)};
         auto t{read_value<double>(1,ceps_struct)};
         if(ray && t) 
-         return ast_rep(rt::postion(*ray,*t));
+         return ast_rep(rt::position(*ray,*t));
     } else  if (name(ceps_struct) == "intersect"){
         auto shape{read_value<rt::Shape*>(0,ceps_struct)};
         auto ray{read_value<rt::ray_t>(1,ceps_struct)};
@@ -1497,6 +1503,7 @@ ceps::ast::node_t cepsplugin::renderch6(ceps::ast::node_callparameters_t params)
 extern "C" void init_plugin(IUserdefined_function_registry* smc)
 {
   test_interface::register_ops(rt::World{});
+  test_interface::register_ops(rt::prepare_computations_t{});
 
   cepsplugin::plugin_master = smc->get_plugin_interface();
   cepsplugin::plugin_master->reg_ceps_phase0plugin("rt_obj", cepsplugin::plugin_entrypoint);
