@@ -32,7 +32,7 @@ using namespace std;
 
 template<> bool check<rt::prepare_computations_t>(ceps::ast::Struct & s)
 {
-    return name(s) == "prep_comps";
+    return name(s) == "prepare_computations";
 }
 
 template<> bool check<rt::prepare_computations_t>(ceps::ast::node_t n)
@@ -63,15 +63,19 @@ template<> rt::prepare_computations_t fetch<rt::prepare_computations_t>(ceps::as
 }
 
 template<> ceps::ast::node_t ast_rep<rt::prepare_computations_t>(rt::prepare_computations_t pc){
-    auto result = mk_struct("prep_comps");
-    /*auto objs{add_field(result,"objects", nullptr)};
-    auto lights{add_field(result,"lights", nullptr)};
-    for(auto pl : w.lights){
-        children(as_struct_ref(lights)).push_back(ast_rep<>(pl));
-    }
-    for(auto o : w.objects){
-        children(as_struct_ref(objs)).push_back(ast_rep<>(o.get()));
-    }*/
+    //Assumptions w.r.t. pc
+    ((pc.t));
+    ((pc.object));
+    ((pc.point));
+    ((pc.eyev));
+    ((pc.normal_v));
+    auto result = mk_struct("prepare_computations");
+    add_field(result,"t", ast_rep(pc.t));
+    add_field(result,"object", ast_rep(pc.object.get()));
+    add_field(result,"point", ast_rep<rt::tuple_t>(pc.point));
+    add_field(result,"eyev", ast_rep<rt::tuple_t>(pc.eyev));
+    add_field(result,"normal_v", ast_rep<rt::tuple_t>(pc.normal_v));
+
     return result;
 }
  

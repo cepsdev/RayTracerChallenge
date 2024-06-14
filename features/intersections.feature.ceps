@@ -220,10 +220,10 @@ Scenario{
      Then{
       equality_test{
          datum{
-            comps.computations.object;
-            comps.computations.point;
-            comps.computations.eyev;
-            comps.computations.normalv;
+            comps.prepare_computations.object;
+            comps.prepare_computations.point.tuple;
+            comps.prepare_computations.eyev.tuple;
+            comps.prepare_computations.normal_v.tuple;
 
          };
          datum{
@@ -235,32 +235,3 @@ Scenario{
       };
      };
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
