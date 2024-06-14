@@ -69,12 +69,15 @@ template<> ceps::ast::node_t ast_rep<rt::prepare_computations_t>(rt::prepare_com
     ((pc.point));
     ((pc.eyev));
     ((pc.normal_v));
+    ((pc.inside));
+
     auto result = mk_struct("prepare_computations");
     add_field(result,"t", ast_rep(pc.t));
     add_field(result,"object", ast_rep(pc.object.get()));
     add_field(result,"point", ast_rep<rt::tuple_t>(pc.point));
     add_field(result,"eyev", ast_rep<rt::tuple_t>(pc.eyev));
     add_field(result,"normal_v", ast_rep<rt::tuple_t>(pc.normal_v));
+    add_field(result,"inside", ast_rep<bool>(pc.inside));
 
     return result;
 }

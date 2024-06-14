@@ -346,14 +346,17 @@ namespace rt{
         return is;
     }
     prepare_computations_t prepare_computations(intersection inter, ray_t ray){
+        auto point{position(ray,inter.t)};
+        auto normal_v{inter.obj->normal_at(point)};
+        auto inside{ 0.0 > dot(normal_v, -1.0 * ray.direction)};
         return prepare_computations_t{
             .t = inter.t,
             .object = shared_ptr<Shape>{inter.obj},
-            .point = position(ray,inter.t),
+            .point = point,
             .eyev = -1.0 * ray.direction,
-            .normal_v = inter.obj->normal_at(position(ray,inter.t))
+            .normal_v = normal_v,
+            .inside = inside
         };
     }
-
 }
 

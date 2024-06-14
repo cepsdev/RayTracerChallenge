@@ -369,6 +369,11 @@ template<> bool check<double>(ceps::ast::node_t n){ return n && ceps::ast::is<ce
 
 template<> double fetch<double>(ceps::ast::node_t n){ return value(as_double_ref(n));}
 
+
+template<> bool check<bool>(ceps::ast::node_t n){ return n && ceps::ast::is<ceps::ast::Ast_node_kind::int_literal>(n); }
+
+template<> bool fetch<bool>(ceps::ast::node_t n){ return value(as_int_ref(n));}
+
 template<> bool check<rt::tuple_t>(ceps::ast::node_t n){ 
     using namespace ceps::ast; 
  return n && 
@@ -433,6 +438,21 @@ template<> ceps::ast::node_t ast_rep<double>( double value){
     using namespace ceps::interpreter;
     return mk_double_node(value,all_zero_unit());
 }
+
+template<> ceps::ast::node_t ast_rep<bool>(std::string field_name, bool value){
+    using namespace ceps::ast;
+    using namespace ceps::interpreter;
+    auto f = mk_struct(field_name);
+    children(*f).push_back(mk_int_node(value?1:0));
+    return f;    
+}
+
+template<> ceps::ast::node_t ast_rep<bool>( bool value){
+    using namespace ceps::ast;
+    using namespace ceps::interpreter;
+    return mk_int_node(value?1:0);
+}
+
 
 template<> ceps::ast::node_t ast_rep<rt::ray_t>(rt::ray_t ray){
     using namespace ceps::ast;

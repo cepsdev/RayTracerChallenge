@@ -360,7 +360,8 @@ namespace rt{
         shared_ptr<Shape> object;
         point_t point;
         vector_t eyev;
-        vector_t normal_v;               
+        vector_t normal_v;
+        bool inside{};               
     };
 
     prepare_computations_t prepare_computations(intersection inter, ray_t ray);

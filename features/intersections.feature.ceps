@@ -204,7 +204,7 @@ Scenario{
 };
 
 Scenario{
-     title{label __chapter__7_p_99 title = "Precomputing the state of an intersection";};
+     title{label __chapter__7_p_93 title = "Precomputing the state of an intersection";};
      Given{
          let r = rt_obj(ray{rt_obj(point{0.0;0.0;-5.0;});rt_obj(vector{0.0;0.0;1.0;});});
      };
@@ -234,4 +234,27 @@ Scenario{
          };
       };
      };
+};
+
+
+Scenario{
+   title{label __chapter__7_p_94 title = "The hit, when an intersection occurs on the outside";};
+   Given{
+      let r = rt_obj(ray{rt_obj(point{0.0;0.0;-5.0;}); rt_obj(vector{0.0;0.0;1.0;});});
+   };
+   And{
+      let shape = rt_obj(sphere{});
+   };
+   And{
+      let i = rt_obj(intersection{4.0; shape; });
+   };
+   When{
+      let comps = rt_op(prepare_computations{i;r;});
+   };
+   Then{
+      equality_test{
+         comps.prepare_computations.inside;
+         inside{0;};
+      };
+   };
 };
