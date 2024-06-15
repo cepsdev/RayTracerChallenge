@@ -260,7 +260,7 @@ Scenario{
            && rt_op(approx_equal{c.color.blue.content().at(0);0.2855;});
    };
 };
-
+"!!!!!!!!!!!!!!!!\n";c;
 Scenario{
    title{label __chapter__7_world_8 title = "The color with an intersection behind the ray.";};
    Given{
@@ -304,7 +304,15 @@ Scenario{
       let r = rt_obj(ray{rt_obj(point{0.0;0.0;0.75;});rt_obj(vector{0.0;0.0;-1.0;});});
    };
    When{
-      let c = rt_op(color_at{w;r;});
+      let c = rt_op(color_at{identity(
+         world{
+            objects{
+               outer;
+               inner;
+            };
+            w.world.lights;
+         }
+      );r;});
    };
    Then{
            rt_op(approx_equal{c.color.red.content().at(0);inner.sphere.material.color.color.red.content();})

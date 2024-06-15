@@ -47,7 +47,7 @@ template<> rt::prepare_computations_t fetch<rt::prepare_computations_t>(ceps::as
      if (!is<Ast_node_kind::structdef>(e)) continue;
      if (name(*as_struct_ptr(e)) == "object" && children(*as_struct_ptr(e)).size() ){
         auto shape{read_value<rt::Shape*>(*as_struct_ptr(children(*as_struct_ptr(e))[0]))};
-        if (shape) pc.object = std::shared_ptr<rt::Shape>{*shape};
+        if (shape) pc.object = *shape;
      } else if (name(*as_struct_ptr(e)) == "t" && children(*as_struct_ptr(e)).size() ){
         auto t{fetch<rt::tuple_t::val_t>(children(*as_struct_ptr(e))[0])};
         if (t) pc.t = t;
@@ -85,7 +85,7 @@ template<> ceps::ast::node_t ast_rep<rt::prepare_computations_t>(rt::prepare_com
 
     auto result = mk_struct("prepare_computations");
     add_field(result,"t", ast_rep(pc.t));
-    if (pc.object) add_field(result,"object", ast_rep(pc.object.get()));
+    if (pc.object) add_field(result,"object", ast_rep(pc.object));
     else add_field(result,"object", mk_undef());
     add_field(result,"point", ast_rep<rt::tuple_t>(pc.point));
     add_field(result,"eyev", ast_rep<rt::tuple_t>(pc.eyev));

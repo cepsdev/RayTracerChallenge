@@ -133,9 +133,18 @@ static node_t handle_shade_hit(Struct* op){
     return ast_rep(c);
 }
 
+static node_t handle_color_at(Struct* op){
+    auto world{read_value<rt::World>(0,*op)};    
+    auto r{read_value<rt::ray_t>(1,*op)};
+    if (!r || !world) return mk_struct("error");
+    auto c{color_at(*world,*r)};    
+    return ast_rep(c);
+}
+
 void test_interface::register_ops(rt::World){
     ops["intersect_world"] = handle_intersect_world;
     ops["shade_hit"] = handle_shade_hit;            
+    ops["color_at"] = handle_color_at;            
 }    
 
 ///// rt::World <<<<<<

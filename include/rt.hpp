@@ -357,7 +357,7 @@ namespace rt{
 
     struct prepare_computations_t{
         decltype(intersection::t) t;
-        shared_ptr<Shape> object;
+        Shape* object;
         point_t point;
         vector_t eyev;
         vector_t normal_v;
@@ -366,4 +366,5 @@ namespace rt{
 
     prepare_computations_t prepare_computations(intersection inter, ray_t ray);
     color_t shade_hit(World,prepare_computations_t);
+    color_t color_at(World,ray_t);
 }

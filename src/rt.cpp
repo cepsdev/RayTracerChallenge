@@ -351,7 +351,7 @@ namespace rt{
         auto inside{ 0.0 > dot(normal_v, -1.0 * ray.direction)};
         return prepare_computations_t{
             .t = inter.t,
-            .object = shared_ptr<Shape>{inter.obj},
+            .object = inter.obj,
             .point = point,
             .eyev = -1.0 * ray.direction,
             .normal_v = (inside?-1.0:1.0) * normal_v,
@@ -364,6 +364,13 @@ namespace rt{
             if (comps.object) c = c + lighting(comps.object->material,light,comps.point,comps.eyev,comps.normal_v);
         }
         return c;
+    }
+    color_t color_at(World w,ray_t r){
+        auto is{w.intersect(r)};
+        auto hit{is.hit()};
+        if (!hit) return {};
+        auto comps{prepare_computations(*hit,r)};
+        return shade_hit(w,comps);
     }
 }
 
