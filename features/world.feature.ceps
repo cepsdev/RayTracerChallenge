@@ -186,4 +186,41 @@ Scenario{
      };
 };
 
-c;
+Scenario{
+     title{label __chapter__7_world_5 title = "Shading an intersection from the inside";};
+     Given{
+        let w = rt_op(default_world{});
+     };
+     And{
+       let w = identity(
+               world{
+                  w.world.objects;
+                  lights{ 
+                     point_light{position{rt_obj(point{0.0;0.25;0.0;});}; intensity{color{red{1.0;}; green{1.0;}; blue{1.0;}; };};};
+                  };
+               });
+     };
+     And{
+        let r = rt_obj(ray{rt_obj(point{0.0;0.0;0.0;});rt_obj(vector{0.0;0.0;1.0;});});
+     };
+     And{
+        let shape = w.world.objects.content().at(1);
+     };
+     And{
+      let i = rt_obj(intersection{0.5; shape;});
+     };
+     When{
+      let comps = rt_op(prepare_computations{i; r;});
+     };
+     And{
+      let c = rt_op(shade_hit{w;comps;});
+     };
+     Then{
+           rt_op(approx_equal{c.color.red.content().at(0);0.90498;})
+           && rt_op(approx_equal{c.color.green.content().at(0);0.90498;})
+           && rt_op(approx_equal{c.color.blue.content().at(0);0.90498;});
+     };
+};
+
+
+

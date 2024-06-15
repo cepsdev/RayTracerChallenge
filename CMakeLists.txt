@@ -30,6 +30,7 @@ add_library(rt SHARED
            src/tests-entrypoint.cpp
            src/test-interface-world.cpp
            src/test-interface-prepare_computations.cpp
+           src/test-interface-shape.cpp
            src/rt.cpp 
            )
 

@@ -516,62 +516,6 @@ template<> ceps::ast::node_t ast_rep<rt::intersect_result_t>(rt::intersect_resul
     return result;
 }
 
-///// rt::Shape >>>>>>
-
-template<> ceps::ast::node_t ast_rep<rt::Shape>(rt::Shape* shape){
-    using namespace ceps::ast;
-    using namespace ceps::interpreter;
-    auto& ser{shape->get_serializer()};
-    return ser.serialize(*shape);
-}
-
-template<> ceps::ast::node_t ast_rep<rt::Shape*>(std::string field_name, rt::Shape* shape){
-    using namespace ceps::ast;
-    using namespace ceps::interpreter;
-    auto f = mk_struct(field_name);
-    children(*f).push_back(ast_rep<rt::Shape>(shape));
-    return f;    
-}
-
-template<> bool check<rt::Shape*>(ceps::ast::Struct& s);
-template<> bool check<rt::Shape*>(ceps::ast::node_t  n){
-    using namespace ceps::ast;
-    if (!is<Ast_node_kind::structdef>(n)) return false;
-    return check<rt::Shape*>(*as_struct_ptr(n));
-    return true;
-}
-
-
-template<> bool check<rt::Shape*>(ceps::ast::Struct& s){
-    using namespace ceps::ast;
-    if (name(s) != "sphere") return false;
-    return true;
-}
-
-template<> rt::Shape* fetch<rt::Shape*>(ceps::ast::Struct& s)
-{
-    using namespace ceps::ast;
-
-    rt::Shape* result{};
-    if (name(s) == "sphere"){ 
-     result = create<rt::Sphere>();
-     if (children(s).size() == 0) return result;
-     if (is<Ast_node_kind::structdef>(children(s)[0])){
-        auto m {read_value<rt::matrix_t>( *as_struct_ptr(children(*as_struct_ptr(children(s)[0]))[0])  )};
-        if (m) result->transformation = *m;
-     }
-      
-    }    
-
-    return result;
-}
-
-template<> rt::Shape* fetch<rt::Shape*>(ceps::ast::node_t  n)
-{
-    return fetch<rt::Shape*>(*ceps::ast::as_struct_ptr(n));
-}
-
-///// rt::Shape <<<<<<
 
 ///// rt::matrix_t >>>>>>
 
