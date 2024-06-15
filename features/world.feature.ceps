@@ -43,6 +43,8 @@ val s2 = undef;
 val shape = undef;
 val i = undef;
 val comps = undef;
+val outer = undef;
+val inner = undef;
 
 kind DocgenStringPrintNoEscape;
 DocgenStringPrintNoEscape docinfo_se;
@@ -223,4 +225,90 @@ Scenario{
 };
 
 
+Scenario{
+   title{label __chapter__7_world_6 title = "The color when a ray misses.";};
+   Given{
+     let w = rt_op(default_world{}); 
+   };
+   And{
+      let r = rt_obj(ray{rt_obj(point{0.0;0.0;-5.0;});rt_obj(vector{0.0;1.0;0.0;});});
+   };
+   When{
+      let c = rt_op(color_at{w;r;});
+   };
+   Then{
+           rt_op(approx_equal{c.color.red.content().at(0);0.0;})
+           && rt_op(approx_equal{c.color.green.content().at(0);0.0;})
+           && rt_op(approx_equal{c.color.blue.content().at(0);0.0;});
+   };
+};
 
+Scenario{
+   title{label __chapter__7_world_7 title = "The color when a ray hits.";};
+   Given{
+     let w = rt_op(default_world{}); 
+   };
+   And{
+      let r = rt_obj(ray{rt_obj(point{0.0;0.0;-5.0;});rt_obj(vector{0.0;0.0;1.0;});});
+   };
+   When{
+      let c = rt_op(color_at{w;r;});
+   };
+   Then{
+           rt_op(approx_equal{c.color.red.content().at(0);0.38066;})
+           && rt_op(approx_equal{c.color.green.content().at(0);0.47583;})
+           && rt_op(approx_equal{c.color.blue.content().at(0);0.2855;});
+   };
+};
+
+Scenario{
+   title{label __chapter__7_world_8 title = "The color with an intersection behind the ray.";};
+   Given{
+     let w = rt_op(default_world{}); 
+   };
+   And{
+      let outer = w.world.objects.content().at(0);
+   };
+   And{
+      let outer = identity(
+         sphere{
+            outer.sphere.transform;
+            material{
+               outer.sphere.material.color;
+               ambient{1.0;};
+               outer.sphere.material.diffuse;
+               outer.sphere.material.specular;
+               outer.sphere.material.shininess;
+            };
+         }
+      );
+   };
+   And{
+      let inner = w.world.objects.content().at(1);
+   };
+   And{
+      let inner = identity(
+         sphere{
+            inner.sphere.transform;
+            material{
+               inner.sphere.material.color;
+               ambient{1.0;};
+               inner.sphere.material.diffuse;
+               inner.sphere.material.specular;
+               inner.sphere.material.shininess;
+            };
+         }
+      );
+   };
+   And{
+      let r = rt_obj(ray{rt_obj(point{0.0;0.0;0.75;});rt_obj(vector{0.0;0.0;-1.0;});});
+   };
+   When{
+      let c = rt_op(color_at{w;r;});
+   };
+   Then{
+           rt_op(approx_equal{c.color.red.content().at(0);inner.sphere.material.color.color.red.content();})
+           && rt_op(approx_equal{c.color.green.content().at(0);inner.sphere.material.color.color.green.content();})
+           && rt_op(approx_equal{c.color.blue.content().at(0);inner.sphere.material.color.color.blue.content();});
+   };
+};
