@@ -126,21 +126,11 @@ static node_t handle_intersect_world(Struct* op){
 
 static node_t handle_shade_hit(Struct* op){
     
-    //auto world{read_value<rt::World>(0,*op)};
-        
-    auto ray{read_value<rt::ray_t>(1,*op)};
-    return nullptr;
-    /*node_t result {};
-    if (!world || !ray){
-        result = mk_struct("error");
-    }
-    rt::intersections intersections_result{};
-    for (auto shape : world->objects){
-        auto r{shape->intersect(*ray)};
-        intersections_result.append(r);
-    }
-    intersections_result.sort();
-    return ast_rep(intersections_result);*/
+    auto world{read_value<rt::World>(0,*op)};    
+    auto comps{read_value<rt::prepare_computations_t>(1,*op)};
+    if (!comps || !world) return mk_struct("error");
+    
+    return ast_rep(*comps);
 }
 
 void test_interface::register_ops(rt::World){
