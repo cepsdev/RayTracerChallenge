@@ -124,8 +124,28 @@ static node_t handle_intersect_world(Struct* op){
     return ast_rep(intersections_result);
 }
 
+static node_t handle_shade_hit(Struct* op){
+    
+    //auto world{read_value<rt::World>(0,*op)};
+        
+    auto ray{read_value<rt::ray_t>(1,*op)};
+    return nullptr;
+    /*node_t result {};
+    if (!world || !ray){
+        result = mk_struct("error");
+    }
+    rt::intersections intersections_result{};
+    for (auto shape : world->objects){
+        auto r{shape->intersect(*ray)};
+        intersections_result.append(r);
+    }
+    intersections_result.sort();
+    return ast_rep(intersections_result);*/
+}
+
 void test_interface::register_ops(rt::World){
-    ops["intersect_world"] = handle_intersect_world;            
+    ops["intersect_world"] = handle_intersect_world;
+    ops["shade_hit"] = handle_shade_hit;            
 }    
 
 ///// rt::World <<<<<<

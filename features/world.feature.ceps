@@ -40,7 +40,9 @@ val w = undef;
 val a_light = undef;
 val s1 = undef;
 val s2 = undef;
-
+val shape = undef;
+val i = undef;
+val comps = undef;
 
 kind DocgenStringPrintNoEscape;
 DocgenStringPrintNoEscape docinfo_se;
@@ -155,3 +157,30 @@ Scenario{
         xs.intersections.intersection.t.content().at(3) == 6.0;
      };
 };
+
+
+Scenario{
+     title{label __chapter__7_world_4 title = "Shading an intersection";};
+     Given{
+        let w = rt_op(default_world{});
+     };
+     And{
+        let r = rt_obj(ray{rt_obj(point{0.0;0.0;-5.0;});rt_obj(vector{0.0;0.0;1.0;});});
+     };
+     And{
+        let shape = w.world.objects.content().at(0);
+     };
+     And{
+      let i = rt_obj(intersection{0.5; shape;});
+     };
+     When{
+      let comps = rt_op(prepare_computations{i; r;});
+     };
+     And{
+      let c = rt_op(shade_hit{w;comps;});
+     };
+     Then{
+           rt_op(approx_equal{c.content().at(0);0.90498;});
+     };
+};
+c;

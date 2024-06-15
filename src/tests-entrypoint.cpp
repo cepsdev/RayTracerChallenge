@@ -39,7 +39,6 @@ SOFTWARE.
 #include <map>
 #include <algorithm>
 #include <future>
-#include <netinet/sctp.h> 
 #include <cmath>
 #include <vector>
 #include <tuple>
@@ -382,11 +381,20 @@ template<> bool check<rt::tuple_t>(ceps::ast::node_t n){
 
 template<> bool check<rt::ray_t>(ceps::ast::node_t n){ 
  using namespace ceps::ast; 
- return n && 
+  //std::cerr << *children(*as_struct_ptr(children(*as_struct_ptr(n))[0]))[0]<< '\n';
+  return n && 
   is<Ast_node_kind::structdef>(n) && 
   children(*as_struct_ptr(n)).size() > 1 &&
   is<Ast_node_kind::structdef>(children(*as_struct_ptr(n))[0]) &&
-  is<Ast_node_kind::structdef>(children(*as_struct_ptr(n))[1]) ; }
+  is<Ast_node_kind::structdef>(children(*as_struct_ptr(n))[1]) 
+  &&  children(*as_struct_ptr(children(*as_struct_ptr(n))[0])).size()
+  &&  children(*as_struct_ptr(children(*as_struct_ptr(n))[1])).size()
+  &&  is<Ast_node_kind::structdef>(children(*as_struct_ptr(children(*as_struct_ptr(n))[0]))[0])
+  &&  is<Ast_node_kind::structdef>(children(*as_struct_ptr(children(*as_struct_ptr(n))[1]))[0])
+  &&  children(*as_struct_ptr(children(*as_struct_ptr(children(*as_struct_ptr(n))[0]))[0])).size() > 3
+  &&  children(*as_struct_ptr(children(*as_struct_ptr(children(*as_struct_ptr(n))[1]))[0])).size() > 3
+  ;
+}
 
 template<> bool check<rt::sphere_t>(ceps::ast::node_t n){ 
  using namespace ceps::ast; 
@@ -422,7 +430,10 @@ template<> rt::ray_t fetch<rt::ray_t>(ceps::ast::node_t n){
     using namespace std;
     auto& v {children(*as_struct_ptr(n))};
 
-    return { fetch<tuple_t>(children(*as_struct_ptr(v[0]))[0]), fetch<tuple_t>(children(*as_struct_ptr(v[1]))[0])};
+    return { 
+        fetch<tuple_t>(children(*as_struct_ptr(v[0]))[0]), 
+        fetch<tuple_t>(children(*as_struct_ptr(v[1]))[0])
+    };
 }
 
 template<> ceps::ast::node_t ast_rep<double>(std::string field_name, double value){
