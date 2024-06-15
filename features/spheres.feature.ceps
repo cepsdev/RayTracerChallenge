@@ -389,7 +389,7 @@ Scenario{
  };
  And{
    let mat = rt_obj(material{ambient{1.0;};});
- };cd 
+ };
  When{
    let sp = rt_op(set_material{sp;mat;});
  };

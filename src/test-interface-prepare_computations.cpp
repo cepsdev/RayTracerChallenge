@@ -29,7 +29,6 @@ using namespace ceps::ast;
 using namespace ceps::interpreter;
 using namespace std;
 
-
 template<> bool check<rt::prepare_computations_t>(ceps::ast::Struct & s)
 {
     return name(s) == "prepare_computations";
@@ -52,6 +51,18 @@ template<> rt::prepare_computations_t fetch<rt::prepare_computations_t>(ceps::as
      } else if (name(*as_struct_ptr(e)) == "t" && children(*as_struct_ptr(e)).size() ){
         auto t{fetch<rt::tuple_t::val_t>(children(*as_struct_ptr(e))[0])};
         if (t) pc.t = t;
+     } else if (name(*as_struct_ptr(e)) == "point" && children(*as_struct_ptr(e)).size() ){
+        auto p{fetch<rt::tuple_t>(children(*as_struct_ptr(e))[0])};
+        pc.point = p;
+     } else if (name(*as_struct_ptr(e)) == "eyev" && children(*as_struct_ptr(e)).size() ){
+        auto v{fetch<rt::tuple_t>(children(*as_struct_ptr(e))[0])};
+        pc.eyev = v;
+     } else if (name(*as_struct_ptr(e)) == "normal_v" && children(*as_struct_ptr(e)).size() ){
+        auto v{fetch<rt::tuple_t>(children(*as_struct_ptr(e))[0])};
+        pc.normal_v = v;
+     } else if (name(*as_struct_ptr(e)) == "inside" && children(*as_struct_ptr(e)).size() ){
+        auto b{fetch<bool>(children(*as_struct_ptr(e))[0])};
+        pc.inside = b;
      } 
  
     }//for

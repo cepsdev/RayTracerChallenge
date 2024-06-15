@@ -171,7 +171,7 @@ Scenario{
         let shape = w.world.objects.content().at(0);
      };
      And{
-      let i = rt_obj(intersection{0.5; shape;});
+      let i = rt_obj(intersection{4.0; shape;});
      };
      When{
       let comps = rt_op(prepare_computations{i; r;});
@@ -180,8 +180,10 @@ Scenario{
       let c = rt_op(shade_hit{w;comps;});
      };
      Then{
-           rt_op(approx_equal{c.content().at(0);0.90498;});
+           rt_op(approx_equal{c.color.red.content().at(0);0.38066;})
+           && rt_op(approx_equal{c.color.green.content().at(0);0.47583;})
+           && rt_op(approx_equal{c.color.blue.content().at(0);0.2855;});
      };
 };
-c;
 
+c;

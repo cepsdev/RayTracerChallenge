@@ -358,5 +358,12 @@ namespace rt{
             .inside = inside
         };
     }
+    color_t shade_hit(World w,prepare_computations_t comps){
+        color_t c{};
+        for(auto light: w.lights){
+            if (comps.object) c = c + lighting(comps.object->material,light,comps.point,comps.eyev,comps.normal_v);
+        }
+        return c;
+    }
 }
 

@@ -129,8 +129,12 @@ static node_t handle_shade_hit(Struct* op){
     auto world{read_value<rt::World>(0,*op)};    
     auto comps{read_value<rt::prepare_computations_t>(1,*op)};
     if (!comps || !world) return mk_struct("error");
-    
-    return ast_rep(*comps);
+    std::cerr << *ast_rep(*world) << '\n';
+    std::cerr << "\n\n";
+    std::cerr << *ast_rep(*comps) << '\n';
+
+    auto c{shade_hit(*world,*comps)};    
+    return ast_rep(c);
 }
 
 void test_interface::register_ops(rt::World){
