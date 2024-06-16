@@ -1,7 +1,7 @@
 /*
 MIT License
 
-Copyright (c) 2023,2024 Tomas Prerovsky
+Copyright (c) 2024 Tomas Prerovsky
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,43 +22,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+let skip_summary = 0;
+val hsize = undef;
+val vsize = undef;
+val field_of_view = undef;
+val c = undef;
 
-kind DocgenStringPrintNoEscape;
-DocgenStringPrintNoEscape docinfo_se;
-val a = "";
-val b = a;
-val v = b;
-val v1 = b;
-val v2 = b;
-val c = 0;
-val c1 = 0;
-val c2 = 0;
-val c3 = 0;
-val red_color = 0;
-val col = 0;
-val canvas = 0;
-val ppm = 0;
-val canvas_rows = 0;
-val canvas_cols = 0;
-val skip_summary = 0;
-val summary_only_failures = 1;
-val mat = 0;
-val mat1 = 0;
-val mat2 = 0;
-val mat3 = 0;
-val tup = 0;
-val PI = 3.14159265359;
 
-kind DocgenStringPrintNoEscape;
-DocgenStringPrintNoEscape docinfo_se;
-
-docinfo_se(
-
-"
-"
-
-);
-
-macro equality_test{
-   symbolic_equality(as_nodeset(arglist.at(0)),as_nodeset(arglist.at(1))).diff.equal.content();
+Scenario{
+     title{label __chapter__7_scenario_12 title = "Constructing a camera";};
+     Given{
+         let hsize = 160;
+     };
+     And{
+         let vsize = 120;
+     };
+     And{
+         let field_of_view = PI/2.0;
+     };
+     Whenn{
+        let c = rt_op(camera{hsize{hsize;};vsize{vsize;};field_of_view{field_of_view;};});
+     };
+     Then {
+        equality_test{
+            c;
+            camera{
+                hsize{hsize;};
+                vsize{vsize;};
+                field_of_view{field_of_view;};
+                transform{matrix{dim{4;4;};data{ 1.0; 0.0; 0.0; 0.0; 0.0; 1.0; 0.0; 0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;}; };};
+            };
+        };
+     };
 };

@@ -66,6 +66,7 @@ namespace test_interface{
     void register_ops(rt::World);
     void register_ops(rt::prepare_computations_t);
     void register_ops(rt::matrix_t);
+    void register_ops(rt::camera_t);
 }
 
 //////////////////////////////////////////////
@@ -1481,6 +1482,7 @@ extern "C" void init_plugin(IUserdefined_function_registry* smc)
   test_interface::register_ops(rt::World{});
   test_interface::register_ops(rt::prepare_computations_t{});
   test_interface::register_ops(rt::matrix_t{});
+  test_interface::register_ops(rt::camera_t{});
   
 
   cepsplugin::plugin_master = smc->get_plugin_interface();
