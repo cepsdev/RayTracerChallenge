@@ -65,6 +65,7 @@ namespace test_interface{
     map<string, op_t> ops;
     void register_ops(rt::World);
     void register_ops(rt::prepare_computations_t);
+    void register_ops(rt::matrix_t);
 }
 
 //////////////////////////////////////////////
@@ -1479,6 +1480,8 @@ extern "C" void init_plugin(IUserdefined_function_registry* smc)
 {
   test_interface::register_ops(rt::World{});
   test_interface::register_ops(rt::prepare_computations_t{});
+  test_interface::register_ops(rt::matrix_t{});
+  
 
   cepsplugin::plugin_master = smc->get_plugin_interface();
   cepsplugin::plugin_master->reg_ceps_phase0plugin("rt_obj", cepsplugin::plugin_entrypoint);

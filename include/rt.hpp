@@ -367,4 +367,5 @@ namespace rt{
     prepare_computations_t prepare_computations(intersection inter, ray_t ray);
     color_t shade_hit(World,prepare_computations_t);
     color_t color_at(World,ray_t);
+    matrix_t view_transformation(point_t, point_t, vector_t);
 }

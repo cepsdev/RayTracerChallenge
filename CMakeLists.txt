@@ -31,6 +31,7 @@ add_library(rt SHARED
            src/test-interface-world.cpp
            src/test-interface-prepare_computations.cpp
            src/test-interface-shape.cpp
+           src/test-interface-transformation.cpp
            src/rt.cpp 
            )
 

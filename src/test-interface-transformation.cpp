@@ -23,41 +23,31 @@ SOFTWARE.
 */
 
 
-kind DocgenStringPrintNoEscape;
-DocgenStringPrintNoEscape docinfo_se;
-val a = "";
-val b = a;
-val v = b;
-val v1 = b;
-val v2 = b;
-val c = 0;
-val c1 = 0;
-val c2 = 0;
-val c3 = 0;
-val red_color = 0;
-val col = 0;
-val canvas = 0;
-val ppm = 0;
-val canvas_rows = 0;
-val canvas_cols = 0;
-val skip_summary = 0;
-val summary_only_failures = 1;
-val mat = 0;
-val mat1 = 0;
-val mat2 = 0;
-val mat3 = 0;
-val tup = 0;
+#include "rt.hpp"
+#include "test-interface-base.hpp"
+using namespace ceps::ast;
+using namespace ceps::interpreter;
+using namespace std;
 
-kind DocgenStringPrintNoEscape;
-DocgenStringPrintNoEscape docinfo_se;
+namespace test_interface{
+    using namespace ceps::ast;
+    using namespace std;
+    using op_t = node_t (*) (node_struct_t);
+    extern map<string, op_t> ops;
+    void register_ops(rt::matrix_t);
+}
 
-docinfo_se(
 
-"
-"
+static node_t handle_view_transform(Struct* op){
+    auto from{read_value<rt::tuple_t>(0,*op)};    
+    auto to{read_value<rt::tuple_t>(1,*op)};
+    auto up{read_value<rt::tuple_t>(2,*op)};
+    if (!from || !to || !up) return mk_struct("error");
+    return ast_rep(rt::view_transformation(*from, *to, *up));
+}
 
-);
+void test_interface::register_ops(rt::matrix_t){
+    ops["view_transform"] = handle_view_transform;
+}    
 
-macro equality_test{
-   symbolic_equality(as_nodeset(arglist.at(0)),as_nodeset(arglist.at(1))).diff.equal.content();
-};
+///// rt::World <<<<<<

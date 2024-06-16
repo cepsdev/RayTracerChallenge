@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-
 let skip_summary = 0;
 let summary_only_failures = 0;
 val transform = undef;
@@ -39,8 +38,11 @@ val A = undef;
 val B = undef;
 val C = undef;
 val T = undef;
-
-
+val t = undef;
+val from = undef;
+val to = undef;
+val up = undef;
+val m = undef;
 
 Scenario{
      title{label __chapter__4_scenario_1 title = "Multiplying by a translation matrix";};
@@ -478,8 +480,6 @@ Scenario{
        };
 
 };
-
-
 Scenario{
      title{label __chapter__4_scenario_18 title = "Chained transformations must be applied in reverse order";};
        Given{
@@ -500,5 +500,117 @@ Scenario{
             rt_obj(point{15.0;0.0;7.0;});
             rt_op(multiply{T;p;});
         });
+       };
+};
+
+Scenario{     
+      title{label __chapter__7_scenario_8 title = "The transformation matrix for the default orientation.";};
+       Given{
+        let from = rt_obj(point{0.0;0.0;0.0;});
+       };
+       And{
+        let to = rt_obj(point{0.0;0.0;-1.0;});
+       };
+       And{
+        let up = rt_obj(vector{0.0;1.0;0.0;});
+       };
+       When{let t = rt_op(view_transform{from;to;up;});};
+       Then{
+        equality_test{
+            matrix{
+            dim{4;4;};
+            data{
+                1.0; 0.0; 0.0; 0.0; 
+                0.0; 1.0;0.0;0.0;
+                0.0;0.0;1.0;0.0;
+                0.0;0.0;0.0;1.0;
+            };
+            };
+            t;
+        };
+       };
+};
+
+Scenario{     
+      title{label __chapter__7_scenario_9 title = "A view transformation matrix looking in positive z direction.";};
+       Given{
+        let from = rt_obj(point{0.0;0.0;0.0;});
+       };
+       And{
+        let to = rt_obj(point{0.0;0.0;1.0;});
+       };
+       And{
+        let up = rt_obj(vector{0.0;1.0;0.0;});
+       };
+       When{let t = rt_op(view_transform{from;to;up;});};
+       Then{
+        equality_test{
+            rt_obj(scaling{-1.0;1.0;-1.0;});
+            t;
+        };
+       };
+};
+
+Scenario{     
+      title{label __chapter__7_scenario_10 title = "The view transformation moves the world.";};
+       Given{
+        let from = rt_obj(point{0.0;0.0;8.0;});
+       };
+       And{
+        let to = rt_obj(point{0.0;0.0;0.0;});
+       };
+       And{
+        let up = rt_obj(vector{0.0;1.0;0.0;});
+       };
+       When{let t = rt_op(view_transform{from;to;up;});};
+       Then{
+        equality_test{
+            rt_obj(translation{0.0;0.0;-8.0;});
+            t;
+        };
+       };
+};
+
+Scenario{     
+      title{label __chapter__7_scenario_11 title = "An arbitrary view transformation.";};
+       Given{
+        let from = rt_obj(point{1.0;3.0;2.0;});
+       };
+       And{
+        let to = rt_obj(point{4.0;-2.0;8.0;});
+       };
+       And{
+        let up = rt_obj(vector{1.0;1.0;0.0;});
+       };
+       When{let t = rt_op(view_transform{from;to;up;});};
+       Then{
+            /*matrix{
+                dim{4; 4; };
+                data{
+                    -0.50709; 0.50709; 0.67612; -2.36643;
+                    0.76772; 0.60609; 0.12122; -2.82843;
+                    -0.35857; 0.59761; -0.71714; 0.0;
+                    0.0;     0.0;     0.0;       1.0;
+
+                };
+            };*/
+            rt_op(approx_equal{-0.50709;t.matrix.data.content().at(0);})
+            && rt_op(approx_equal{0.50709;t.matrix.data.content().at(1);})
+            && rt_op(approx_equal{0.67612;t.matrix.data.content().at(2);})
+            && rt_op(approx_equal{-2.36643;t.matrix.data.content().at(3);})
+            && rt_op(approx_equal{0.76772;t.matrix.data.content().at(4);})
+            && rt_op(approx_equal{0.60609;t.matrix.data.content().at(5);})
+            && rt_op(approx_equal{0.12122;t.matrix.data.content().at(6);})
+            && rt_op(approx_equal{-2.82843;t.matrix.data.content().at(7);})
+            && rt_op(approx_equal{-0.35857;t.matrix.data.content().at(8);})
+            && rt_op(approx_equal{0.59761;t.matrix.data.content().at(9);})
+            && rt_op(approx_equal{-0.71714;t.matrix.data.content().at(10);})
+            && rt_op(approx_equal{0.0;t.matrix.data.content().at(11);})
+            && rt_op(approx_equal{0.0;t.matrix.data.content().at(12);})
+            && rt_op(approx_equal{0.0;t.matrix.data.content().at(13);})
+            && rt_op(approx_equal{0.0;t.matrix.data.content().at(14);})
+            && rt_op(approx_equal{1.0;t.matrix.data.content().at(15);})
+
+            ;
        };
 };

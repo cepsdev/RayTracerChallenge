@@ -46,19 +46,6 @@ val comps = undef;
 val outer = undef;
 val inner = undef;
 
-kind DocgenStringPrintNoEscape;
-DocgenStringPrintNoEscape docinfo_se;
-
-docinfo_se(
-
-"
-"
-
-);
-
-macro equality_test{
-   symbolic_equality(as_nodeset(arglist.at(0)),as_nodeset(arglist.at(1))).diff.equal.content();
-};
 
 Scenario{
      title{label __chapter__7_world_1 title = "Creating a world";};
@@ -260,7 +247,6 @@ Scenario{
            && rt_op(approx_equal{c.color.blue.content().at(0);0.2855;});
    };
 };
-"!!!!!!!!!!!!!!!!\n";c;
 Scenario{
    title{label __chapter__7_world_8 title = "The color with an intersection behind the ray.";};
    Given{

@@ -372,5 +372,20 @@ namespace rt{
         auto comps{prepare_computations(*hit,r)};
         return shade_hit(w,comps);
     }
+    matrix_t view_transformation(point_t from, point_t to, vector_t up){
+        auto forward{ 1/norm_2(to - from) * (to - from)};
+        auto upn{1/norm_2(up) * up};
+        auto left{ cross(forward, upn) };
+        auto true_up{cross(left, forward)};
+        matrix_t orientation{ 4, 4 , 
+            { 
+                get<0>(left),get<1>(left),get<2>(left) , 0.0,
+                get<0>(true_up),get<1>(true_up),get<2>(true_up) , 0.0,
+                -get<0>(forward),-get<1>(forward),-get<2>(forward) , 0.0,
+                0.0, 0.0, 0.0, 1.0
+            } 
+        };
+        return orientation*translation(-get<0>(from),-get<1>(from),-get<2>(from));
+    }
 }
 
