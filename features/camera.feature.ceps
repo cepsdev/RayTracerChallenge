@@ -113,7 +113,7 @@ Scenario{
     Then {
         equality_test{
             r;
-            rt_obj(ray{rt_obj(point{0.0;0.0;0.0;}); rt_obj(vector{0.0;0.0;-1.0;});});        
+            rt_obj(ray{rt_obj(point{0.0;0.0;0.0;}); rt_obj(vector{0.66519;0.33259;-0.66851;});});        
         };
     };
 };
