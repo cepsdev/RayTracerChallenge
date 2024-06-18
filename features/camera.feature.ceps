@@ -27,7 +27,7 @@ val hsize = undef;
 val vsize = undef;
 val field_of_view = undef;
 val c = undef;
-
+val r = undef;
 
 Scenario{
      title{label __chapter__7_scenario_12 title = "Constructing a camera";};
@@ -40,7 +40,7 @@ Scenario{
      And{
          let field_of_view = PI/2.0;
      };
-     Whenn{
+     When{
         let c = rt_op(camera{hsize{hsize;};vsize{vsize;};field_of_view{field_of_view;};});
      };
      Then {
@@ -54,4 +54,66 @@ Scenario{
             };
         };
      };
+};
+
+Scenario{
+     title{label __chapter__7_scenario_13 title = "The pixel size for a horizontal canvas";};
+     Given{
+        let c = rt_op(camera{hsize{200;};vsize{125;};field_of_view{PI/2.0;};});
+    };
+    Then {
+        equality_test{
+            c.camera.pixel_size;
+            pixel_size{
+                0.01;
+            };
+        };
+     };
+};
+
+Scenario{
+     title{label __chapter__7_scenario_14 title = "The pixel size for a vertical canvas";};
+     Given{
+        let c = rt_op(camera{hsize{125;};vsize{200;};field_of_view{PI/2.0;};});
+    };
+     Then {
+        equality_test{
+            c.camera.pixel_size;
+            pixel_size{
+                0.01;
+            };
+        };
+     };
+};
+
+Scenario{
+    title{label __chapter__7_scenario_15 title = "Constructing a ray through the center of the canvas";};
+    Given{
+        let c = rt_op(camera{hsize{201;};vsize{101;};field_of_view{PI/2.0;};});
+    };
+    When{
+        let r = rt_op(ray_for_pixel{c; 100; 50;}); 
+    };
+    Then {
+        equality_test{
+            r;
+            rt_obj(ray{rt_obj(point{0.0;0.0;0.0;}); rt_obj(vector{0.0;0.0;-1.0;});});        
+        };
+    };
+};
+
+Scenario{
+    title{label __chapter__7_scenario_16 title = "Constructing a ray through a corner of the canvas";};
+    Given{
+        let c = rt_op(camera{hsize{201;};vsize{101;};field_of_view{PI/2.0;};});
+    };
+    When{
+        let r = rt_op(ray_for_pixel{c; 0; 0;}); 
+    };
+    Then {
+        equality_test{
+            r;
+            rt_obj(ray{rt_obj(point{0.0;0.0;0.0;}); rt_obj(vector{0.0;0.0;-1.0;});});        
+        };
+    };
 };
