@@ -23,33 +23,37 @@ SOFTWARE.
 */
 
 let skip_summary = 0;
-val hsize = undef;
-val vsize = undef;
-val field_of_view = undef;
+val hsize_ = undef;
+val vsize_ = undef;
+val field_of_view_ = undef;
 val c = undef;
 val r = undef;
-
 Scenario{
      title{label __chapter__7_scenario_12 title = "Constructing a camera";};
      Given{
-         let hsize = 160;
+         let hsize_ = 160;
      };
      And{
-         let vsize = 120;
+         let vsize_ = 120;
      };
      And{
-         let field_of_view = PI/2.0;
+         let field_of_view_ = PI/2.0;
      };
      When{
-        let c = rt_op(camera{hsize{hsize;};vsize{vsize;};field_of_view{field_of_view;};});
+        let c = rt_op(camera{hsize{hsize_;};vsize{vsize_;};field_of_view{field_of_view_;};});
      };
-     Then {
+     Then{
         equality_test{
-            c;
             camera{
-                hsize{hsize;};
-                vsize{vsize;};
-                field_of_view{field_of_view;};
+                c.camera.hsize;
+                c.camera.vsize;
+                c.camera.field_of_view;
+                c.camera.transform;                
+            };
+            camera{
+                hsize{hsize_;};
+                vsize{vsize_;};
+                field_of_view{field_of_view_;};
                 transform{matrix{dim{4;4;};data{ 1.0; 0.0; 0.0; 0.0; 0.0; 1.0; 0.0; 0.0;0.0;0.0;1.0;0.0;0.0;0.0;0.0;1.0;}; };};
             };
         };
@@ -62,12 +66,7 @@ Scenario{
         let c = rt_op(camera{hsize{200;};vsize{125;};field_of_view{PI/2.0;};});
     };
     Then {
-        equality_test{
-            c.camera.pixel_size;
-            pixel_size{
-                0.01;
-            };
-        };
+        rt_op(approx_equal{c.camera.pixel_size.content();0.01;});
      };
 };
 
@@ -77,15 +76,11 @@ Scenario{
         let c = rt_op(camera{hsize{125;};vsize{200;};field_of_view{PI/2.0;};});
     };
      Then {
-        equality_test{
-            c.camera.pixel_size;
-            pixel_size{
-                0.01;
-            };
-        };
+        rt_op(approx_equal{c.camera.pixel_size.content();0.01;});
      };
 };
-
+c;
+/*
 Scenario{
     title{label __chapter__7_scenario_15 title = "Constructing a ray through the center of the canvas";};
     Given{
@@ -117,3 +112,27 @@ Scenario{
         };
     };
 };
+
+Scenario{
+    title{label __chapter__7_scenario_17 title = "Constructing a ray when the camera is transformed";};
+    Given{
+        let c = rt_op(camera{hsize{201;};vsize{101;};field_of_view{PI/2.0;};});
+    };
+    When{
+        let c = identity(camera{ c.camera.hsize; c.camera.vsize; c.camera.field_of_view; c.camera.pixel_size; transform{};  }); 
+    };
+    And{
+        let r = rt_op(ray_for_pixel{c; 100; 50;}); 
+    };
+    Then {
+        equality_test{
+            r;
+            rt_obj(ray{rt_obj(point{0.0;2.0;-5.0;}); rt_obj(vector{0.66519;0.0;-0.66851;});});        
+        };
+    };
+};
+*/
+
+
+
+let skip_summary = 0;

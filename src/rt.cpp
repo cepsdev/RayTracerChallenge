@@ -387,5 +387,13 @@ namespace rt{
         };
         return orientation*translation(-get<0>(from),-get<1>(from),-get<2>(from));
     }
+    void camera_t::calculate_pixel_size(){
+        aspect_ = (double )hsize/ (double)vsize;
+        double half_view = tan (field_of_view / 2.0);
+        if (aspect_ >= 1.0) {half_width_ = half_view; half_height_ = half_view * 1/aspect_; }
+        else  {half_height_ = half_view; half_width_ = half_view * aspect_; }
+        pixel_size_ = (half_width_ * 2.0) / (double)hsize;
+        cerr << pixel_size_ << '\n';
+    }
 }
 

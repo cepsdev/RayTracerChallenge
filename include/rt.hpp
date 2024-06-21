@@ -369,9 +369,30 @@ namespace rt{
     color_t color_at(World,ray_t);
     matrix_t view_transformation(point_t, point_t, vector_t);
     struct camera_t {
-        precision_t hsize;
-        precision_t vsize;
-        precision_t field_of_view;
-        matrix_t transformation;        
+        camera_t() = default;
+        camera_t(int hsize, int vsize, precision_t field_of_view ): hsize{hsize}, vsize{vsize}, field_of_view{field_of_view}{
+            calculate_pixel_size();
+            transform = matrix_t{4,4,
+            {1.0,0.0,0.0,0.0,
+             0.0,1.0,0.0,0.0,
+             0.0,0.0,1.0,0.0,
+             0.0,0.0,0.0,1.0}};
+
+        } 
+        double pixel_size() const { return pixel_size_; }
+        int hsize{};
+        int vsize{};
+        precision_t field_of_view{};
+        matrix_t transform{};
+        double half_width() const {return half_width_;}
+        double half_height() const { return half_height_;}
+        double aspect() const {return aspect_;}
+
+        private:
+        void calculate_pixel_size();
+        double pixel_size_{};
+        double half_width_;
+        double half_height_;
+        double aspect_;                
     };
 }
