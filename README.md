@@ -12,7 +12,7 @@ Test driven implementation of a basic ray tracer as described in the book 'The R
 - chapter 4: :heavy_check_mark:
 - chapter 5: :heavy_check_mark:
 - chapter 6: :heavy_check_mark:
-- chapter 7: pending
+- chapter 7: :heavy_check_mark:
 - chapter 8: pending
 - chapter 9: pending
 - chapter 10: pending
@@ -36,3 +36,6 @@ Test driven implementation of a basic ray tracer as described in the book 'The R
 ### Some Pictures
 #### Chapter 6
 ![phomng](./pics/ch6.jpg)
+#### Chapter 7 - Putting it Together
+![ball_scene](./pics/putting_it_together_chapter7.png)
+
