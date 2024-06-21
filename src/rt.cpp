@@ -393,7 +393,19 @@ namespace rt{
         if (aspect_ >= 1.0) {half_width_ = half_view; half_height_ = half_view * 1/aspect_; }
         else  {half_height_ = half_view; half_width_ = half_view * aspect_; }
         pixel_size_ = (half_width_ * 2.0) / (double)hsize;
-        cerr << pixel_size_ << '\n';
     }
+    ray_t camera_t::ray_for_pixel(int px, int py) const{
+        auto xoffset{ (px + 0.5) * pixel_size()};
+        auto yoffset{ (py + 0.5) * pixel_size()};
+        auto world_x{half_width() - xoffset};
+        auto world_y{half_height() - yoffset};
+        auto pixel{inverse(transform)*point_t(world_x,world_y,-1.0)};
+        auto origin{inverse(transform)*point_t(0.0,0.0,0.0)};
+        auto direction{pixel - origin};
+        direction = 1/norm_2(direction) * direction;
+
+        return {origin, direction};
+    }
+
 }
 

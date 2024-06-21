@@ -379,6 +379,7 @@ namespace rt{
              0.0,0.0,0.0,1.0}};
 
         } 
+        ray_t ray_for_pixel(int px, int py) const;
         double pixel_size() const { return pixel_size_; }
         int hsize{};
         int vsize{};

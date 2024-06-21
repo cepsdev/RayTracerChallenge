@@ -57,7 +57,8 @@ template<> rt::camera_t fetch<rt::camera_t>(ceps::ast::Struct& s)
     decltype(rt::camera_t::hsize) hsize{};
     decltype(rt::camera_t::vsize) vsize{};
     decltype(rt::camera_t::field_of_view) field_of_view{};
-
+    optional<decltype(rt::camera_t::transform)> t;
+    
     for (auto e : children(s)){
      if (!is<Ast_node_kind::structdef>(e)) continue;
      if (name(*as_struct_ptr(e)) == "hsize" && children(*as_struct_ptr(e)).size() && is<Ast_node_kind::int_literal>(children(*as_struct_ptr(e))[0])){
@@ -68,11 +69,12 @@ template<> rt::camera_t fetch<rt::camera_t>(ceps::ast::Struct& s)
      } else if (name(*as_struct_ptr(e)) == "field_of_view" && children(*as_struct_ptr(e)).size() && is<Ast_node_kind::float_literal>(children(*as_struct_ptr(e))[0])){
          field_of_view = value(as_double_ref(children(*as_struct_ptr(e))[0]));
      } else if (name(*as_struct_ptr(e)) == "transform" && children(*as_struct_ptr(e)).size() && is<Ast_node_kind::structdef>(children(*as_struct_ptr(e))[0])){
-         //r.field_of_view = value(as_double_ref(children(*as_struct_ptr(e))[0]));
+         t =  read_value<rt::matrix_t>(as_struct_ref(children(*as_struct_ptr(e))[0])) ;
      }
     }
     
     rt::camera_t r{hsize, vsize, field_of_view};
+    if(t) r.transform = *t;
     return r;
 }
 template<> rt::camera_t fetch<rt::camera_t>(ceps::ast::node_t n)
@@ -93,15 +95,30 @@ template<> ceps::ast::node_t ast_rep<rt::camera_t>(rt::camera_t c){
     return result;
 }
 
-
 static node_t handle_camera(Struct* op){
     auto c{read_value<rt::camera_t>(*op)};    
     if (!c) return mk_struct("error");
     return ast_rep(*c);
 }
 
+static node_t handle_ray_for_pixel(Struct* op){
+    if (!children(*op).size() || !is<Ast_node_kind::structdef>(children(*op)[0])) return mk_struct("error");
+
+    auto c{read_value<rt::camera_t>( as_struct_ref(children(*op)[0]))} ;        
+    if (!c) return mk_struct("error");
+    int px{};
+    int py{};
+    if (children(*op).size() > 1 && is<Ast_node_kind::int_literal>(children(*op)[1]))
+     px = value(as_int_ref(children(*op)[1]));
+    if (children(*op).size() > 2 && is<Ast_node_kind::int_literal>(children(*op)[2]))
+     py = value(as_int_ref(children(*op)[2]));
+    
+    return ast_rep( c->ray_for_pixel(px,py));
+}
+
 void test_interface::register_ops(rt::camera_t){
     ops["camera"] = handle_camera;
+    ops["ray_for_pixel"] = handle_ray_for_pixel;
 }    
 
 ///// rt::World <<<<<<

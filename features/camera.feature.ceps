@@ -79,8 +79,8 @@ Scenario{
         rt_op(approx_equal{c.camera.pixel_size.content();0.01;});
      };
 };
-c;
-/*
+
+
 Scenario{
     title{label __chapter__7_scenario_15 title = "Constructing a ray through the center of the canvas";};
     Given{
@@ -90,12 +90,15 @@ Scenario{
         let r = rt_op(ray_for_pixel{c; 100; 50;}); 
     };
     Then {
-        equality_test{
-            r;
-            rt_obj(ray{rt_obj(point{0.0;0.0;0.0;}); rt_obj(vector{0.0;0.0;-1.0;});});        
-        };
+        rt_op(approx_equal{r.ray.origin.tuple.x.content();0.0;})
+        && rt_op(approx_equal{r.ray.origin.tuple.y.content();0.0;})
+        && rt_op(approx_equal{r.ray.origin.tuple.z.content();0.0;})
+        && rt_op(approx_equal{r.ray.direction.tuple.x.content();0.0;})
+        && rt_op(approx_equal{r.ray.direction.tuple.y.content();0.0;})
+        && rt_op(approx_equal{r.ray.direction.tuple.z.content();-1.0;});
     };
 };
+
 
 Scenario{
     title{label __chapter__7_scenario_16 title = "Constructing a ray through a corner of the canvas";};
@@ -106,10 +109,12 @@ Scenario{
         let r = rt_op(ray_for_pixel{c; 0; 0;}); 
     };
     Then {
-        equality_test{
-            r;
-            rt_obj(ray{rt_obj(point{0.0;0.0;0.0;}); rt_obj(vector{0.66519;0.33259;-0.66851;});});        
-        };
+        rt_op(approx_equal{r.ray.origin.tuple.x.content();0.0;})
+        && rt_op(approx_equal{r.ray.origin.tuple.y.content();0.0;})
+        && rt_op(approx_equal{r.ray.origin.tuple.z.content();0.0;})
+        && rt_op(approx_equal{r.ray.direction.tuple.x.content();0.66519;})
+        && rt_op(approx_equal{r.ray.direction.tuple.y.content();0.33259;})
+        && rt_op(approx_equal{r.ray.direction.tuple.z.content();-0.66851;});
     };
 };
 
@@ -119,20 +124,28 @@ Scenario{
         let c = rt_op(camera{hsize{201;};vsize{101;};field_of_view{PI/2.0;};});
     };
     When{
-        let c = identity(camera{ c.camera.hsize; c.camera.vsize; c.camera.field_of_view; c.camera.pixel_size; transform{};  }); 
+        let c = identity(
+            camera{ c.camera.hsize; c.camera.vsize; c.camera.field_of_view; c.camera.pixel_size; 
+                    transform{  
+                        rt_op(
+                            multiply{
+                                rt_obj(rotation_y{PI / 4.0;});
+                                rt_obj(translation{0.0;-2.0;5.0;});
+                            }
+                        );
+                    };  
+            }); 
     };
     And{
         let r = rt_op(ray_for_pixel{c; 100; 50;}); 
     };
     Then {
-        equality_test{
-            r;
-            rt_obj(ray{rt_obj(point{0.0;2.0;-5.0;}); rt_obj(vector{0.66519;0.0;-0.66851;});});        
-        };
+        rt_op(approx_equal{r.ray.origin.tuple.x.content();0.0;}) &&
+        rt_op(approx_equal{r.ray.origin.tuple.y.content();2.0;}) &&
+        rt_op(approx_equal{r.ray.origin.tuple.z.content();-5.0;}) &&
+  
+        rt_op(approx_equal{r.ray.direction.tuple.x.content();sqrt(2.0)/2.0;}) &&
+        rt_op(approx_equal{r.ray.direction.tuple.y.content();0.0;}) &&
+        rt_op(approx_equal{r.ray.direction.tuple.z.content();-1.0*sqrt(2.0)/2.0;});
     };
 };
-*/
-
-
-
-let skip_summary = 0;
