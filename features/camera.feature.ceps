@@ -28,6 +28,12 @@ val vsize_ = undef;
 val field_of_view_ = undef;
 val c = undef;
 val r = undef;
+val w = undef;
+val from = undedf;
+val to = undef;
+val up = undef;
+val image = undef;
+
 Scenario{
      title{label __chapter__7_scenario_12 title = "Constructing a camera";};
      Given{
@@ -148,4 +154,53 @@ Scenario{
         rt_op(approx_equal{r.ray.direction.tuple.y.content();0.0;}) &&
         rt_op(approx_equal{r.ray.direction.tuple.z.content();-1.0*sqrt(2.0)/2.0;});
     };
+};
+
+Scenario{
+     title{label __chapter__7_world_17 title = "Rendering  world with a camera";};
+     Given{
+         let w = rt_op(default_world{});
+     };
+     And{
+        let c = rt_op(camera{hsize{11;};vsize{11;};field_of_view{PI/2.0;};});
+     };
+     And{
+        let from = rt_obj(point{0.0;0.0;-5.0;});
+     };
+     And{
+        let to = rt_obj(point{0.0;0.0;0.0;});
+     };
+     And{
+        let up = rt_obj(vector{0.0;1.0;0.0;});
+     };
+     And{
+        let c = identity(
+            camera{ c.camera.hsize; c.camera.vsize; c.camera.field_of_view; c.camera.pixel_size; 
+                    transform{  
+                        rt_op(
+                            view_transform{from;to;up;}
+                        );
+                    };  
+            }); 
+     };
+     When{
+        let image = rt_op(render{c;w;}); 
+     };
+     Then{
+        rt_op(approx_equal{
+            rt_op(pixel_at{image;5;5;}).color.red.content();
+            0.38066;
+        })
+        &&
+        rt_op(approx_equal{
+            rt_op(pixel_at{image;5;5;}).color.green.content();
+            0.47583;
+        })
+       &&
+        rt_op(approx_equal{
+            rt_op(pixel_at{image;5;5;}).color.blue.content();
+            0.2855;
+        })
+        ;
+     };
 };

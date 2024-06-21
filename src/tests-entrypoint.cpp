@@ -894,7 +894,9 @@ template<> ceps::ast::node_t ast_rep<rt::material_t>(rt::material_t m){
  
 ///// rt::material_t <<<<<<
 
-
+template<> ceps::ast::node_t ast_rep<rt::canvas_t>(rt::canvas_t canvas){
+    return rt::mk_canvas(canvas);
+}
 
 
 

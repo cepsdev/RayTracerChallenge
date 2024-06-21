@@ -116,9 +116,18 @@ static node_t handle_ray_for_pixel(Struct* op){
     return ast_rep( c->ray_for_pixel(px,py));
 }
 
+static node_t handle_render(Struct* op){
+    auto c{read_value<rt::camera_t>(0,*op)};    
+    if (!c) return mk_struct("error");
+    auto w{read_value<rt::World>(1,*op)};    
+    if (!w) return mk_struct("error");
+    return ast_rep(rt::render(*c, *w));
+}
+
 void test_interface::register_ops(rt::camera_t){
     ops["camera"] = handle_camera;
     ops["ray_for_pixel"] = handle_ray_for_pixel;
+    ops["render"] = handle_render;
 }    
 
 ///// rt::World <<<<<<

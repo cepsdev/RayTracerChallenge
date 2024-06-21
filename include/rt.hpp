@@ -396,4 +396,5 @@ namespace rt{
         double half_height_;
         double aspect_;                
     };
+    canvas_t render(camera_t, World);
 }

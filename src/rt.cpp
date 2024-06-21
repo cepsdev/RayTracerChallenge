@@ -406,6 +406,18 @@ namespace rt{
 
         return {origin, direction};
     }
-
+    canvas_t render(camera_t camera, World world){
+        canvas_t image{camera.hsize, camera.vsize};
+        for(int y{}; y < camera.vsize; ++y)
+            for(int x{}; x < camera.hsize; ++x)
+        {
+            auto ray{camera.ray_for_pixel(x,y)};
+            auto color{color_at(world,ray)};
+            image.write_pixel(x,y,color);
+        }
+        return image;
+    }
 }
+
+
 
