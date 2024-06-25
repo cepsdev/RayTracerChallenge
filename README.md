@@ -41,3 +41,14 @@ Test driven implementation of a basic ray tracer as described in the book 'The R
 #### Chapter 8 - Shadows
 ![ball_scene](./pics/ch8_shadows.png)
 
+
+Remark: Change, albeit correct, makes two feature tests fail:
+
+  scenario{   📎 Shading an intersection
+   verdict{    ❗         Failed
+   }   
+  }  
+  scenario{   📎 Shading an intersection from the inside
+   verdict{    ❗         Failed
+   }   
+  }  
