@@ -361,7 +361,8 @@ namespace rt{
         point_t point;
         vector_t eyev;
         vector_t normal_v;
-        bool inside{};               
+        bool inside{};
+        point_t over_point{};       
     };
 
     prepare_computations_t prepare_computations(intersection inter, ray_t ray);

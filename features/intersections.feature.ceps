@@ -290,3 +290,30 @@ Scenario{
       };
    };
 };
+
+
+Scenario{
+   title{label __chapter__8_p_115 title = "The hit should offset the point";};
+   Given{
+      let r = rt_obj(ray{rt_obj(point{0.0;0.0;-5.0;}); rt_obj(vector{0.0;0.0;1.0;});});
+   };
+   And{
+      let shape = rt_obj(sphere{});
+      let shape = identity(
+         sphere{
+            transform{  rt_obj(translation{0.0;0.0;1.0;}); };   
+            shape.sphere.material;
+         }
+      );
+   };
+   And{
+      let i = rt_obj(intersection{5.0; shape; });
+   };
+   When{
+      let comps = rt_op(prepare_computations{i;r;});
+   };
+   Then{
+      comps.prepare_computations.over_point.tuple.z.content() < EPSILON/2.0 && 
+      comps.prepare_computations.point.tuple.z.content() > comps.prepare_computations.over_point.tuple.z.content();      
+   };
+};

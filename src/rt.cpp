@@ -349,13 +349,16 @@ namespace rt{
         auto point{position(ray,inter.t)};
         auto normal_v{inter.obj->normal_at(point)};
         auto inside{ 0.0 > dot(normal_v, -1.0 * ray.direction)};
+        normal_v = (inside?-1.0:1.0) * normal_v;
+
         return prepare_computations_t{
             .t = inter.t,
             .object = inter.obj,
             .point = point,
             .eyev = -1.0 * ray.direction,
-            .normal_v = (inside?-1.0:1.0) * normal_v,
-            .inside = inside
+            .normal_v = normal_v,
+            .inside = inside,
+            .over_point = point + smallness<double>::value * normal_v
         };
     }
     color_t shade_hit(World w,prepare_computations_t comps){

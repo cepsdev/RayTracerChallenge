@@ -91,6 +91,7 @@ template<> ceps::ast::node_t ast_rep<rt::prepare_computations_t>(rt::prepare_com
     add_field(result,"eyev", ast_rep<rt::tuple_t>(pc.eyev));
     add_field(result,"normal_v", ast_rep<rt::tuple_t>(pc.normal_v));
     add_field(result,"inside", ast_rep<bool>(pc.inside));
+    add_field(result,"over_point", ast_rep<rt::tuple_t>(pc.over_point));
     return result;
 }
  
