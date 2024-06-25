@@ -308,7 +308,6 @@ Scenario{
    };
 };
 
-
 Scenario{
    title{label __chapter__8_scenario_2 title = "There is no shadow when nothing is collinear with point and light.";};
    Given{
@@ -316,6 +315,45 @@ Scenario{
    };
    And{
       let p = rt_obj(point{0.0;10.0;0.0;});
+   };
+   Then{
+           !rt_op(is_shadowed{w;p;});
+   };
+};
+
+Scenario{
+   title{label __chapter__8_scenario_3 title = "The shadow when an object is between the point and the light";};
+   Given{
+     let w = rt_op(default_world{}); 
+   };
+   And{
+      let p = rt_obj(point{10.0;-10.0;10.0;});
+   };
+   Then{
+           rt_op(is_shadowed{w;p;});
+   };
+};
+
+Scenario{
+   title{label __chapter__8_scenario_4 title = "There is no shadow when an object is behind the light";};
+   Given{
+     let w = rt_op(default_world{}); 
+   };
+   And{
+      let p = rt_obj(point{-20.0;20.0;-20.0;});
+   };
+   Then{
+      !rt_op(is_shadowed{w;p;});
+   };
+};
+
+Scenario{
+   title{label __chapter__8_scenario_5 title = "There is no shadow when an object is behind the point";};
+   Given{
+     let w = rt_op(default_world{}); 
+   };
+   And{
+      let p = rt_obj(point{-2.0;2.0;-2.0;});
    };
    Then{
            !rt_op(is_shadowed{w;p;});

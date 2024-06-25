@@ -417,8 +417,19 @@ namespace rt{
         }
         return image;
     }
-    bool is_shadowed(World w, point_t p)
+
+    bool is_shadowed(World w, point_t point)
     {
+        for (auto light : w.lights){
+            auto v{light.position - point};
+            auto distance{norm_2(v)};
+            auto direction{ 1/norm_2(v) * v};
+            auto r{ray_t(point, direction)};
+            auto intersections{w.intersect(r)};
+            if (intersections.hit() && intersections.hit()->t < distance) {
+                return true;
+            } 
+        }
         return false;
     }
 }
