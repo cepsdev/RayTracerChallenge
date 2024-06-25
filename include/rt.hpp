@@ -346,7 +346,7 @@ namespace rt{
 
     ray_t transform(ray_t, matrix_t);
     vector_t reflect(vector_t in, vector_t normal);
-    color_t lighting(material_t material, point_light light, point_t point, vector_t eyev, vector_t normalv);
+    color_t lighting(material_t material, point_light light, point_t point, vector_t eyev, vector_t normalv, bool in_shadow = false);
 
     class World{
         public:

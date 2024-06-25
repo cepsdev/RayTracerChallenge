@@ -297,7 +297,7 @@ namespace rt{
         return in - 2 * dot(in, normal) * normal;
     }
 
-    color_t lighting(material_t material, point_light light, point_t point, vector_t eyev, vector_t normalv){
+    color_t lighting(material_t material, point_light light, point_t point, vector_t eyev, vector_t normalv, bool in_shadow){
 
         auto normalize = [](vector_t v) {  return 1.0/norm_2(v) * v; };
         // combine the surface color with the light's color/intensity
@@ -328,7 +328,7 @@ namespace rt{
             }
         }
 
-        return ambient + diffuse + specular;
+        return in_shadow ? ambient :  ambient + diffuse + specular;
     }
 
     void intersections::sort(){

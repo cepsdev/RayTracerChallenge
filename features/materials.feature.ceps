@@ -40,7 +40,7 @@ val light = undef;
 val eyev = undef;
 val normalv = undef;
 val result = undef;
-
+val in_shadow = undef;
 kind DocgenStringPrintNoEscape;
 DocgenStringPrintNoEscape docinfo_se;
 
@@ -219,6 +219,39 @@ Scenario{
     };
 };
 
+Scenario{
+     title{label __chapter__8_scenario_1 title = "Lighting with the source in shadow";};
+     Background{};
+     Given{
+         let eyev = rt_obj(vector{0.0;0.0;-1.0;});
+     };
+    And{
+        let normalv = rt_obj(vector{0.0;0.0;-1.0;});
+    };
+    And{
+        let light = rt_obj(
+            point_light{
+                position{
+                    rt_obj(point{0.0;0.0;10.0;});
+                };
+                intensity{rt_obj(color{1.0;1.0;1.0;});};
+            }
+        ); 
+    };
+    And{
+        let in_shadow = 1;
+    };
+    When{
+        let result = rt_op(lighting{mat;light;position;eyev;normalv;in_shadow;});
+    };
+    Then{
+        rt_op( 
+            approx_equal{ 
+                rt_obj(color{0.1;0.1;0.1;}); 
+                result;
+            });
+    };
+};
 
 
 

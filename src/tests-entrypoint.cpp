@@ -328,6 +328,7 @@ std::optional<T> read_value(ceps::ast::Struct& s){
     return fetch<T>(s);
 }
 
+
 template<typename T> ceps::ast::node_t ast_rep (T entity);
 template<typename T> ceps::ast::node_t ast_rep (std::string field_name, T value);
 template<typename T> ceps::ast::node_t ast_rep (T* entity);
@@ -369,6 +370,10 @@ template<>
 template<> bool check<double>(ceps::ast::node_t n){ return n && ceps::ast::is<ceps::ast::Ast_node_kind::float_literal>(n); }
 
 template<> double fetch<double>(ceps::ast::node_t n){ return value(as_double_ref(n));}
+
+template<> bool check<int>(ceps::ast::node_t n){ return n && ceps::ast::is<ceps::ast::Ast_node_kind::int_literal>(n); }
+
+template<> int fetch<int>(ceps::ast::node_t n){ return value(as_int_ref(n));}
 
 
 template<> bool check<bool>(ceps::ast::node_t n){ return n && ceps::ast::is<ceps::ast::Ast_node_kind::int_literal>(n); }
@@ -1371,8 +1376,9 @@ ceps::ast::node_t cepsplugin::op(ceps::ast::node_callparameters_t params){
         auto point{read_value<rt::tuple_t>(2,ceps_struct)};
         auto eyev{read_value<rt::tuple_t>(3,ceps_struct)};
         auto normalv{read_value<rt::tuple_t>(4,ceps_struct)};
+        auto in_shadow{read_value<int>(5,ceps_struct)};
         if (material && light && point && eyev && normalv){
-            auto r = lighting(*material, *light, *point, *eyev, *normalv);
+            auto r = lighting(*material, *light, *point, *eyev, *normalv, in_shadow ? *in_shadow : false );
             return ast_rep(r);
         }
     } else  if (name(ceps_struct) == "default_world"){    
