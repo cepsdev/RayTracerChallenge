@@ -141,10 +141,18 @@ static node_t handle_color_at(Struct* op){
     return ast_rep(c);
 }
 
+static node_t handle_is_shadowed(Struct* op){
+    auto world{read_value<rt::World>(0,*op)};    
+    auto p{read_value<rt::tuple_t>(1,*op)};
+    if (!p || !world) return mk_struct("error");
+    return ast_rep(rt::is_shadowed(*world, *p));
+}
+
 void test_interface::register_ops(rt::World){
     ops["intersect_world"] = handle_intersect_world;
     ops["shade_hit"] = handle_shade_hit;            
-    ops["color_at"] = handle_color_at;            
+    ops["color_at"] = handle_color_at;
+    ops["is_shadowed"] = handle_is_shadowed;            
 }    
 
 ///// rt::World <<<<<<

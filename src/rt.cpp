@@ -417,6 +417,10 @@ namespace rt{
         }
         return image;
     }
+    bool is_shadowed(World w, point_t p)
+    {
+        return false;
+    }
 }
 
 

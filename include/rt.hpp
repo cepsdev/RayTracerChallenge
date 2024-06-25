@@ -397,4 +397,5 @@ namespace rt{
         double aspect_;                
     };
     canvas_t render(camera_t, World);
+    bool is_shadowed(World, point_t);
 }

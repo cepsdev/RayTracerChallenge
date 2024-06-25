@@ -247,6 +247,7 @@ Scenario{
            && rt_op(approx_equal{c.color.blue.content().at(0);0.2855;});
    };
 };
+
 Scenario{
    title{label __chapter__7_world_8 title = "The color with an intersection behind the ray.";};
    Given{
@@ -304,5 +305,19 @@ Scenario{
            rt_op(approx_equal{c.color.red.content().at(0);inner.sphere.material.color.color.red.content();})
            && rt_op(approx_equal{c.color.green.content().at(0);inner.sphere.material.color.color.green.content();})
            && rt_op(approx_equal{c.color.blue.content().at(0);inner.sphere.material.color.color.blue.content();});
+   };
+};
+
+
+Scenario{
+   title{label __chapter__8_scenario_2 title = "There is no shadow when nothing is collinear with point and light.";};
+   Given{
+     let w = rt_op(default_world{}); 
+   };
+   And{
+      let p = rt_obj(point{0.0;10.0;0.0;});
+   };
+   Then{
+           !rt_op(is_shadowed{w;p;});
    };
 };
