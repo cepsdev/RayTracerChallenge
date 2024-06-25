@@ -363,8 +363,9 @@ namespace rt{
     }
     color_t shade_hit(World w,prepare_computations_t comps){
         color_t c{};
+        auto shadowed{is_shadowed(w,comps.over_point)};
         for(auto light: w.lights){
-            if (comps.object) c = c + lighting(comps.object->material,light,comps.point,comps.eyev,comps.normal_v);
+            if (comps.object) c = c + lighting(comps.object->material,light,comps.over_point,comps.eyev,comps.normal_v,shadowed);
         }
         return c;
     }
